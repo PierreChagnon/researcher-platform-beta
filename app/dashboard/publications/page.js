@@ -1,9 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
@@ -16,123 +18,53 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BarChart, Download, Eye, MoreHorizontal, RefreshCw, Search, FileText } from "lucide-react"
-
-// Publications fictives pour la démonstration
-const publications = [
-    {
-        id: "1",
-        title: "Deep Learning Approaches for Natural Language Processing",
-        journal: "Journal of Artificial Intelligence Research",
-        year: 2023,
-        authors: "Doe, J., Smith, A., Johnson, B.",
-        citations: 45,
-        type: "article",
-    },
-    {
-        id: "2",
-        title: "A Survey of Machine Learning Techniques for Healthcare Applications",
-        journal: "IEEE Transactions on Medical Imaging",
-        year: 2022,
-        authors: "Doe, J., Williams, C., Brown, D.",
-        citations: 32,
-        type: "article",
-    },
-    {
-        id: "3",
-        title: "Reinforcement Learning in Robotics: A Comprehensive Review",
-        journal: "Robotics and Autonomous Systems",
-        year: 2021,
-        authors: "Smith, A., Doe, J., Miller, E.",
-        citations: 78,
-        type: "review",
-    },
-    {
-        id: "4",
-        title: "Explainable AI: Methods and Applications",
-        journal: "ACM Computing Surveys",
-        year: 2022,
-        authors: "Doe, J., Johnson, B., Davis, F.",
-        citations: 56,
-        type: "article",
-    },
-    {
-        id: "5",
-        title: "Advances in Computer Vision: From CNNs to Transformers",
-        journal: "Computer Vision and Image Understanding",
-        year: 2023,
-        authors: "Doe, J., Wilson, G.",
-        citations: 23,
-        type: "article",
-    },
-    {
-        id: "6",
-        title: "Ethical Considerations in AI Development",
-        journal: "AI Ethics",
-        year: 2021,
-        authors: "Doe, J., Thompson, H., Garcia, I.",
-        citations: 41,
-        type: "article",
-    },
-    {
-        id: "7",
-        title: "Machine Learning for Climate Change Prediction",
-        journal: "Environmental Data Science",
-        year: 2022,
-        authors: "Doe, J., Martinez, J.",
-        citations: 19,
-        type: "article",
-    },
-    {
-        id: "8",
-        title: "Federated Learning: Privacy-Preserving Machine Learning",
-        journal: "Journal of Privacy and Security",
-        year: 2023,
-        authors: "Doe, J., Anderson, K., Lee, S.",
-        citations: 27,
-        type: "review",
-    },
-    {
-        id: "9",
-        title: "Neural Architecture Search: Automating Deep Learning Design",
-        journal: "Machine Learning Research",
-        year: 2021,
-        authors: "Doe, J., White, R.",
-        citations: 38,
-        type: "article",
-    },
-    {
-        id: "10",
-        title: "Quantum Machine Learning: Opportunities and Challenges",
-        journal: "Quantum Computing",
-        year: 2023,
-        authors: "Doe, J., Clark, M., Lewis, P.",
-        citations: 15,
-        type: "article",
-    },
-    {
-        id: "11",
-        title: "Transfer Learning in Medical Image Analysis",
-        journal: "Medical Image Analysis",
-        year: 2022,
-        authors: "Doe, J., Walker, T., Hall, J.",
-        citations: 29,
-        type: "article",
-    },
-    {
-        id: "12",
-        title: "Graph Neural Networks for Social Network Analysis",
-        journal: "Social Network Analysis and Mining",
-        year: 2021,
-        authors: "Doe, J., Young, S., King, R.",
-        citations: 34,
-        type: "article",
-    },
-]
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import {
+    BarChart,
+    Download,
+    Eye,
+    MoreHorizontal,
+    RefreshCw,
+    Search,
+    FileText,
+    Plus,
+    ExternalLink,
+    Globe,
+    CheckCircle,
+    AlertCircle,
+    Trash,
+} from "lucide-react"
+import { usePublications } from "@/hooks/usePublications"
+import { useAuth } from "@/contexts/AuthContext"
+import { syncPublicationsFromOrcid, addManualPublication } from "@/lib/actions/sync-publications"
+import { deletePublicationAction } from "@/lib/actions/publication-actions"
 
 export default function PublicationsPage() {
     const [searchTerm, setSearchTerm] = useState("")
-    const [isLoading, setIsLoading] = useState(false)
+    const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+    const [publicationToDelete, setPublicationToDelete] = useState(null)
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+    const [isPending, startTransition] = useTransition()
+    const { publications, loading, stats, refreshPublications } = usePublications()
+    const { userData } = useAuth()
 
     const filteredPublications = publications.filter(
         (pub) =>
@@ -141,37 +73,77 @@ export default function PublicationsPage() {
             pub.journal.toLowerCase().includes(searchTerm.toLowerCase()),
     )
 
-    const handleRefresh = async () => {
-        setIsLoading(true)
-
-        try {
-            // Simuler une requête API
-            await new Promise((resolve) => setTimeout(resolve, 2000))
-
-            toast({
-                title: "Publications mises à jour",
-                description: "Vos publications ont été synchronisées avec succès.",
-            })
-        } catch (error) {
+    const handleSyncOrcid = async () => {
+        if (!userData?.orcid) {
             toast({
                 variant: "destructive",
-                title: "Erreur",
-                description: "Une erreur est survenue lors de la synchronisation de vos publications.",
+                title: "ORCID manquant",
+                description: "Veuillez d'abord ajouter votre identifiant ORCID dans votre profil.",
             })
-        } finally {
-            setIsLoading(false)
+            return
         }
+
+        startTransition(async () => {
+            const result = await syncPublicationsFromOrcid(userData.orcid)
+
+            if (result.success) {
+                toast({
+                    title: "Synchronisation réussie",
+                    description: result.message,
+                })
+                refreshPublications()
+            } else {
+                toast({
+                    variant: "destructive",
+                    title: "Erreur de synchronisation",
+                    description: result.error,
+                })
+            }
+        })
     }
 
-    // Calculer les statistiques
-    const totalCitations = publications.reduce((sum, pub) => sum + pub.citations, 0)
-    const publicationsByYear = publications.reduce((acc, pub) => {
-        acc[pub.year] = (acc[pub.year] || 0) + 1
-        return acc
-    }, {})
+    const handleAddManualPublication = async (formData) => {
+        startTransition(async () => {
+            const result = await addManualPublication(formData)
 
-    const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(a))
-    const recentYears = years.slice(0, 5)
+            if (result.success) {
+                toast({
+                    title: "Publication ajoutée",
+                    description: result.message,
+                })
+                setIsAddDialogOpen(false)
+                refreshPublications()
+            } else {
+                toast({
+                    variant: "destructive",
+                    title: "Erreur",
+                    description: result.error,
+                })
+            }
+        })
+    }
+
+    const handleDeletePublication = async () => {
+        if (!publicationToDelete) return
+
+        startTransition(async () => {
+            const result = await deletePublicationAction(publicationToDelete.id)
+
+            if (result.success) {
+                toast.success(result.message)
+                setIsDeleteDialogOpen(false)
+                setPublicationToDelete(null)
+                refreshPublications()
+            } else {
+                toast.error(result.error)
+            }
+        })
+    }
+
+    const openDeleteDialog = (publication) => {
+        setPublicationToDelete(publication)
+        setIsDeleteDialogOpen(true)
+    }
 
     return (
         <div className="space-y-6">
@@ -180,17 +152,96 @@ export default function PublicationsPage() {
                     <h1 className="text-3xl font-bold tracking-tight">Publications</h1>
                     <p className="text-muted-foreground">Gérez vos publications scientifiques récupérées via ORCID.</p>
                 </div>
-                <Button onClick={handleRefresh} disabled={isLoading} className="flex items-center gap-2">
-                    <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-                    {isLoading ? "Synchronisation..." : "Synchroniser"}
-                </Button>
+                <div className="flex gap-2">
+                    <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                        <DialogTrigger asChild>
+                            <Button variant="outline" className="flex items-center gap-2">
+                                <Plus className="h-4 w-4" />
+                                Ajouter manuellement
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[525px]">
+                            <form action={handleAddManualPublication}>
+                                <DialogHeader>
+                                    <DialogTitle>Ajouter une publication</DialogTitle>
+                                    <DialogDescription>
+                                        Ajoutez manuellement une publication qui n&apos;est pas dans OpenAlex.
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div className="grid gap-4 py-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="title">Titre *</Label>
+                                        <Input id="title" name="title" required />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="journal">Journal *</Label>
+                                        <Input id="journal" name="journal" required />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="year">Année *</Label>
+                                            <Input id="year" name="year" type="number" min="1900" max="2030" required />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="doi">DOI</Label>
+                                            <Input id="doi" name="doi" placeholder="10.1000/xyz123" />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="authors">Auteurs *</Label>
+                                        <Input id="authors" name="authors" placeholder="Doe, J., Smith, A." required />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="url">URL</Label>
+                                        <Input id="url" name="url" type="url" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="abstract">Résumé</Label>
+                                        <Textarea id="abstract" name="abstract" rows={3} />
+                                    </div>
+                                </div>
+                                <DialogFooter>
+                                    <Button type="button" variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                                        Annuler
+                                    </Button>
+                                    <Button type="submit" disabled={isPending}>
+                                        {isPending ? "Ajout..." : "Ajouter"}
+                                    </Button>
+                                </DialogFooter>
+                            </form>
+                        </DialogContent>
+                    </Dialog>
+                    <Button
+                        onClick={handleSyncOrcid}
+                        disabled={isPending || !userData?.orcid}
+                        className="flex items-center gap-2"
+                    >
+                        <RefreshCw className={`h-4 w-4 ${isPending ? "animate-spin" : ""}`} />
+                        {isPending ? "Synchronisation..." : "Synchroniser ORCID"}
+                    </Button>
+                </div>
             </div>
+
+            {!userData?.orcid && (
+                <Card className="border-orange-200 bg-orange-50">
+                    <CardContent className="flex items-center gap-3 pt-6">
+                        <AlertCircle className="h-5 w-5 text-orange-600" />
+                        <div>
+                            <p className="font-medium text-orange-800">ORCID non configuré</p>
+                            <p className="text-sm text-orange-700">
+                                Ajoutez votre identifiant ORCID dans votre profil pour synchroniser automatiquement vos publications.
+                            </p>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
 
             <Tabs defaultValue="list" className="space-y-4">
                 <TabsList>
-                    <TabsTrigger value="list">Liste</TabsTrigger>
+                    <TabsTrigger value="list">Liste ({stats.total})</TabsTrigger>
                     <TabsTrigger value="stats">Statistiques</TabsTrigger>
                 </TabsList>
+
                 <TabsContent value="list" className="space-y-4">
                     <div className="flex items-center gap-2">
                         <Search className="h-4 w-4 text-muted-foreground" />
@@ -205,66 +256,123 @@ export default function PublicationsPage() {
                     <Card>
                         <CardHeader>
                             <CardTitle>Vos publications</CardTitle>
-                            <CardDescription>Liste de vos publications récupérées via votre identifiant ORCID.</CardDescription>
+                            <CardDescription>
+                                {stats.openAlexCount > 0 && (
+                                    <span className="flex items-center gap-1">
+                                        <CheckCircle className="h-4 w-4 text-green-600" />
+                                        {stats.openAlexCount} depuis OpenAlex
+                                    </span>
+                                )}
+                                {stats.manualCount > 0 && (
+                                    <span className="flex items-center gap-1">
+                                        <FileText className="h-4 w-4 text-blue-600" />
+                                        {stats.manualCount} ajoutées manuellement
+                                    </span>
+                                )}
+                            </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Titre</TableHead>
-                                        <TableHead className="hidden md:table-cell">Journal</TableHead>
-                                        <TableHead className="hidden md:table-cell">Année</TableHead>
-                                        <TableHead className="hidden md:table-cell">Citations</TableHead>
-                                        <TableHead className="hidden md:table-cell">Type</TableHead>
-                                        <TableHead className="w-[50px]"></TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {filteredPublications.length === 0 ? (
+                            {loading ? (
+                                <div className="flex items-center justify-center py-8">
+                                    <RefreshCw className="h-6 w-6 animate-spin" />
+                                    <span className="ml-2">Chargement des publications...</span>
+                                </div>
+                            ) : (
+                                <Table>
+                                    <TableHeader>
                                         <TableRow>
-                                            <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                                                Aucune publication trouvée
-                                            </TableCell>
+                                            <TableHead>Titre</TableHead>
+                                            <TableHead className="hidden md:table-cell">Journal</TableHead>
+                                            <TableHead className="hidden md:table-cell">Année</TableHead>
+                                            <TableHead className="hidden md:table-cell">Citations</TableHead>
+                                            <TableHead className="hidden md:table-cell">Source</TableHead>
+                                            <TableHead className="w-[50px]"></TableHead>
                                         </TableRow>
-                                    ) : (
-                                        filteredPublications.map((pub) => (
-                                            <TableRow key={pub.id}>
-                                                <TableCell className="font-medium">{pub.title}</TableCell>
-                                                <TableCell className="hidden md:table-cell">{pub.journal}</TableCell>
-                                                <TableCell className="hidden md:table-cell">{pub.year}</TableCell>
-                                                <TableCell className="hidden md:table-cell">{pub.citations}</TableCell>
-                                                <TableCell className="hidden md:table-cell">
-                                                    <Badge variant={pub.type === "review" ? "outline" : "secondary"}>
-                                                        {pub.type === "review" ? "Revue" : "Article"}
-                                                    </Badge>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <DropdownMenu>
-                                                        <DropdownMenuTrigger asChild>
-                                                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                                <MoreHorizontal className="h-4 w-4" />
-                                                                <span className="sr-only">Actions</span>
-                                                            </Button>
-                                                        </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="end">
-                                                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                            <DropdownMenuSeparator />
-                                                            <DropdownMenuItem className="flex items-center gap-2">
-                                                                <Eye className="h-4 w-4" />
-                                                                <span>Voir les détails</span>
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem className="flex items-center gap-2">
-                                                                <Download className="h-4 w-4" />
-                                                                <span>Télécharger</span>
-                                                            </DropdownMenuItem>
-                                                        </DropdownMenuContent>
-                                                    </DropdownMenu>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {filteredPublications.length === 0 ? (
+                                            <TableRow>
+                                                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                                                    {publications.length === 0
+                                                        ? "Aucune publication trouvée. Synchronisez avec ORCID ou ajoutez-en manuellement."
+                                                        : "Aucune publication ne correspond à votre recherche"}
                                                 </TableCell>
                                             </TableRow>
-                                        ))
-                                    )}
-                                </TableBody>
-                            </Table>
+                                        ) : (
+                                            filteredPublications.map((pub) => (
+                                                <TableRow key={pub.id}>
+                                                    <TableCell className="font-medium">
+                                                        <div>
+                                                            <div className="font-medium">{pub.title}</div>
+                                                            <div className="text-sm text-muted-foreground md:hidden">
+                                                                {pub.journal} • {pub.year}
+                                                            </div>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="hidden md:table-cell">{pub.journal}</TableCell>
+                                                    <TableCell className="hidden md:table-cell">{pub.year}</TableCell>
+                                                    <TableCell className="hidden md:table-cell">{pub.citations}</TableCell>
+                                                    <TableCell className="hidden md:table-cell">
+                                                        <Badge variant={pub.source === "openalex" ? "default" : "secondary"}>
+                                                            {pub.source === "openalex" ? (
+                                                                <div className="flex items-center gap-1">
+                                                                    <Globe className="h-3 w-3" />
+                                                                    OpenAlex
+                                                                </div>
+                                                            ) : (
+                                                                <div className="flex items-center gap-1">
+                                                                    <FileText className="h-3 w-3" />
+                                                                    Manuel
+                                                                </div>
+                                                            )}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <DropdownMenu>
+                                                            <DropdownMenuTrigger asChild>
+                                                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                                    <MoreHorizontal className="h-4 w-4" />
+                                                                    <span className="sr-only">Actions</span>
+                                                                </Button>
+                                                            </DropdownMenuTrigger>
+                                                            <DropdownMenuContent align="end">
+                                                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                                <DropdownMenuSeparator />
+                                                                <DropdownMenuItem className="flex items-center gap-2">
+                                                                    <Eye className="h-4 w-4" />
+                                                                    <span>Voir les détails</span>
+                                                                </DropdownMenuItem>
+                                                                {pub.url && (
+                                                                    <DropdownMenuItem asChild>
+                                                                        <a
+                                                                            href={pub.url}
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer"
+                                                                            className="flex items-center gap-2"
+                                                                        >
+                                                                            <ExternalLink className="h-4 w-4" />
+                                                                            <span>Ouvrir le lien</span>
+                                                                        </a>
+                                                                    </DropdownMenuItem>
+                                                                )}
+                                                                <DropdownMenuItem className="flex items-center gap-2">
+                                                                    <Download className="h-4 w-4" />
+                                                                    <span>Télécharger</span>
+                                                                </DropdownMenuItem>
+                                                                <DropdownMenuSeparator />
+                                                                <DropdownMenuItem onClick={() => openDeleteDialog(pub)} variant="destructive" className="flex items-center gap-2">
+                                                                    <Trash className="h-4 w-4" />
+                                                                    <span>Supprimer</span>
+                                                                </DropdownMenuItem>
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            )}
                         </CardContent>
                         <CardFooter className="flex justify-between">
                             <div className="text-sm text-muted-foreground">
@@ -273,15 +381,19 @@ export default function PublicationsPage() {
                         </CardFooter>
                     </Card>
                 </TabsContent>
+
                 <TabsContent value="stats" className="space-y-4">
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium">Total des publications</CardTitle>
                                 <FileText className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{publications.length}</div>
+                                <div className="text-2xl font-bold">{stats.total}</div>
+                                <p className="text-xs text-muted-foreground">
+                                    {stats.openAlexCount} OpenAlex • {stats.manualCount} manuelles
+                                </p>
                             </CardContent>
                         </Card>
                         <Card>
@@ -290,16 +402,30 @@ export default function PublicationsPage() {
                                 <BarChart className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{totalCitations}</div>
+                                <div className="text-2xl font-bold">{stats.totalCitations}</div>
+                                <p className="text-xs text-muted-foreground">Moyenne: {stats.averageCitations}</p>
                             </CardContent>
                         </Card>
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Moyenne de citations</CardTitle>
-                                <BarChart className="h-4 w-4 text-muted-foreground" />
+                                <CardTitle className="text-sm font-medium">Accès libre</CardTitle>
+                                <Globe className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{(totalCitations / publications.length).toFixed(1)}</div>
+                                <div className="text-2xl font-bold">{stats.openAccessCount}</div>
+                                <p className="text-xs text-muted-foreground">
+                                    {stats.total > 0 ? Math.round((stats.openAccessCount / stats.total) * 100) : 0}% du total
+                                </p>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">Publications récentes</CardTitle>
+                                <FileText className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{stats.recentPublications}</div>
+                                <p className="text-xs text-muted-foreground">5 dernières années</p>
                             </CardContent>
                         </Card>
                     </div>
@@ -307,29 +433,64 @@ export default function PublicationsPage() {
                     <Card>
                         <CardHeader>
                             <CardTitle>Publications par année</CardTitle>
-                            <CardDescription>Nombre de publications par année sur les 5 dernières années</CardDescription>
+                            <CardDescription>Évolution de vos publications au fil du temps</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="h-[200px] w-full">
                                 <div className="flex h-full items-end gap-2">
-                                    {recentYears.map((year) => (
-                                        <div key={year} className="relative flex w-full flex-col items-center">
-                                            <div
-                                                className="bg-primary w-full rounded-md transition-all"
-                                                style={{
-                                                    height: `${(publicationsByYear[Number(year)] / Math.max(...Object.values(publicationsByYear))) * 100}%`,
-                                                }}
-                                            />
-                                            <span className="mt-2 text-sm">{year}</span>
-                                            <span className="absolute -top-6 text-sm font-medium">{publicationsByYear[Number(year)]}</span>
-                                        </div>
-                                    ))}
+                                    {Object.entries(stats.publicationsByYear)
+                                        .sort(([a], [b]) => Number(a) - Number(b))
+                                        .slice(-10)
+                                        .map(([year, count]) => (
+                                            <div key={year} className="relative flex w-full flex-col items-center">
+                                                <div
+                                                    className="bg-primary w-full rounded-md transition-all"
+                                                    style={{
+                                                        height: `${(count / Math.max(...Object.values(stats.publicationsByYear))) * 100}%`,
+                                                    }}
+                                                />
+                                                <span className="mt-2 text-sm">{year}</span>
+                                                <span className="absolute -top-6 text-sm font-medium">{count}</span>
+                                            </div>
+                                        ))}
                                 </div>
                             </div>
                         </CardContent>
                     </Card>
                 </TabsContent>
             </Tabs>
+
+            {/* Dialogue de confirmation de suppression */}
+            <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Êtes-vous sûr de vouloir supprimer cette publication ?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            {publicationToDelete?.source === "openalex" ? (
+                                <>
+                                    Cette publication provient d&apos;OpenAlex. Elle sera supprimée de votre liste mais pourra être
+                                    récupérée lors d&apos;une prochaine synchronisation ORCID.
+                                </>
+                            ) : (
+                                <>
+                                    Cette publication a été ajoutée manuellement. Cette action est irréversible et la publication sera
+                                    définitivement supprimée.
+                                </>
+                            )}
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={isPending}>Annuler</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleDeletePublication}
+                            disabled={isPending}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                            {isPending ? "Suppression..." : "Supprimer"}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     )
 }

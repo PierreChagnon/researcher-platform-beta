@@ -56,7 +56,7 @@ export default function DashboardLayout({ children }) {
 
     return (
         <div className="flex min-h-screen flex-col">
-            <header className="sticky flex items-center justify-center top-0 z-40 border-b">
+            <header className="sticky flex items-center justify-center top-0 z-40 border-b backdrop-blur-lg">
                 <div className="w-full flex h-16 items-center justify-between p-4">
                     <div className="flex items-center gap-2">
                         <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
@@ -70,7 +70,7 @@ export default function DashboardLayout({ children }) {
                                 <SheetHeader className="">
                                     <SheetTitle className="flex items-center gap-2">
                                         <BookOpen className="h-6 w-6" />
-                                        <span>ResearchSite</span>
+                                        <span>Researcher Platform</span>
                                     </SheetTitle>
                                 </SheetHeader>
                                 <nav className="flex flex-col gap-2">
@@ -93,7 +93,7 @@ export default function DashboardLayout({ children }) {
                         </Sheet>
                         <Link href="/dashboard" className="flex items-center gap-2 font-bold text-xl">
                             <BookOpen className="h-6 w-6" />
-                            <span className="hidden md:inline">ResearchSite</span>
+                            <span className="hidden md:inline">Researcher Platform</span>
                         </Link>
                     </div>
                     <div className="flex items-center gap-4">

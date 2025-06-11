@@ -1,12 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useAuth } from "@/contexts/AuthContext"
+import { updateUserProfile } from "@/lib/firestore"
 import { toast } from "sonner"
 
 const defaultValues = {
@@ -26,6 +28,7 @@ export default function ProfilePage() {
     const [isLoading, setIsLoading] = useState(false)
     const [formData, setFormData] = useState(defaultValues)
     const [errors, setErrors] = useState({})
+    const { user, userData, refreshUserData } = useAuth()
 
     const validateForm = () => {
         const newErrors = {}
@@ -89,26 +92,61 @@ export default function ProfilePage() {
             return
         }
 
+        if (!user) {
+            toast({
+                variant: "destructive",
+                title: "Erreur",
+                description: "Utilisateur non connecté.",
+            })
+            return
+        }
+
         setIsLoading(true)
 
         try {
-            // Ici, nous simulons la sauvegarde du profil
-            await new Promise((resolve) => setTimeout(resolve, 1000))
+            // Sauvegarder le profil dans Firestore
+            const { error } = await updateUserProfile(user.uid, formData)
+
+            if (error) {
+                throw new Error(error)
+            }
+
+            // Rafraîchir les données utilisateur
+            await refreshUserData()
 
             toast({
                 title: "Profil mis à jour",
                 description: "Vos informations ont été enregistrées avec succès.",
             })
         } catch (error) {
+            console.error("Erreur lors de la sauvegarde:", error)
             toast({
                 variant: "destructive",
                 title: "Erreur",
-                description: "Une erreur est survenue lors de la sauvegarde de votre profil.",
+                description: error.message || "Une erreur est survenue lors de la sauvegarde de votre profil.",
             })
         } finally {
             setIsLoading(false)
         }
     }
+
+    // Ajouter cet useEffect après la déclaration des states
+    useEffect(() => {
+        if (userData) {
+            setFormData({
+                name: userData.name || "",
+                title: userData.title || "",
+                institution: userData.institution || "",
+                email: userData.email || "",
+                bio: userData.bio || "",
+                orcid: userData.orcid || "",
+                website: userData.website || "",
+                twitter: userData.social?.twitter || "",
+                linkedin: userData.social?.linkedin || "",
+                github: userData.social?.github || "",
+            })
+        }
+    }, [userData])
 
     return (
         <div className="space-y-6">
