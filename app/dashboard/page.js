@@ -8,6 +8,8 @@ import { FileText, Settings, User, ExternalLink, BarChart } from "lucide-react"
 import { useAuth } from "@/contexts/AuthContext"
 import { getUserPublications } from "@/lib/firestore"
 
+const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN || "researcher-platform-beta.vercel.app"
+
 export default function DashboardPage() {
     const { user, userData } = useAuth()
     const [publications, setPublications] = useState([])
@@ -135,7 +137,9 @@ export default function DashboardPage() {
                         <div className="rounded-md border bg-muted/50 p-4">
                             <div className="text-sm font-medium">URL de votre site</div>
                             <div className="mt-1 flex items-center gap-2">
-                                <code className="rounded bg-muted px-2 py-1 text-sm">{siteUrl}.researchsite.com</code>
+                                <code className="rounded bg-muted px-2 py-1 text-sm">
+                                    {siteUrl}.{DOMAIN}
+                                </code>
                                 <Button size="icon" variant="ghost" className="h-8 w-8">
                                     <span className="sr-only">Copier l&apos;URL</span>
                                     <svg
@@ -161,7 +165,7 @@ export default function DashboardPage() {
                                 <Link href="/dashboard/settings">Personnaliser</Link>
                             </Button>
                             <Button asChild>
-                                <Link href="/site/preview" target="_blank" className="flex items-center gap-2">
+                                <Link href={`https://${siteUrl}.${DOMAIN}`} target="_blank" className="flex items-center gap-2">
                                     <span>Voir mon site</span>
                                     <ExternalLink className="h-4 w-4" />
                                 </Link>

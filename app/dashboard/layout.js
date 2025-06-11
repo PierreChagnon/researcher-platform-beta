@@ -14,10 +14,12 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Sheet, SheetContent, SheetHeader, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useAuth } from "@/contexts/AuthContext"
 import { signOut } from "@/lib/auth"
 import { toast } from "sonner"
+
+const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN || "researcher-platform-beta.vercel.app"
 
 const navigation = [
     { name: "Tableau de bord", href: "/dashboard", icon: Home },
@@ -56,8 +58,8 @@ export default function DashboardLayout({ children }) {
 
     return (
         <div className="flex min-h-screen flex-col">
-            <header className="sticky flex items-center justify-center top-0 z-40 border-b backdrop-blur-lg">
-                <div className="w-full flex h-16 items-center justify-between p-4">
+            <header className="sticky top-0 z-40 border-b bg-background">
+                <div className="container flex h-16 items-center justify-between py-4">
                     <div className="flex items-center gap-2">
                         <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                             <SheetTrigger asChild>
@@ -67,20 +69,18 @@ export default function DashboardLayout({ children }) {
                                 </Button>
                             </SheetTrigger>
                             <SheetContent side="left" className="w-[240px] sm:w-[300px]">
-                                <SheetHeader className="">
-                                    <SheetTitle className="flex items-center gap-2">
-                                        <BookOpen className="h-6 w-6" />
-                                        <span>Researcher Platform</span>
-                                    </SheetTitle>
-                                </SheetHeader>
+                                <div className="flex items-center gap-2 font-bold text-xl mb-8">
+                                    <BookOpen className="h-6 w-6" />
+                                    <span>ResearchSite</span>
+                                </div>
                                 <nav className="flex flex-col gap-2">
                                     {navigation.map((item) => (
                                         <Link
                                             key={item.name}
                                             href={item.href}
                                             className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium ${pathname === item.href
-                                                ? "bg-primary text-primary-foreground"
-                                                : "hover:bg-accent hover:text-accent-foreground"
+                                                    ? "bg-primary text-primary-foreground"
+                                                    : "hover:bg-accent hover:text-accent-foreground"
                                                 }`}
                                             onClick={() => setIsMobileMenuOpen(false)}
                                         >
@@ -93,12 +93,20 @@ export default function DashboardLayout({ children }) {
                         </Sheet>
                         <Link href="/dashboard" className="flex items-center gap-2 font-bold text-xl">
                             <BookOpen className="h-6 w-6" />
-                            <span className="hidden md:inline">Researcher Platform</span>
+                            <span className="hidden md:inline">ResearchSite</span>
                         </Link>
                     </div>
                     <div className="flex items-center gap-4">
-                        <Link href="/site/preview" target="_blank">
-                            <Button variant="outline" size="sm" className="hidden md:flex items-center gap-2">
+                        <Link
+                            href={userData?.siteSettings?.siteUrl ? `https://${userData.siteSettings.siteUrl}.${DOMAIN}` : "#"}
+                            target="_blank"
+                        >
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="hidden md:flex items-center gap-2"
+                                disabled={!userData?.siteSettings?.siteUrl}
+                            >
                                 <Globe className="h-4 w-4" />
                                 Voir mon site
                             </Button>
@@ -127,7 +135,7 @@ export default function DashboardLayout({ children }) {
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
                                     <Link
-                                        href="/site/preview"
+                                        href={userData?.siteSettings?.siteUrl ? `https://${userData.siteSettings.siteUrl}.${DOMAIN}` : "#"}
                                         target="_blank"
                                         className="flex items-center gap-2 cursor-pointer md:hidden"
                                     >
@@ -153,8 +161,8 @@ export default function DashboardLayout({ children }) {
                                 key={item.name}
                                 href={item.href}
                                 className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium ${pathname === item.href
-                                    ? "bg-primary text-primary-foreground"
-                                    : "hover:bg-accent hover:text-accent-foreground"
+                                        ? "bg-primary text-primary-foreground"
+                                        : "hover:bg-accent hover:text-accent-foreground"
                                     }`}
                             >
                                 <item.icon className="h-4 w-4" />
