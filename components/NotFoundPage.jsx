@@ -10,10 +10,9 @@ export default function NotFoundPage({
     showBackToHome = false,
     researcherId = null,
 }) {
-    const domain = process.env.NEXT_PUBLIC_DOMAIN || "researcher-platform-beta.vercel.app"
 
     // Si on a un researcherId, personnaliser le message
-    const finalMessage = researcherId ? `Le site "${researcherId}.${domain}" n'existe pas.` : message
+    const finalMessage = researcherId ? `Le site "${researcherId}.${DOMAIN}" n'existe pas.` : message
 
     return (
         <div className="min-h-screen bg-background flex items-center justify-center">

@@ -133,6 +133,7 @@ export default function ProfilePage() {
     // Ajouter cet useEffect après la déclaration des states
     useEffect(() => {
         if (userData) {
+            console.log("Données utilisateur récupérées:", userData)
             setFormData({
                 name: userData.name || "",
                 title: userData.title || "",
