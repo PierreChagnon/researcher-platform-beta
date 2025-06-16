@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useTransition } from "react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -75,9 +76,8 @@ export default function PublicationsPage() {
 
     const handleSyncOrcid = async () => {
         if (!userData?.orcid) {
-            toast({
+            toast("Veuillez ajouter votre identifiant ORCID", {
                 variant: "destructive",
-                title: "ORCID manquant",
                 description: "Veuillez d'abord ajouter votre identifiant ORCID dans votre profil.",
             })
             return
@@ -87,15 +87,13 @@ export default function PublicationsPage() {
             const result = await syncPublicationsFromOrcid(userData.orcid)
 
             if (result.success) {
-                toast({
-                    title: "Synchronisation réussie",
+                toast("Publications synchronisées avec succès", {
                     description: result.message,
                 })
                 refreshPublications()
             } else {
-                toast({
+                toast("Erreur lors de la synchronisation", {
                     variant: "destructive",
-                    title: "Erreur de synchronisation",
                     description: result.error,
                 })
             }
@@ -107,16 +105,14 @@ export default function PublicationsPage() {
             const result = await addManualPublication(formData)
 
             if (result.success) {
-                toast({
-                    title: "Publication ajoutée",
+                toast("Publications ajoutée avec succès", {
                     description: result.message,
                 })
                 setIsAddDialogOpen(false)
                 refreshPublications()
             } else {
-                toast({
+                toast("Erreur", {
                     variant: "destructive",
-                    title: "Erreur",
                     description: result.error,
                 })
             }
@@ -224,14 +220,28 @@ export default function PublicationsPage() {
 
             {!userData?.orcid && (
                 <Card className="border-orange-200 bg-orange-50">
-                    <CardContent className="flex items-center gap-3 pt-6">
-                        <AlertCircle className="h-5 w-5 text-orange-600" />
-                        <div>
-                            <p className="font-medium text-orange-800">ORCID non configuré</p>
-                            <p className="text-sm text-orange-700">
-                                Ajoutez votre identifiant ORCID dans votre profil pour synchroniser automatiquement vos publications.
-                            </p>
+                    <CardContent className="flex flex-col">
+                        <div className="flex items-center gap-3">
+                            <AlertCircle className="h-5 w-5 text-orange-600" />
+                            <div>
+                                <p className="font-medium text-orange-800">ORCID non configuré</p>
+                                <p className="text-sm text-orange-700">
+                                    Ajoutez votre identifiant ORCID dans votre profil pour synchroniser automatiquement vos publications.
+                                </p>
+                            </div>
                         </div>
+                        <Button
+                            variant="outline"
+                            className="mt-4"
+                            asChild
+                        >
+                            <Link
+                                className="max-w-sm"
+                                href={{
+                                    pathname: '/dashboard/profile',
+                                    query: { tab: 'academic' },
+                                }}>Configurer mon ORCID</Link>
+                        </Button>
                     </CardContent>
                 </Card>
             )}

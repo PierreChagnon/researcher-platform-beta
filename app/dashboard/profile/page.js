@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
+import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -25,24 +26,38 @@ const defaultValues = {
 }
 
 export default function ProfilePage() {
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState({
+        personal: false,
+        academic: false,
+        social: false
+    })
     const [formData, setFormData] = useState(defaultValues)
     const [errors, setErrors] = useState({})
+    const [activeTab, setActiveTab] = useState("personal")
     const { user, userData, refreshUserData } = useAuth()
+    const searchParams = useSearchParams()
+    const ORCIDInputRef = useRef(null)
 
-    const validateForm = () => {
+    // Récupérer le paramètre tab depuis l'URL
+    useEffect(() => {
+        const tab = searchParams.get('tab')
+        if (tab) {
+            const validTabs = ["personal", "academic", "social"]
+            if (validTabs.includes(tab)) {
+                setActiveTab(tab)
+                ORCIDInputRef.current?.focus()
+                ORCIDInputRef.current?.select()
+                console.log("on focus ORCID")
+            }
+        }
+    }, [searchParams])
+
+    // Validation spécifique pour les informations personnelles
+    const validatePersonalForm = () => {
         const newErrors = {}
 
         if (formData.name.length < 2) {
             newErrors.name = "Le nom doit contenir au moins 2 caractères."
-        }
-
-        if (formData.title.length < 2) {
-            newErrors.title = "Le titre doit contenir au moins 2 caractères."
-        }
-
-        if (formData.institution.length < 2) {
-            newErrors.institution = "L'institution doit contenir au moins 2 caractères."
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -52,6 +67,22 @@ export default function ProfilePage() {
 
         if (formData.bio.length < 10) {
             newErrors.bio = "La biographie doit contenir au moins 10 caractères."
+        }
+
+        setErrors(prev => ({ ...prev, ...newErrors }))
+        return Object.keys(newErrors).length === 0
+    }
+
+    // Validation spécifique pour les informations académiques
+    const validateAcademicForm = () => {
+        const newErrors = {}
+
+        if (formData.title.length < 2) {
+            newErrors.title = "Le titre doit contenir au moins 2 caractères."
+        }
+
+        if (formData.institution.length < 2) {
+            newErrors.institution = "L'institution doit contenir au moins 2 caractères."
         }
 
         const orcidRegex = /^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/
@@ -67,8 +98,13 @@ export default function ProfilePage() {
             }
         }
 
-        setErrors(newErrors)
+        setErrors(prev => ({ ...prev, ...newErrors }))
         return Object.keys(newErrors).length === 0
+    }
+
+    // Validation pour les réseaux sociaux (pas de validation stricte nécessaire)
+    const validateSocialForm = () => {
+        return true // Tous les champs sociaux sont optionnels
     }
 
     const handleInputChange = (field, value) => {
@@ -85,27 +121,47 @@ export default function ProfilePage() {
         }
     }
 
-    async function handleSubmit(e) {
-        e.preventDefault()
-
-        if (!validateForm()) {
-            return
-        }
-
+    // Fonction générique pour sauvegarder les données
+    const saveProfileData = async (tabType, validatedData) => {
         if (!user) {
-            toast({
+            toast("Erreur", {
                 variant: "destructive",
-                title: "Erreur",
                 description: "Utilisateur non connecté.",
             })
             return
         }
 
-        setIsLoading(true)
+        setIsLoading(prev => ({ ...prev, [tabType]: true }))
 
         try {
+            // Préparer les données à sauvegarder selon l'onglet
+            let dataToSave = {}
+
+            if (tabType === 'personal') {
+                dataToSave = {
+                    name: formData.name,
+                    email: formData.email,
+                    bio: formData.bio
+                }
+            } else if (tabType === 'academic') {
+                dataToSave = {
+                    title: formData.title,
+                    institution: formData.institution,
+                    orcid: formData.orcid,
+                    website: formData.website
+                }
+            } else if (tabType === 'social') {
+                dataToSave = {
+                    social: {
+                        twitter: formData.twitter,
+                        linkedin: formData.linkedin,
+                        github: formData.github
+                    }
+                }
+            }
+
             // Sauvegarder le profil dans Firestore
-            const { error } = await updateUserProfile(user.uid, formData)
+            const { error } = await updateUserProfile(user.uid, dataToSave)
 
             if (error) {
                 throw new Error(error)
@@ -114,26 +170,45 @@ export default function ProfilePage() {
             // Rafraîchir les données utilisateur
             await refreshUserData()
 
-            toast({
-                title: "Profil mis à jour",
-                description: "Vos informations ont été enregistrées avec succès.",
+            toast("Profil mis à jour", {
+                description: `Vos informations ${tabType === 'personal' ? 'personnelles' : tabType === 'academic' ? 'académiques' : 'de réseaux sociaux'} ont été enregistrées avec succès.`,
             })
         } catch (error) {
             console.error("Erreur lors de la sauvegarde:", error)
-            toast({
+            toast("Erreur", {
                 variant: "destructive",
-                title: "Erreur",
                 description: error.message || "Une erreur est survenue lors de la sauvegarde de votre profil.",
             })
         } finally {
-            setIsLoading(false)
+            setIsLoading(prev => ({ ...prev, [tabType]: false }))
+        }
+    }
+
+    // Fonctions de soumission spécifiques à chaque onglet
+    const handlePersonalSubmit = async (e) => {
+        e.preventDefault()
+        if (validatePersonalForm()) {
+            await saveProfileData('personal')
+        }
+    }
+
+    const handleAcademicSubmit = async (e) => {
+        e.preventDefault()
+        if (validateAcademicForm()) {
+            await saveProfileData('academic')
+        }
+    }
+
+    const handleSocialSubmit = async (e) => {
+        e.preventDefault()
+        if (validateSocialForm()) {
+            await saveProfileData('social')
         }
     }
 
     // Ajouter cet useEffect après la déclaration des states
     useEffect(() => {
         if (userData) {
-            console.log("Données utilisateur récupérées:", userData)
             setFormData({
                 name: userData.name || "",
                 title: userData.title || "",
@@ -156,14 +231,15 @@ export default function ProfilePage() {
                 <p className="text-muted-foreground">Gérez vos informations personnelles et professionnelles.</p>
             </div>
 
-            <Tabs defaultValue="personal" className="space-y-4">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
                 <TabsList>
                     <TabsTrigger value="personal">Informations personnelles</TabsTrigger>
                     <TabsTrigger value="academic">Informations académiques</TabsTrigger>
                     <TabsTrigger value="social">Réseaux sociaux</TabsTrigger>
                 </TabsList>
-                <form onSubmit={handleSubmit}>
-                    <TabsContent value="personal" className="space-y-4">
+
+                <TabsContent value="personal" className="space-y-4">
+                    <form onSubmit={handlePersonalSubmit}>
                         <Card>
                             <CardHeader>
                                 <CardTitle>Informations personnelles</CardTitle>
@@ -194,7 +270,7 @@ export default function ProfilePage() {
                                         onChange={(e) => handleInputChange("email", e.target.value)}
                                         className={errors.email ? "border-red-500" : ""}
                                     />
-                                    <p className="text-sm text-muted-foreground">Votre adresse email professionnelle.</p>
+                                    <p className="text-sm text-muted-foreground">Votre adresse email professionnelle. (La modifier ne changera pas l&apos;adresse mail de connexion à la plateforme)</p>
                                     {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
                                 </div>
                                 <div className="space-y-2">
@@ -213,13 +289,16 @@ export default function ProfilePage() {
                                 </div>
                             </CardContent>
                             <CardFooter>
-                                <Button type="submit" disabled={isLoading}>
-                                    {isLoading ? "Enregistrement..." : "Enregistrer"}
+                                <Button type="submit" disabled={isLoading.personal}>
+                                    {isLoading.personal ? "Enregistrement..." : "Enregistrer"}
                                 </Button>
                             </CardFooter>
                         </Card>
-                    </TabsContent>
-                    <TabsContent value="academic" className="space-y-4">
+                    </form>
+                </TabsContent>
+
+                <TabsContent value="academic" className="space-y-4">
+                    <form onSubmit={handleAcademicSubmit}>
                         <Card>
                             <CardHeader>
                                 <CardTitle>Informations académiques</CardTitle>
@@ -253,6 +332,7 @@ export default function ProfilePage() {
                                 <div className="space-y-2">
                                     <Label htmlFor="orcid">ORCID</Label>
                                     <Input
+                                        ref={ORCIDInputRef}
                                         id="orcid"
                                         placeholder="0000-0000-0000-0000"
                                         value={formData.orcid}
@@ -280,13 +360,16 @@ export default function ProfilePage() {
                                 </div>
                             </CardContent>
                             <CardFooter>
-                                <Button type="submit" disabled={isLoading}>
-                                    {isLoading ? "Enregistrement..." : "Enregistrer"}
+                                <Button type="submit" disabled={isLoading.academic}>
+                                    {isLoading.academic ? "Enregistrement..." : "Enregistrer"}
                                 </Button>
                             </CardFooter>
                         </Card>
-                    </TabsContent>
-                    <TabsContent value="social" className="space-y-4">
+                    </form>
+                </TabsContent>
+
+                <TabsContent value="social" className="space-y-4">
+                    <form onSubmit={handleSocialSubmit}>
                         <Card>
                             <CardHeader>
                                 <CardTitle>Réseaux sociaux</CardTitle>
@@ -327,13 +410,13 @@ export default function ProfilePage() {
                                 </div>
                             </CardContent>
                             <CardFooter>
-                                <Button type="submit" disabled={isLoading}>
-                                    {isLoading ? "Enregistrement..." : "Enregistrer"}
+                                <Button type="submit" disabled={isLoading.social}>
+                                    {isLoading.social ? "Enregistrement..." : "Enregistrer"}
                                 </Button>
                             </CardFooter>
                         </Card>
-                    </TabsContent>
-                </form>
+                    </form>
+                </TabsContent>
             </Tabs>
         </div>
     )
