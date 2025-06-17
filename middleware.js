@@ -3,6 +3,7 @@ import { NextResponse } from "next/server"
 const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN || "researcher-platform-beta.vercel.app"
 
 export function middleware(request) {
+    console.log("Middleware exécuté pour la requête:", request.url)
     const { pathname } = request.nextUrl
     const hostname = request.headers.get("host")
 
@@ -33,6 +34,7 @@ export function middleware(request) {
     let isPremium = false
 
     if (hostname && hostname.includes(DOMAIN)) {
+        console.log("Domaine principal détecté:", hostname)
         const subdomain = hostname.split(".")[0]
         const baseDomain = DOMAIN.split(".")[0] // researcher-platform-beta
         if (subdomain && subdomain !== "www" && subdomain !== baseDomain) {

@@ -11,7 +11,8 @@ export async function POST(request) {
 
         // Définir le cookie avec le token
         // Sécurisé, HttpOnly, et SameSite=Strict pour la sécurité
-        cookies().set({
+        const cookieStore = await cookies()
+        cookieStore.set({
             name: "auth-token",
             value: token,
             httpOnly: true,

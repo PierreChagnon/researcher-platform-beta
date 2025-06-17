@@ -69,22 +69,19 @@ export default function LoginPage() {
             const { user, error } = await signIn(formData.email, formData.password)
 
             if (error) {
-                toast({
+                toast("Erreur de connexion", {
                     variant: "destructive",
-                    title: "Erreur lors de la connexion",
                     description: error,
                 })
             } else {
-                toast({
-                    title: "Connexion réussie !",
+                toast("Connexion réussie", {
                     description: "Vous allez être redirigé vers votre tableau de bord.",
                 })
                 router.push("/dashboard")
             }
         } catch (error) {
-            toast({
+            toast("Erreur de connexion", {
                 variant: "destructive",
-                title: "Erreur lors de la connexion",
                 description: "Une erreur est survenue. Veuillez réessayer.",
             })
         } finally {
