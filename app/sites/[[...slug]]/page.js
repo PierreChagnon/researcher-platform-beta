@@ -7,6 +7,63 @@ import NotFoundPage from "@/components/NotFoundPage"
 
 const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN || "researcher-platform-beta.vercel.app"
 
+// 🎯 Configuration ISR
+export const revalidate = false // Pas de revalidation automatique - uniquement on-demand
+// Alternative: export const revalidate = 86400 // 24h comme backup de sécurité
+
+// 🚀 Génération des métadonnées pour le SEO
+export async function generateMetadata({ params }) {
+    const headersList = await headers()
+    const researcherId = headersList.get("x-researcher-id")
+
+    if (!researcherId) {
+        return {
+            title: "ResearchSite - Sites Web pour Chercheurs",
+            description: "Créez facilement votre site web de chercheur",
+        }
+    }
+
+    try {
+        const researcher = await getResearcherByUrl(researcherId)
+
+        if (!researcher) {
+            return {
+                title: "Chercheur introuvable - ResearchSite",
+                description: "Le site demandé n'existe pas",
+            }
+        }
+
+        const siteName = researcher.siteSettings?.siteName || `${researcher.name} - Chercheur`
+        const siteDescription = researcher.siteSettings?.siteDescription || `Site personnel de ${researcher.name}`
+
+        return {
+            title: siteName,
+            description: siteDescription,
+            openGraph: {
+                title: siteName,
+                description: siteDescription,
+                type: "website",
+                url: `https://${researcherId}.${DOMAIN}`,
+            },
+            twitter: {
+                card: "summary_large_image",
+                title: siteName,
+                description: siteDescription,
+            },
+            robots: {
+                index: true,
+                follow: true,
+            },
+        }
+    } catch (error) {
+        console.error("Erreur génération métadonnées:", error)
+        return {
+            title: "ResearchSite",
+            description: "Site de chercheur",
+        }
+    }
+}
+
 // Fonction pour trouver un chercheur par son URL personnalisée
 async function getResearcherByUrl(siteUrl) {
     try {
@@ -52,19 +109,46 @@ async function getResearcherByCustomDomain(domain) {
     }
 }
 
+// 🎯 Fonction pour récupérer les publications du chercheur
+async function getResearcherPublications(userId) {
+    try {
+        const publicationsRef = collection(db, "publications")
+        const q = query(publicationsRef, where("userId", "==", userId), where("isVisible", "==", true))
+        const querySnapshot = await getDocs(q)
+
+        const publications = []
+        querySnapshot.forEach((doc) => {
+            publications.push({ id: doc.id, ...doc.data() })
+        })
+
+        // Trier par année décroissante
+        return publications.sort((a, b) => (b.year || 0) - (a.year || 0))
+    } catch (error) {
+        console.error("Erreur lors de la récupération des publications:", error)
+        return []
+    }
+}
+
 export default async function DynamicSitePage() {
-    const headersList = headers()
+    const headersList = await headers()
     const researcherId = headersList.get("x-researcher-id")
     const isPremium = headersList.get("x-is-premium") === "true"
     const hostname = headersList.get("x-hostname")
+
+    console.log("🔄 ISR: Génération de la page pour", researcherId)
 
     // Cas 1: Sous-domaine détecté (johndoe.researcher-platform-beta.vercel.app)
     if (researcherId) {
         const researcher = await getResearcherByUrl(researcherId)
 
         if (researcher) {
-            // Chercheur trouvé → Afficher son site
-            return <ResearcherSite researcher={researcher} isPremium={isPremium} />
+            // 🚀 Récupérer les publications pour le site
+            const publications = await getResearcherPublications(researcher.id)
+
+            console.log("✅ ISR: Site généré pour", researcherId, "avec", publications.length, "publications")
+
+            // Chercheur trouvé → Afficher son site avec ses publications
+            return <ResearcherSite researcher={researcher} publications={publications} isPremium={isPremium} />
         } else {
             // Sous-domaine invalide → Page 404
             return (
@@ -83,7 +167,8 @@ export default async function DynamicSitePage() {
         const researcher = await getResearcherByCustomDomain(hostname)
 
         if (researcher) {
-            return <ResearcherSite researcher={researcher} isPremium={isPremium} />
+            const publications = await getResearcherPublications(researcher.id)
+            return <ResearcherSite researcher={researcher} publications={publications} isPremium={isPremium} />
         } else {
             return (
                 <NotFoundPage

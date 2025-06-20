@@ -3,7 +3,21 @@
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { BookOpen, ChevronDown, Home, LogOut, Settings, User, FileText, Globe, Menu } from "lucide-react"
+import {
+    BookOpen,
+    ChevronDown,
+    Home,
+    LogOut,
+    Settings,
+    User,
+    FileText,
+    Globe,
+    Menu,
+    Presentation,
+    GraduationCap,
+    Phone,
+    FileIcon as FileUser,
+} from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -25,6 +39,10 @@ const navigation = [
     { name: "Tableau de bord", href: "/dashboard", icon: Home },
     { name: "Profil", href: "/dashboard/profile", icon: User },
     { name: "Publications", href: "/dashboard/publications", icon: FileText },
+    { name: "Présentations", href: "/dashboard/presentations", icon: Presentation },
+    { name: "Enseignement", href: "/dashboard/teaching", icon: GraduationCap },
+    { name: "Contact", href: "/dashboard/contact", icon: Phone },
+    { name: "CV", href: "/dashboard/cv", icon: FileUser },
     { name: "Paramètres", href: "/dashboard/settings", icon: Settings },
 ]
 
@@ -135,7 +153,9 @@ export default function DashboardLayout({ children }) {
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
                                     <Link
-                                        href={userData?.siteSettings?.siteUrl ? `https://${userData.siteSettings.siteUrl}.${DOMAIN}` : "#"}
+                                        href={
+                                            userData?.siteSettings?.siteUrl ? `https://${DOMAIN}/sites/${userData.siteSettings.siteUrl}` : "#"
+                                        }
                                         target="_blank"
                                         className="flex items-center gap-2 cursor-pointer md:hidden"
                                     >
