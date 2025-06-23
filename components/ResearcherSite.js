@@ -3,7 +3,7 @@ import { Mail, MapPin, ExternalLink, Calendar } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
-export default function ResearcherSite({ researcher, publications = [], customDomain = null }) {
+export default function ResearcherSite({ researcher, publications = [], presentations, teaching, customDomain = null }) {
     // Default data if no researcher
     const defaultResearcher = {
         name: "Dr. Researcher",
@@ -18,6 +18,8 @@ export default function ResearcherSite({ researcher, publications = [], customDo
     }
 
     const data = researcher || defaultResearcher
+    console.log("🔄 Rendering ResearcherSite for", data)
+    console.log("📊 Publications:", publications.length, "Presentations:", presentations?.length || 0, "Teaching:", teaching?.length || 0)
 
     return (
         <div className="min-h-screen bg-white">
@@ -198,6 +200,92 @@ export default function ResearcherSite({ researcher, publications = [], customDo
                                                 </a>
                                             )}
                                         </div>
+                                    </article>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            )}
+
+            {/* Presentations */}
+            {presentations && presentations.length > 0 && (
+                <section className="py-16 bg-slate-50">
+                    <div className="container mx-auto px-4">
+                        <div className="max-w-4xl mx-auto">
+                            <div className="text-center mb-12">
+                                <h2 className="text-3xl font-bold text-gray-900 mb-4">Presentations</h2>
+                                <div className="w-20 h-1 bg-blue-600 mx-auto"></div>
+                            </div>
+                            <div className="space-y-6">
+                                {presentations.map((presentation, idx) => (
+                                    <article
+                                        key={presentation.id || idx}
+                                        className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow"
+                                    >
+                                        <h3 className="text-lg font-semibold text-gray-900 mb-2">{presentation.title}</h3>
+                                        {presentation.event && (
+                                            <p className="text-blue-600 font-medium mb-1">{presentation.event}</p>
+                                        )}
+                                        {presentation.date && (
+                                            <p className="text-gray-500 text-sm mb-2">{presentation.date}</p>
+                                        )}
+                                        {presentation.description && (
+                                            <p className="text-gray-700 text-sm">{presentation.description}</p>
+                                        )}
+                                        {presentation.url && (
+                                            <a
+                                                href={presentation.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-sm text-blue-600 hover:text-blue-700 mt-2 inline-block"
+                                            >
+                                                Voir plus
+                                            </a>
+                                        )}
+                                    </article>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            )}
+
+            {/* Teaching */}
+            {teaching && teaching.length > 0 && (
+                <section className="py-16">
+                    <div className="container mx-auto px-4">
+                        <div className="max-w-4xl mx-auto">
+                            <div className="text-center mb-12">
+                                <h2 className="text-3xl font-bold text-gray-900 mb-4">Enseignement</h2>
+                                <div className="w-20 h-1 bg-blue-600 mx-auto"></div>
+                            </div>
+                            <div className="space-y-6">
+                                {teaching.map((course, idx) => (
+                                    <article
+                                        key={course.id || idx}
+                                        className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow"
+                                    >
+                                        <h3 className="text-lg font-semibold text-gray-900 mb-2">{course.title}</h3>
+                                        {course.institution && (
+                                            <p className="text-blue-600 font-medium mb-1">{course.institution}</p>
+                                        )}
+                                        {course.year && (
+                                            <p className="text-gray-500 text-sm mb-2">{course.year}</p>
+                                        )}
+                                        {course.description && (
+                                            <p className="text-gray-700 text-sm">{course.description}</p>
+                                        )}
+                                        {course.url && (
+                                            <a
+                                                href={course.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-sm text-blue-600 hover:text-blue-700 mt-2 inline-block"
+                                            >
+                                                Voir plus
+                                            </a>
+                                        )}
                                     </article>
                                 ))}
                             </div>

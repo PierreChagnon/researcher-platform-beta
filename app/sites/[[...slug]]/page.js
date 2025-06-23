@@ -12,7 +12,7 @@ export const revalidate = false // No automatic revalidation
 
 // Metadata generation for SEO
 export async function generateMetadata({ params }) {
-    const headersList = headers()
+    const headersList = await headers()
     const researcherId = headersList.get("x-researcher-id")
 
     if (!researcherId) {
@@ -112,7 +112,7 @@ async function getResearcherByCustomDomain(domain) {
 async function getResearcherPublications(userId) {
     try {
         const publicationsRef = collection(db, "publications")
-        const q = query(publicationsRef, where("userId", "==", userId), where("isVisible", "==", true))
+        const q = query(publicationsRef, where("userId", "==", userId))
         const querySnapshot = await getDocs(q)
 
         const publications = []
@@ -132,7 +132,7 @@ async function getResearcherPublications(userId) {
 async function getResearcherPresentations(userId) {
     try {
         const presentationsRef = collection(db, "presentations")
-        const q = query(presentationsRef, where("userId", "==", userId), where("isVisible", "==", true))
+        const q = query(presentationsRef, where("userId", "==", userId))
         const querySnapshot = await getDocs(q)
 
         const presentations = []
@@ -151,8 +151,8 @@ async function getResearcherPresentations(userId) {
 // Function to get the researcher's teaching
 async function getResearcherTeaching(userId) {
     try {
-        const teachingRef = collection(db, "teaching")
-        const q = query(teachingRef, where("userId", "==", userId), where("isVisible", "==", true))
+        const teachingRef = collection(db, "teachings")
+        const q = query(teachingRef, where("userId", "==", userId))
         const querySnapshot = await getDocs(q)
 
         const teaching = []
@@ -161,6 +161,7 @@ async function getResearcherTeaching(userId) {
         })
 
         // Sort by descending year
+        console.log("Retrieved teaching data:", teaching)
         return teaching.sort((a, b) => (b.year || 0) - (a.year || 0))
     } catch (error) {
         console.error("Error retrieving teaching:", error)
@@ -169,7 +170,7 @@ async function getResearcherTeaching(userId) {
 }
 
 export default async function DynamicSitePage() {
-    const headersList = headers()
+    const headersList = await headers()
     const researcherId = headersList.get("x-researcher-id")
     const isPremium = headersList.get("x-is-premium") === "true"
     const hostname = headersList.get("x-hostname")
