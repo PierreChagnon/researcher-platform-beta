@@ -32,16 +32,19 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useAuth } from "@/contexts/AuthContext"
 import { signOut } from "@/lib/auth"
 import { toast } from "sonner"
+import { Separator } from "@/components/ui/separator"
 
 const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN || "researcher-platform-beta.vercel.app"
 
 const navigation = [
     { name: "Tableau de bord", href: "/dashboard", icon: Home },
+    { type: "separator" },
     { name: "Profil", href: "/dashboard/profile", icon: User },
     { name: "Publications", href: "/dashboard/publications", icon: FileText },
     { name: "Présentations", href: "/dashboard/presentations", icon: Presentation },
     { name: "Enseignement", href: "/dashboard/teaching", icon: GraduationCap },
     { name: "Contact", href: "/dashboard/contact", icon: Phone },
+    { type: "separator" },
     { name: "CV", href: "/dashboard/cv", icon: FileUser },
     { name: "Paramètres", href: "/dashboard/settings", icon: Settings },
 ]
@@ -63,6 +66,25 @@ export default function DashboardLayout({ children }) {
         } else {
             router.push("/")
         }
+    }
+
+    const renderNavigationItem = (item, index, isMobile = false) => {
+        if (item.type === "separator") {
+            return <Separator key={`separator-${index}`} className="my-2" />
+        }
+
+        return (
+            <Link
+                key={item.name}
+                href={item.href}
+                className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium ${pathname === item.href ? "bg-primary text-primary-foreground" : "hover:bg-accent hover:text-accent-foreground"
+                    }`}
+                onClick={isMobile ? () => setIsMobileMenuOpen(false) : undefined}
+            >
+                <item.icon className="h-4 w-4" />
+                {item.name}
+            </Link>
+        )
     }
 
     // Afficher un loader pendant la vérification de l'authentification
@@ -92,20 +114,7 @@ export default function DashboardLayout({ children }) {
                                     <span>ResearchSite</span>
                                 </div>
                                 <nav className="flex flex-col gap-2">
-                                    {navigation.map((item) => (
-                                        <Link
-                                            key={item.name}
-                                            href={item.href}
-                                            className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium ${pathname === item.href
-                                                    ? "bg-primary text-primary-foreground"
-                                                    : "hover:bg-accent hover:text-accent-foreground"
-                                                }`}
-                                            onClick={() => setIsMobileMenuOpen(false)}
-                                        >
-                                            <item.icon className="h-4 w-4" />
-                                            {item.name}
-                                        </Link>
-                                    ))}
+                                    {navigation.map((item, index) => renderNavigationItem(item, index, true))}
                                 </nav>
                             </SheetContent>
                         </Sheet>
@@ -176,19 +185,7 @@ export default function DashboardLayout({ children }) {
             <div className="flex flex-1">
                 <aside className="hidden md:flex w-64 flex-col border-r bg-background">
                     <nav className="flex-1 space-y-1 p-4">
-                        {navigation.map((item) => (
-                            <Link
-                                key={item.name}
-                                href={item.href}
-                                className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium ${pathname === item.href
-                                        ? "bg-primary text-primary-foreground"
-                                        : "hover:bg-accent hover:text-accent-foreground"
-                                    }`}
-                            >
-                                <item.icon className="h-4 w-4" />
-                                {item.name}
-                            </Link>
-                        ))}
+                        {navigation.map((item, index) => renderNavigationItem(item, index))}
                     </nav>
                 </aside>
                 <main className="flex-1 p-6">{children}</main>

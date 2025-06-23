@@ -135,8 +135,6 @@ export default async function DynamicSitePage() {
     const isPremium = headersList.get("x-is-premium") === "true"
     const hostname = headersList.get("x-hostname")
 
-    console.log("🔄 ISR: Génération de la page pour", researcherId)
-
     // Cas 1: Sous-domaine détecté (johndoe.researcher-platform-beta.vercel.app)
     if (researcherId) {
         const researcher = await getResearcherByUrl(researcherId)
@@ -144,8 +142,6 @@ export default async function DynamicSitePage() {
         if (researcher) {
             // 🚀 Récupérer les publications pour le site
             const publications = await getResearcherPublications(researcher.id)
-
-            console.log("✅ ISR: Site généré pour", researcherId, "avec", publications.length, "publications")
 
             // Chercheur trouvé → Afficher son site avec ses publications
             return <ResearcherSite researcher={researcher} publications={publications} isPremium={isPremium} />

@@ -3,11 +3,8 @@ import { NextResponse } from "next/server"
 const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN || "researcher-platform-beta.vercel.app"
 
 export function middleware(request) {
-    console.log("Middleware exécuté pour la requête:", request.url)
     const { pathname } = request.nextUrl
     const hostname = request.headers.get("host")
-    console.log("Hostname détecté:", hostname)
-    console.log("Pathname détecté:", pathname)
 
     // Vérifier si cette requête a déjà été rewritée
     const isRewritten = request.headers.get("x-rewritten") === "true"

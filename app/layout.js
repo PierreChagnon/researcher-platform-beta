@@ -15,7 +15,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr" suppressHydrationWarning>
       <body className={inter.className}>
-      <Toaster />
+      <Toaster  position="top-center" />
         {/* <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange> */}
         <AuthProvider>
           {children}

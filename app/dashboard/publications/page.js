@@ -53,16 +53,19 @@ import {
     Upload,
     File,
     Trash2,
+    Edit,
 } from "lucide-react"
 import { usePublications } from "@/hooks/usePublications"
 import { useAuth } from "@/contexts/AuthContext"
-import { syncPublicationsFromOrcid, addManualPublication } from "@/lib/actions/sync-publications"
+import { addManualPublication, fetchPublicationsPreview } from "@/lib/actions/sync-publications"
 import {
     deletePublicationAction,
     deleteMultiplePublicationsAction,
     uploadPublicationPDF,
+    updatePublicationAction,
 } from "@/lib/actions/publication-actions"
 import { toast } from "sonner"
+import { PublicationSyncModal } from "@/components/PublicationSyncModal"
 
 export default function PublicationsPage() {
     const [searchTerm, setSearchTerm] = useState("")
@@ -75,6 +78,9 @@ export default function PublicationsPage() {
     const [isDeleteMultipleDialogOpen, setIsDeleteMultipleDialogOpen] = useState(false)
     const { publications, loading, stats, refreshPublications } = usePublications()
     const { userData } = useAuth()
+    const [editingPublication, setEditingPublication] = useState(null)
+    const [isSyncModalOpen, setIsSyncModalOpen] = useState(false)
+    const [publicationsPreview, setPublicationsPreview] = useState([])
 
     const filteredPublications = publications.filter(
         (pub) =>
@@ -85,18 +91,18 @@ export default function PublicationsPage() {
 
     const handleSelectAll = (checked) => {
         if (checked) {
-            setSelectedPublications(new Set(filteredPublications.map((pub) => pub.id)))
+            setSelectedPublications(new Set(filteredPublications.map((pub) => pub.firestoreId)))
         } else {
             setSelectedPublications(new Set())
         }
     }
 
-    const handleSelectPublication = (publicationId, checked) => {
+    const handleSelectPublication = (firestoreId, checked) => {
         const newSelected = new Set(selectedPublications)
         if (checked) {
-            newSelected.add(publicationId)
+            newSelected.add(firestoreId)
         } else {
-            newSelected.delete(publicationId)
+            newSelected.delete(firestoreId)
         }
         setSelectedPublications(newSelected)
     }
@@ -105,7 +111,15 @@ export default function PublicationsPage() {
         if (selectedPublications.size === 0) return
 
         startTransition(async () => {
-            const result = await deleteMultiplePublicationsAction(Array.from(selectedPublications))
+            // Récupérer les vrais IDs Firestore
+            const firestoreIds = Array.from(selectedPublications)
+                .map((id) => {
+                    const pub = filteredPublications.find((p) => p.firestoreId === id)
+                    return pub?.firestoreId
+                })
+                .filter(Boolean)
+
+            const result = await deleteMultiplePublicationsAction(firestoreIds)
 
             if (result.success) {
                 toast.success(`${selectedPublications.size} publication(s) supprimée(s) avec succès`)
@@ -125,11 +139,11 @@ export default function PublicationsPage() {
         }
 
         startTransition(async () => {
-            const result = await syncPublicationsFromOrcid(userData.orcid)
+            const result = await fetchPublicationsPreview(userData.orcid)
 
             if (result.success) {
-                toast.success(result.message)
-                refreshPublications()
+                setPublicationsPreview(result.publications)
+                setIsSyncModalOpen(true)
             } else {
                 toast.error(result.error)
             }
@@ -154,7 +168,7 @@ export default function PublicationsPage() {
         if (!publicationToDelete) return
 
         startTransition(async () => {
-            const result = await deletePublicationAction(publicationToDelete.id)
+            const result = await deletePublicationAction(publicationToDelete.firestoreId)
 
             if (result.success) {
                 toast.success(result.message)
@@ -192,94 +206,47 @@ export default function PublicationsPage() {
     const isAllSelected = filteredPublications.length > 0 && selectedPublications.size === filteredPublications.length
     const isIndeterminate = selectedPublications.size > 0 && selectedPublications.size < filteredPublications.length
 
+    const handleUpdatePublication = async (formData) => {
+        if (!editingPublication) return
+
+        startTransition(async () => {
+            const result = await updatePublicationAction(editingPublication.firestoreId, formData)
+            if (result.success) {
+                toast.success(result.message)
+                setIsAddDialogOpen(false)
+                setEditingPublication(null)
+                refreshPublications()
+            } else {
+                toast.error(result.error)
+            }
+        })
+    }
+
+    const openEditDialog = (publication) => {
+        setEditingPublication(publication)
+        setIsAddDialogOpen(true)
+    }
+
+    const closeAddDialog = () => {
+        setIsAddDialogOpen(false)
+        setEditingPublication(null)
+    }
+
+    const openAddDialog = () => {
+        setEditingPublication(null)
+        setIsAddDialogOpen(true)
+    }
+
+    const handleSyncComplete = () => {
+        refreshPublications()
+    }
+
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Publications</h1>
                     <p className="text-muted-foreground">Gérez vos publications scientifiques récupérées via ORCID.</p>
-                </div>
-                <div className="flex gap-2">
-                    {selectedPublications.size > 0 && (
-                        <Button
-                            variant="destructive"
-                            onClick={() => setIsDeleteMultipleDialogOpen(true)}
-                            className="flex items-center gap-2"
-                        >
-                            <Trash2 className="h-4 w-4" />
-                            Supprimer ({selectedPublications.size})
-                        </Button>
-                    )}
-                    <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-                        <DialogTrigger asChild>
-                            <Button variant="outline" className="flex items-center gap-2">
-                                <Plus className="h-4 w-4" />
-                                Ajouter manuellement
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[525px]">
-                            <form action={handleAddManualPublication}>
-                                <DialogHeader>
-                                    <DialogTitle>Ajouter une publication</DialogTitle>
-                                    <DialogDescription>
-                                        Ajoutez manuellement une publication qui n&apos;est pas dans OpenAlex.
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <div className="grid gap-4 py-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="title">Titre *</Label>
-                                        <Input id="title" name="title" required />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="journal">Journal *</Label>
-                                        <Input id="journal" name="journal" required />
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="year">Année *</Label>
-                                            <Input id="year" name="year" type="number" min="1900" max="2030" required />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="doi">DOI</Label>
-                                            <Input id="doi" name="doi" placeholder="10.1000/xyz123" />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="authors">Auteurs *</Label>
-                                        <Input id="authors" name="authors" placeholder="Doe, J., Smith, A." required />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="url">URL</Label>
-                                        <Input id="url" name="url" type="url" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="osfUrl">Lien OSF</Label>
-                                        <Input id="osfUrl" name="osfUrl" placeholder="https://osf.io/xxxxx/" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="abstract">Résumé</Label>
-                                        <Textarea id="abstract" name="abstract" rows={3} />
-                                    </div>
-                                </div>
-                                <DialogFooter>
-                                    <Button type="button" variant="outline" onClick={() => setIsAddDialogOpen(false)}>
-                                        Annuler
-                                    </Button>
-                                    <Button type="submit" disabled={isPending}>
-                                        {isPending ? "Ajout..." : "Ajouter"}
-                                    </Button>
-                                </DialogFooter>
-                            </form>
-                        </DialogContent>
-                    </Dialog>
-                    <Button
-                        onClick={handleSyncOrcid}
-                        disabled={isPending || !userData?.orcid}
-                        className="flex items-center gap-2"
-                    >
-                        <RefreshCw className={`h-4 w-4 ${isPending ? "animate-spin" : ""}`} />
-                        {isPending ? "Synchronisation..." : "Synchroniser ORCID"}
-                    </Button>
                 </div>
             </div>
 
@@ -304,14 +271,134 @@ export default function PublicationsPage() {
                 </TabsList>
 
                 <TabsContent value="list" className="space-y-4">
-                    <div className="flex items-center gap-2">
-                        <Search className="h-4 w-4 text-muted-foreground" />
-                        <Input
-                            placeholder="Rechercher par titre, auteur ou journal..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="max-w-sm"
-                        />
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 flex-1">
+                            <Search className="h-4 w-4 text-muted-foreground" />
+                            <Input
+                                placeholder="Rechercher par titre, auteur ou journal..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="max-w-sm"
+                            />
+                        </div>
+                        <div className="flex gap-2">
+                            {selectedPublications.size > 0 && (
+                                <Button
+                                    variant="destructive"
+                                    onClick={() => setIsDeleteMultipleDialogOpen(true)}
+                                    className="flex items-center gap-2"
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                    Supprimer ({selectedPublications.size})
+                                </Button>
+                            )}
+                            <Dialog
+                                open={isAddDialogOpen}
+                                onOpenChange={(open) => {
+                                    if (!open) {
+                                        closeAddDialog()
+                                    }
+                                }}
+                            >
+                                <DialogTrigger asChild>
+                                    <Button variant="outline" className="flex items-center gap-2" onClick={openAddDialog}>
+                                        <Plus className="h-4 w-4" />
+                                        Ajouter manuellement
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[525px]">
+                                    <form action={editingPublication ? handleUpdatePublication : handleAddManualPublication}>
+                                        <DialogHeader>
+                                            <DialogTitle>
+                                                {editingPublication ? "Modifier la publication" : "Ajouter une publication"}
+                                            </DialogTitle>
+                                            <DialogDescription>
+                                                {editingPublication
+                                                    ? "Modifiez les informations de cette publication."
+                                                    : "Ajoutez manuellement une publication qui n'est pas dans OpenAlex."}
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <div className="grid gap-4 py-4">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="title">Titre *</Label>
+                                                <Input id="title" name="title" defaultValue={editingPublication?.title} required />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="journal">Journal *</Label>
+                                                <Input id="journal" name="journal" defaultValue={editingPublication?.journal} required />
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="year">Année *</Label>
+                                                    <Input
+                                                        id="year"
+                                                        name="year"
+                                                        type="number"
+                                                        min="1900"
+                                                        max="2030"
+                                                        defaultValue={editingPublication?.year}
+                                                        required
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="doi">DOI</Label>
+                                                    <Input id="doi" name="doi" placeholder="10.1000/xyz123" defaultValue={editingPublication?.doi} />
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="authors">Auteurs *</Label>
+                                                <Input
+                                                    id="authors"
+                                                    name="authors"
+                                                    placeholder="Doe, J., Smith, A."
+                                                    defaultValue={editingPublication?.authors}
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="url">URL</Label>
+                                                <Input id="url" name="url" type="url" defaultValue={editingPublication?.url} />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="osfUrl">Lien OSF</Label>
+                                                <Input
+                                                    id="osfUrl"
+                                                    name="osfUrl"
+                                                    placeholder="https://osf.io/xxxxx/"
+                                                    defaultValue={editingPublication?.osfUrl}
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="abstract">Résumé</Label>
+                                                <Textarea id="abstract" name="abstract" rows={3} defaultValue={editingPublication?.abstract} />
+                                            </div>
+                                        </div>
+                                        <DialogFooter>
+                                            <Button type="button" variant="outline" onClick={closeAddDialog}>
+                                                Annuler
+                                            </Button>
+                                            <Button type="submit" disabled={isPending}>
+                                                {isPending
+                                                    ? editingPublication
+                                                        ? "Modification..."
+                                                        : "Ajout..."
+                                                    : editingPublication
+                                                        ? "Modifier"
+                                                        : "Ajouter"}
+                                            </Button>
+                                        </DialogFooter>
+                                    </form>
+                                </DialogContent>
+                            </Dialog>
+                            <Button
+                                onClick={handleSyncOrcid}
+                                disabled={isPending || !userData?.orcid}
+                                className="flex items-center gap-2"
+                            >
+                                <RefreshCw className={`h-4 w-4 ${isPending ? "animate-spin" : ""}`} />
+                                {isPending ? "Synchronisation..." : "Synchroniser ORCID"}
+                            </Button>
+                        </div>
                     </div>
 
                     <Card>
@@ -325,7 +412,7 @@ export default function PublicationsPage() {
                                     </span>
                                 )}
                                 {stats.manualCount > 0 && (
-                                    <span className="flex items-center gap-1 ml-4">
+                                    <span className="flex items-center gap-1">
                                         <FileText className="h-4 w-4 text-blue-600" />
                                         {stats.manualCount} ajoutées manuellement
                                     </span>
@@ -369,11 +456,11 @@ export default function PublicationsPage() {
                                             </TableRow>
                                         ) : (
                                             filteredPublications.map((pub) => (
-                                                <TableRow key={pub.id}>
+                                                <TableRow key={pub.firestoreId}>
                                                     <TableCell>
                                                         <Checkbox
-                                                            checked={selectedPublications.has(pub.id)}
-                                                            onCheckedChange={(checked) => handleSelectPublication(pub.id, checked)}
+                                                            checked={selectedPublications.has(pub.firestoreId)}
+                                                            onCheckedChange={(checked) => handleSelectPublication(pub.firestoreId, checked)}
                                                             aria-label={`Sélectionner ${pub.title}`}
                                                         />
                                                     </TableCell>
@@ -444,9 +531,12 @@ export default function PublicationsPage() {
                                                             <DropdownMenuContent align="end">
                                                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                                                 <DropdownMenuSeparator />
-                                                                <DropdownMenuItem className="flex items-center gap-2">
-                                                                    <Eye className="h-4 w-4" />
-                                                                    <span>Voir les détails</span>
+                                                                <DropdownMenuItem
+                                                                    className="flex items-center gap-2"
+                                                                    onClick={() => openEditDialog(pub)}
+                                                                >
+                                                                    <Edit className="h-4 w-4" />
+                                                                    <span>Modifier</span>
                                                                 </DropdownMenuItem>
                                                                 {pub.url && (
                                                                     <DropdownMenuItem asChild>
@@ -599,7 +689,7 @@ export default function PublicationsPage() {
                         <AlertDialogAction
                             onClick={handleDeletePublication}
                             disabled={isPending}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            className="bg-destructive text-primary-foreground hover:bg-destructive/90"
                         >
                             {isPending ? "Suppression..." : "Supprimer"}
                         </AlertDialogAction>
@@ -625,13 +715,22 @@ export default function PublicationsPage() {
                         <AlertDialogAction
                             onClick={handleDeleteMultiple}
                             disabled={isPending}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            className="bg-destructive text-primary-foreground hover:bg-destructive/90"
                         >
                             {isPending ? "Suppression..." : `Supprimer ${selectedPublications.size} publication(s)`}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+
+            {/* Modale de synchronisation ORCID */}
+            <PublicationSyncModal
+                isOpen={isSyncModalOpen}
+                onClose={() => setIsSyncModalOpen(false)}
+                publications={publicationsPreview}
+                orcid={userData?.orcid}
+                onSyncComplete={handleSyncComplete}
+            />
         </div>
     )
 }

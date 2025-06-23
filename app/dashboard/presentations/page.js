@@ -16,6 +16,16 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
     DropdownMenu,
@@ -27,7 +37,11 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Plus, MoreHorizontal, Trash, Edit, Calendar, MapPin, Users } from "lucide-react"
 import { toast } from "sonner"
-import { addPresentationAction } from "@/lib/actions/presentation-actions"
+import {
+    addPresentationAction,
+    updatePresentationAction,
+    deletePresentationAction,
+} from "@/lib/actions/presentation-actions"
 import { usePresentations } from "@/hooks/usePresentations"
 
 const PRESENTATION_CATEGORIES = [
@@ -41,6 +55,8 @@ const PRESENTATION_CATEGORIES = [
 
 export default function PresentationsPage() {
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+    const [editingPresentation, setEditingPresentation] = useState(null)
+    const [deletingPresentation, setDeletingPresentation] = useState(null)
     const [isPending, startTransition] = useTransition()
     const { presentations, loading, refreshPresentations } = usePresentations()
 
@@ -50,6 +66,36 @@ export default function PresentationsPage() {
             if (result.success) {
                 toast.success(result.message)
                 setIsAddDialogOpen(false)
+                refreshPresentations()
+            } else {
+                toast.error(result.error)
+            }
+        })
+    }
+
+    const handleUpdatePresentation = async (formData) => {
+        if (!editingPresentation) return
+
+        startTransition(async () => {
+            const result = await updatePresentationAction(editingPresentation.id, formData)
+            if (result.success) {
+                toast.success(result.message)
+                setEditingPresentation(null)
+                refreshPresentations()
+            } else {
+                toast.error(result.error)
+            }
+        })
+    }
+
+    const handleDeletePresentation = async () => {
+        if (!deletingPresentation) return
+
+        startTransition(async () => {
+            const result = await deletePresentationAction(deletingPresentation.id)
+            if (result.success) {
+                toast.success(result.message)
+                setDeletingPresentation(null)
                 refreshPresentations()
             } else {
                 toast.error(result.error)
@@ -129,6 +175,95 @@ export default function PresentationsPage() {
                 </Dialog>
             </div>
 
+            {/* Dialog de modification */}
+            <Dialog open={!!editingPresentation} onOpenChange={() => setEditingPresentation(null)}>
+                <DialogContent className="sm:max-w-[525px]">
+                    <form action={handleUpdatePresentation}>
+                        <DialogHeader>
+                            <DialogTitle>Modifier la présentation</DialogTitle>
+                            <DialogDescription>Modifiez les informations de votre présentation.</DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="edit-title">Titre *</Label>
+                                <Input id="edit-title" name="title" defaultValue={editingPresentation?.title} required />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="edit-category">Catégorie *</Label>
+                                <Select name="category" defaultValue={editingPresentation?.category} required>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Sélectionnez une catégorie" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {PRESENTATION_CATEGORIES.map((category) => (
+                                            <SelectItem key={category.value} value={category.value}>
+                                                {category.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="edit-coAuthors">Co-auteurs</Label>
+                                <Input
+                                    id="edit-coAuthors"
+                                    name="coAuthors"
+                                    defaultValue={editingPresentation?.coAuthors}
+                                    placeholder="Doe, J., Smith, A."
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="edit-location">Localisation *</Label>
+                                    <Input
+                                        id="edit-location"
+                                        name="location"
+                                        defaultValue={editingPresentation?.location}
+                                        placeholder="Paris, France"
+                                        required
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="edit-date">Date *</Label>
+                                    <Input id="edit-date" name="date" type="date" defaultValue={editingPresentation?.date} required />
+                                </div>
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <Button type="button" variant="outline" onClick={() => setEditingPresentation(null)}>
+                                Annuler
+                            </Button>
+                            <Button type="submit" disabled={isPending}>
+                                {isPending ? "Modification..." : "Modifier"}
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
+
+            {/* Dialog de confirmation de suppression */}
+            <AlertDialog open={!!deletingPresentation} onOpenChange={() => setDeletingPresentation(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Supprimer la présentation</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Êtes-vous sûr de vouloir supprimer la présentation &quot;{deletingPresentation?.title}&quot; ? Cette action est
+                            irréversible.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleDeletePresentation}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            disabled={isPending}
+                        >
+                            {isPending ? "Suppression..." : "Supprimer"}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
             <Card>
                 <CardHeader>
                     <CardTitle>Vos présentations</CardTitle>
@@ -198,12 +333,18 @@ export default function PresentationsPage() {
                                                     <DropdownMenuContent align="end">
                                                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                                         <DropdownMenuSeparator />
-                                                        <DropdownMenuItem className="flex items-center gap-2">
+                                                        <DropdownMenuItem
+                                                            className="flex items-center gap-2"
+                                                            onClick={() => setEditingPresentation(presentation)}
+                                                        >
                                                             <Edit className="h-4 w-4" />
                                                             <span>Modifier</span>
                                                         </DropdownMenuItem>
                                                         <DropdownMenuSeparator />
-                                                        <DropdownMenuItem className="flex items-center gap-2 text-destructive focus:text-destructive">
+                                                        <DropdownMenuItem
+                                                            className="flex items-center gap-2 text-destructive focus:text-destructive"
+                                                            onClick={() => setDeletingPresentation(presentation)}
+                                                        >
                                                             <Trash className="h-4 w-4" />
                                                             <span>Supprimer</span>
                                                         </DropdownMenuItem>
