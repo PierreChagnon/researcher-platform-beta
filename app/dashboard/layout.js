@@ -37,16 +37,16 @@ import { Separator } from "@/components/ui/separator"
 const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN || "researcher-platform-beta.vercel.app"
 
 const navigation = [
-    { name: "Tableau de bord", href: "/dashboard", icon: Home },
+    { name: "Dashboard", href: "/dashboard", icon: Home },
     { type: "separator" },
-    { name: "Profil", href: "/dashboard/profile", icon: User },
+    { name: "Profile", href: "/dashboard/profile", icon: User },
     { name: "Publications", href: "/dashboard/publications", icon: FileText },
-    { name: "Présentations", href: "/dashboard/presentations", icon: Presentation },
-    { name: "Enseignement", href: "/dashboard/teaching", icon: GraduationCap },
+    { name: "Presentations", href: "/dashboard/presentations", icon: Presentation },
+    { name: "Teaching", href: "/dashboard/teaching", icon: GraduationCap },
     { name: "Contact", href: "/dashboard/contact", icon: Phone },
     { type: "separator" },
     { name: "CV", href: "/dashboard/cv", icon: FileUser },
-    { name: "Paramètres", href: "/dashboard/settings", icon: Settings },
+    { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ]
 
 export default function DashboardLayout({ children }) {
@@ -60,8 +60,8 @@ export default function DashboardLayout({ children }) {
         if (error) {
             toast({
                 variant: "destructive",
-                title: "Erreur",
-                description: "Erreur lors de la déconnexion",
+                title: "Error",
+                description: "Error during sign out",
             })
         } else {
             router.push("/")
@@ -87,7 +87,7 @@ export default function DashboardLayout({ children }) {
         )
     }
 
-    // Afficher un loader pendant la vérification de l'authentification
+    // Show a loader while checking authentication
     if (loading) {
         return (
             <div className="flex min-h-screen items-center justify-center">
@@ -135,29 +135,29 @@ export default function DashboardLayout({ children }) {
                                 disabled={!userData?.siteSettings?.siteUrl}
                             >
                                 <Globe className="h-4 w-4" />
-                                Voir mon site
+                                View my site
                             </Button>
                         </Link>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="sm" className="relative h-8 flex items-center gap-2">
-                                    <span className="hidden md:inline">{userData?.name || user?.displayName || "Utilisateur"}</span>
+                                    <span className="hidden md:inline">{userData?.name || user?.displayName || "User"}</span>
                                     <ChevronDown className="h-4 w-4" />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
+                                <DropdownMenuLabel>My account</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem asChild>
                                     <Link href="/dashboard/profile" className="flex items-center gap-2 cursor-pointer">
                                         <User className="h-4 w-4" />
-                                        <span>Profil</span>
+                                        <span>Profile</span>
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
                                     <Link href="/dashboard/settings" className="flex items-center gap-2 cursor-pointer">
                                         <Settings className="h-4 w-4" />
-                                        <span>Paramètres</span>
+                                        <span>Settings</span>
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
@@ -169,13 +169,13 @@ export default function DashboardLayout({ children }) {
                                         className="flex items-center gap-2 cursor-pointer md:hidden"
                                     >
                                         <Globe className="h-4 w-4" />
-                                        <span>Voir mon site</span>
+                                        <span>View my site</span>
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={handleSignOut} className="flex items-center gap-2 cursor-pointer">
                                     <LogOut className="h-4 w-4" />
-                                    <span>Déconnexion</span>
+                                    <span>Sign out</span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>

@@ -34,7 +34,7 @@ export function usePresentations() {
 
             setPresentations(presentationsData)
         } catch (error) {
-            console.error("Erreur lors de la récupération des présentations:", error)
+            console.error("Error while fetching presentations:", error)
             setPresentations([])
         } finally {
             setLoading(false)

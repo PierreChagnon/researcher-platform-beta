@@ -185,15 +185,15 @@ export default function TeachingPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Enseignement</h1>
-                    <p className="text-muted-foreground">Gérez vos activités d&apos;enseignement et conférences invitées.</p>
+                    <h1 className="text-3xl font-bold tracking-tight">Teaching</h1>
+                    <p className="text-muted-foreground">Manage your teaching activities and guest lectures.</p>
                 </div>
             </div>
 
             <Tabs defaultValue="teaching" className="space-y-4">
                 <TabsList>
-                    <TabsTrigger value="teaching">Enseignement ({teachings.length})</TabsTrigger>
-                    <TabsTrigger value="lectures">Conférences invitées ({guestLectures.length})</TabsTrigger>
+                    <TabsTrigger value="teaching">Teaching ({teachings.length})</TabsTrigger>
+                    <TabsTrigger value="lectures">Guest Lectures ({guestLectures.length})</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="teaching" className="space-y-4">
@@ -202,37 +202,37 @@ export default function TeachingPage() {
                             <DialogTrigger asChild>
                                 <Button className="flex items-center gap-2">
                                     <Plus className="h-4 w-4" />
-                                    Ajouter un enseignement
+                                    Add a teaching
                                 </Button>
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-[525px]">
                                 <form action={editingTeaching ? handleUpdateTeaching : handleAddTeaching}>
                                     <DialogHeader>
-                                        <DialogTitle>{editingTeaching ? "Modifier l'enseignement" : "Ajouter un enseignement"}</DialogTitle>
+                                        <DialogTitle>{editingTeaching ? "Edit teaching" : "Add a teaching"}</DialogTitle>
                                         <DialogDescription>
                                             {editingTeaching
-                                                ? "Modifiez les informations de cet enseignement."
-                                                : "Ajoutez un nouveau cours ou enseignement à votre profil."}
+                                                ? "Edit the information for this teaching."
+                                                : "Add a new course or teaching to your profile."}
                                         </DialogDescription>
                                     </DialogHeader>
                                     <div className="grid gap-4 py-4">
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <Label htmlFor="semester">Semestre *</Label>
+                                                <Label htmlFor="semester">Semester *</Label>
                                                 <Select name="semester" defaultValue={editingTeaching?.semester} required>
                                                     <SelectTrigger>
-                                                        <SelectValue placeholder="Sélectionnez" />
+                                                        <SelectValue placeholder="Select" />
                                                     </SelectTrigger>
                                                     <SelectContent>
-                                                        <SelectItem value="spring">Printemps</SelectItem>
-                                                        <SelectItem value="summer">Été</SelectItem>
-                                                        <SelectItem value="fall">Automne</SelectItem>
-                                                        <SelectItem value="winter">Hiver</SelectItem>
+                                                        <SelectItem value="spring">Spring</SelectItem>
+                                                        <SelectItem value="summer">Summer</SelectItem>
+                                                        <SelectItem value="fall">Fall</SelectItem>
+                                                        <SelectItem value="winter">Winter</SelectItem>
                                                     </SelectContent>
                                                 </Select>
                                             </div>
                                             <div className="space-y-2">
-                                                <Label htmlFor="year">Année *</Label>
+                                                <Label htmlFor="year">Year *</Label>
                                                 <Input
                                                     id="year"
                                                     name="year"
@@ -245,27 +245,27 @@ export default function TeachingPage() {
                                             </div>
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="title">Titre du cours *</Label>
+                                            <Label htmlFor="title">Course title *</Label>
                                             <Input
                                                 id="title"
                                                 name="title"
-                                                placeholder="Introduction à l'Intelligence Artificielle"
+                                                placeholder="Introduction to Artificial Intelligence"
                                                 defaultValue={editingTeaching?.title}
                                                 required
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="university">Université *</Label>
+                                            <Label htmlFor="university">University *</Label>
                                             <Input
                                                 id="university"
                                                 name="university"
-                                                placeholder="Université de Paris"
+                                                placeholder="University of Paris"
                                                 defaultValue={editingTeaching?.university}
                                                 required
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="coTeachers">Co-enseignants</Label>
+                                            <Label htmlFor="coTeachers">Co-teachers</Label>
                                             <Input
                                                 id="coTeachers"
                                                 name="coTeachers"
@@ -275,21 +275,21 @@ export default function TeachingPage() {
                                         </div>
                                         <div className="flex items-center space-x-2">
                                             <Switch id="isAssistant" name="isAssistant" defaultChecked={editingTeaching?.isAssistant} />
-                                            <Label htmlFor="isAssistant">Enseignement en tant qu&apos;assistant</Label>
+                                            <Label htmlFor="isAssistant">Teaching as assistant</Label>
                                         </div>
                                     </div>
                                     <DialogFooter>
                                         <Button type="button" variant="outline" onClick={closeTeachingDialog}>
-                                            Annuler
+                                            Cancel
                                         </Button>
                                         <Button type="submit" disabled={isPending}>
                                             {isPending
                                                 ? editingTeaching
-                                                    ? "Modification..."
-                                                    : "Ajout..."
+                                                    ? "Editing..."
+                                                    : "Adding..."
                                                 : editingTeaching
-                                                    ? "Modifier"
-                                                    : "Ajouter"}
+                                                    ? "Edit"
+                                                    : "Add"}
                                         </Button>
                                     </DialogFooter>
                                 </form>
@@ -299,24 +299,24 @@ export default function TeachingPage() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>Vos enseignements</CardTitle>
-                            <CardDescription>Liste de tous vos cours et enseignements</CardDescription>
+                            <CardTitle>Your teachings</CardTitle>
+                            <CardDescription>List of all your courses and teachings</CardDescription>
                         </CardHeader>
                         <CardContent>
                             {teachings.length === 0 ? (
                                 <div className="text-center py-8 text-muted-foreground">
                                     <GraduationCap className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                                    <p>Aucun enseignement ajouté pour le moment.</p>
-                                    <p className="text-sm">Cliquez sur &quot;Ajouter un enseignement&quot; pour commencer.</p>
+                                    <p>No teaching added yet.</p>
+                                    <p className="text-sm">Click on &quot;Add a teaching&quot; to get started.</p>
                                 </div>
                             ) : (
                                 <Table>
                                     <TableHeader>
                                         <TableRow>
-                                            <TableHead>Cours</TableHead>
-                                            <TableHead className="hidden md:table-cell">Université</TableHead>
-                                            <TableHead className="hidden md:table-cell">Période</TableHead>
-                                            <TableHead className="hidden md:table-cell">Rôle</TableHead>
+                                            <TableHead>Course</TableHead>
+                                            <TableHead className="hidden md:table-cell">University</TableHead>
+                                            <TableHead className="hidden md:table-cell">Period</TableHead>
+                                            <TableHead className="hidden md:table-cell">Role</TableHead>
                                             <TableHead className="w-[50px]"></TableHead>
                                         </TableRow>
                                     </TableHeader>
@@ -351,7 +351,7 @@ export default function TeachingPage() {
                                                 </TableCell>
                                                 <TableCell className="hidden md:table-cell">
                                                     <Badge variant={teaching.isAssistant ? "secondary" : "default"}>
-                                                        {teaching.isAssistant ? "Assistant" : "Professeur"}
+                                                        {teaching.isAssistant ? "Assistant" : "Professor"}
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell>
@@ -370,7 +370,7 @@ export default function TeachingPage() {
                                                                 onClick={() => openEditTeachingDialog(teaching)}
                                                             >
                                                                 <Edit className="h-4 w-4" />
-                                                                <span>Modifier</span>
+                                                                <span>Edit</span>
                                                             </DropdownMenuItem>
                                                             <DropdownMenuSeparator />
                                                             <DropdownMenuItem
@@ -378,7 +378,7 @@ export default function TeachingPage() {
                                                                 onClick={() => openDeleteTeachingDialog(teaching)}
                                                             >
                                                                 <Trash className="h-4 w-4" />
-                                                                <span>Supprimer</span>
+                                                                <span>Delete</span>
                                                             </DropdownMenuItem>
                                                         </DropdownMenuContent>
                                                     </DropdownMenu>
@@ -398,24 +398,24 @@ export default function TeachingPage() {
                             <DialogTrigger asChild>
                                 <Button className="flex items-center gap-2">
                                     <Plus className="h-4 w-4" />
-                                    Ajouter une conférence invitée
+                                    Add a guest lecture
                                 </Button>
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-[525px]">
                                 <form action={editingLecture ? handleUpdateGuestLecture : handleAddGuestLecture}>
                                     <DialogHeader>
                                         <DialogTitle>
-                                            {editingLecture ? "Modifier la conférence invitée" : "Ajouter une conférence invitée"}
+                                            {editingLecture ? "Edit guest lecture" : "Add a guest lecture"}
                                         </DialogTitle>
                                         <DialogDescription>
                                             {editingLecture
-                                                ? "Modifiez les informations de cette conférence invitée."
-                                                : "Ajoutez une nouvelle conférence invitée à votre profil."}
+                                                ? "Edit the information for this guest lecture."
+                                                : "Add a new guest lecture to your profile."}
                                         </DialogDescription>
                                     </DialogHeader>
                                     <div className="grid gap-4 py-4">
                                         <div className="space-y-2">
-                                            <Label htmlFor="year">Année *</Label>
+                                            <Label htmlFor="year">Year *</Label>
                                             <Input
                                                 id="year"
                                                 name="year"
@@ -427,21 +427,21 @@ export default function TeachingPage() {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="presentationTitle">Titre de la présentation *</Label>
+                                            <Label htmlFor="presentationTitle">Presentation title *</Label>
                                             <Input
                                                 id="presentationTitle"
                                                 name="presentationTitle"
-                                                placeholder="Les défis de l'IA moderne"
+                                                placeholder="The challenges of modern AI"
                                                 defaultValue={editingLecture?.presentationTitle}
                                                 required
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="courseTitle">Cours *</Label>
+                                            <Label htmlFor="courseTitle">Course *</Label>
                                             <Input
                                                 id="courseTitle"
                                                 name="courseTitle"
-                                                placeholder="Master Intelligence Artificielle"
+                                                placeholder="Master of Artificial Intelligence"
                                                 defaultValue={editingLecture?.courseTitle}
                                                 required
                                             />
@@ -449,16 +449,16 @@ export default function TeachingPage() {
                                     </div>
                                     <DialogFooter>
                                         <Button type="button" variant="outline" onClick={closeLectureDialog}>
-                                            Annuler
+                                            Cancel
                                         </Button>
                                         <Button type="submit" disabled={isPending}>
                                             {isPending
                                                 ? editingLecture
-                                                    ? "Modification..."
-                                                    : "Ajout..."
+                                                    ? "Editing..."
+                                                    : "Adding..."
                                                 : editingLecture
-                                                    ? "Modifier"
-                                                    : "Ajouter"}
+                                                    ? "Edit"
+                                                    : "Add"}
                                         </Button>
                                     </DialogFooter>
                                 </form>
@@ -468,23 +468,23 @@ export default function TeachingPage() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>Vos conférences invitées</CardTitle>
-                            <CardDescription>Liste de toutes vos conférences invitées dans des cours</CardDescription>
+                            <CardTitle>Your guest lectures</CardTitle>
+                            <CardDescription>List of all your guest lectures in courses</CardDescription>
                         </CardHeader>
                         <CardContent>
                             {guestLectures.length === 0 ? (
                                 <div className="text-center py-8 text-muted-foreground">
                                     <GraduationCap className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                                    <p>Aucune conférence invitée ajoutée pour le moment.</p>
-                                    <p className="text-sm">Cliquez sur &quot;Ajouter une conférence invitée&quot; pour commencer.</p>
+                                    <p>No guest lecture added yet.</p>
+                                    <p className="text-sm">Click on &quot;Add a guest lecture&quot; to get started.</p>
                                 </div>
                             ) : (
                                 <Table>
                                     <TableHeader>
                                         <TableRow>
-                                            <TableHead>Présentation</TableHead>
-                                            <TableHead className="hidden md:table-cell">Cours</TableHead>
-                                            <TableHead className="hidden md:table-cell">Année</TableHead>
+                                            <TableHead>Presentation</TableHead>
+                                            <TableHead className="hidden md:table-cell">Course</TableHead>
+                                            <TableHead className="hidden md:table-cell">Year</TableHead>
                                             <TableHead className="w-[50px]"></TableHead>
                                         </TableRow>
                                     </TableHeader>
@@ -522,7 +522,7 @@ export default function TeachingPage() {
                                                                 onClick={() => openEditLectureDialog(lecture)}
                                                             >
                                                                 <Edit className="h-4 w-4" />
-                                                                <span>Modifier</span>
+                                                                <span>Edit</span>
                                                             </DropdownMenuItem>
                                                             <DropdownMenuSeparator />
                                                             <DropdownMenuItem
@@ -530,7 +530,7 @@ export default function TeachingPage() {
                                                                 onClick={() => openDeleteLectureDialog(lecture)}
                                                             >
                                                                 <Trash className="h-4 w-4" />
-                                                                <span>Supprimer</span>
+                                                                <span>Delete</span>
                                                             </DropdownMenuItem>
                                                         </DropdownMenuContent>
                                                     </DropdownMenu>
@@ -545,46 +545,46 @@ export default function TeachingPage() {
                 </TabsContent>
             </Tabs>
 
-            {/* Dialog de confirmation de suppression pour les enseignements */}
+            {/* Delete confirmation dialog for teachings */}
             <AlertDialog open={isDeleteTeachingDialogOpen} onOpenChange={setIsDeleteTeachingDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Êtes-vous sûr de vouloir supprimer cet enseignement ?</AlertDialogTitle>
+                        <AlertDialogTitle>Are you sure you want to delete this teaching?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Cette action est irréversible. L&apos;enseignement &quot;{teachingToDelete?.title}&quot; sera définitivement supprimé.
+                            This action is irreversible. The teaching &quot;{teachingToDelete?.title}&quot; will be permanently deleted.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel disabled={isPending}>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={handleDeleteTeaching}
                             disabled={isPending}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >
-                            {isPending ? "Suppression..." : "Supprimer"}
+                            {isPending ? "Deleting..." : "Delete"}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
 
-            {/* Dialog de confirmation de suppression pour les conférences invitées */}
+            {/* Delete confirmation dialog for guest lectures */}
             <AlertDialog open={isDeleteLectureDialogOpen} onOpenChange={setIsDeleteLectureDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Êtes-vous sûr de vouloir supprimer cette conférence invitée ?</AlertDialogTitle>
+                        <AlertDialogTitle>Are you sure you want to delete this guest lecture?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Cette action est irréversible. La conférence &quot;{lectureToDelete?.presentationTitle}&quot; sera définitivement
-                            supprimée.
+                            This action is irreversible. The guest lecture &quot;{lectureToDelete?.presentationTitle}&quot; will be permanently
+                            deleted.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel disabled={isPending}>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={handleDeleteGuestLecture}
                             disabled={isPending}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >
-                            {isPending ? "Suppression..." : "Supprimer"}
+                            {isPending ? "Deleting..." : "Delete"}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

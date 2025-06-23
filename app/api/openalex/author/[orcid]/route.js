@@ -3,7 +3,6 @@ import { NextResponse } from "next/server"
 export async function GET(request, { params }) {
     try {
         const { orcid } = await params
-        console.log("Requête OpenAlex pour ORCID:", orcid)
         const { searchParams } = new URL(request.url)
         const page = searchParams.get("page") || 1
         const perPage = searchParams.get("per_page") || 25
@@ -11,7 +10,7 @@ export async function GET(request, { params }) {
         // Validation ORCID format
         const orcidRegex = /^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/
         if (!orcidRegex.test(orcid)) {
-            return NextResponse.json({ error: "Format ORCID invalide" }, { status: 400 })
+            return NextResponse.json({ error: "Invalid ORCID format" }, { status: 400 })
         }
 
         // Appel à l'API OpenAlex
@@ -34,7 +33,7 @@ export async function GET(request, { params }) {
         const publications = data.results.map((work) => ({
             id: work.id,
             title: work.title,
-            journal: work.primary_location?.source?.display_name || "Non spécifié",
+            journal: work.primary_location?.source?.display_name || "Not specified",
             year: work.publication_year,
             authors: work.authorships.map((authorship) => authorship.author.display_name).join(", "),
             citations: work.cited_by_count || 0,
@@ -60,9 +59,9 @@ export async function GET(request, { params }) {
             },
         })
     } catch (error) {
-        console.error("Erreur OpenAlex:", error)
+        console.error("OpenAlex error:", error)
         return NextResponse.json(
-            { error: "Erreur lors de la récupération des publications", details: error.message },
+            { error: "Error while retrieving publications", details: error.message },
             { status: 500 },
         )
     }

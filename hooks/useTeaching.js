@@ -22,14 +22,14 @@ export function useTeaching() {
         try {
             setLoading(true)
 
-            // Récupération des enseignements
+            // Fetch teachings
             const teachingsQuery = query(
                 collection(db, "teachings"),
                 where("userId", "==", user.uid),
                 orderBy("year", "desc"),
             )
 
-            // Récupération des conférences invitées
+            // Fetch guest lectures
             const guestLecturesQuery = query(
                 collection(db, "guestLectures"),
                 where("userId", "==", user.uid),
@@ -54,7 +54,7 @@ export function useTeaching() {
             setTeachings(teachingsData)
             setGuestLectures(guestLecturesData)
         } catch (error) {
-            console.error("Erreur lors de la récupération des données d'enseignement:", error)
+            console.error("Error while fetching teaching data:", error)
             setTeachings([])
             setGuestLectures([])
         } finally {

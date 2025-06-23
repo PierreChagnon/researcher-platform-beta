@@ -5,14 +5,14 @@ import { BookOpen, Home, Search } from "lucide-react"
 const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN || "researcher-platform-beta.vercel.app"
 
 export default function NotFoundPage({
-    title = "Page introuvable",
-    message = "La page que vous recherchez n'existe pas.",
+    title = "Page not found",
+    message = "The page you are looking for does not exist.",
     showBackToHome = false,
     researcherId = null,
 }) {
 
-    // Si on a un researcherId, personnaliser le message
-    const finalMessage = researcherId ? `Le site "${researcherId}.${DOMAIN}" n'existe pas.` : message
+    // If we have a researcherId, personalize the message
+    const finalMessage = researcherId ? `The site "${researcherId}.${DOMAIN}" does not exist.` : message
 
     return (
         <div className="min-h-screen bg-background flex items-center justify-center">
@@ -26,7 +26,7 @@ export default function NotFoundPage({
                         <span>ResearchSite</span>
                     </div>
 
-                    {/* Erreur 404 */}
+                    {/* 404 Error */}
                     <div className="space-y-4">
                         <h1 className="text-6xl font-bold text-muted-foreground">404</h1>
                         <h2 className="text-3xl font-bold tracking-tight">{title}</h2>
@@ -39,7 +39,7 @@ export default function NotFoundPage({
                             <Button asChild>
                                 <Link href="/" className="flex items-center gap-2">
                                     <Home className="h-4 w-4" />
-                                    Retour à l'accueil
+                                    Back to home
                                 </Link>
                             </Button>
                         )}
@@ -47,23 +47,23 @@ export default function NotFoundPage({
                         <Button variant="outline" asChild>
                             <Link href="/register" className="flex items-center gap-2">
                                 <Search className="h-4 w-4" />
-                                Créer mon site
+                                Create my site
                             </Link>
                         </Button>
                     </div>
 
                     {/* Suggestions */}
                     <div className="text-sm text-muted-foreground space-y-2">
-                        <p>Vous cherchez quelque chose de spécifique ?</p>
+                        <p>Are you looking for something specific?</p>
                         <div className="flex flex-wrap justify-center gap-4">
                             <Link href="/register" className="hover:underline">
-                                Créer un compte
+                                Create an account
                             </Link>
                             <Link href="/login" className="hover:underline">
-                                Se connecter
+                                Log in
                             </Link>
                             <Link href="/contact" className="hover:underline">
-                                Nous contacter
+                                Contact us
                             </Link>
                         </div>
                     </div>

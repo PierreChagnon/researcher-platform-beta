@@ -30,15 +30,15 @@ export default function ContactPage() {
         setIsLoading(true)
 
         try {
-            // Simulation - en production, vous utiliseriez une Server Action
+            // Simulation - in production, you would use a Server Action
             await new Promise((resolve) => setTimeout(resolve, 1000))
 
-            toast.success("Informations de contact mises à jour", {
-                description: "Vos informations de contact ont été sauvegardées avec succès.",
+            toast.success("Contact information updated", {
+                description: "Your contact information has been successfully saved.",
             })
         } catch (error) {
-            toast.error("Erreur", {
-                description: "Une erreur est survenue lors de la sauvegarde.",
+            toast.error("Error", {
+                description: "An error occurred while saving.",
             })
         } finally {
             setIsLoading(false)
@@ -59,21 +59,21 @@ export default function ContactPage() {
         <div className="space-y-6">
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Contact</h1>
-                <p className="text-muted-foreground">Gérez vos informations de contact qui seront affichées sur votre site.</p>
+                <p className="text-muted-foreground">Manage your contact information that will be displayed on your site.</p>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Informations de contact</CardTitle>
+                        <CardTitle>Contact Information</CardTitle>
                         <CardDescription>
-                            Ces informations seront affichées dans la section contact de votre site web.
+                            This information will be displayed in the contact section of your website.
                         </CardDescription>
                     </CardHeader>
                     <form onSubmit={handleSubmit}>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="email">Email professionnel</Label>
+                                <Label htmlFor="email">Work Email</Label>
                                 <div className="relative">
                                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                                     <Input
@@ -86,12 +86,12 @@ export default function ContactPage() {
                                     />
                                 </div>
                                 <p className="text-sm text-muted-foreground">
-                                    Votre adresse email principale pour les contacts professionnels.
+                                    Your primary email address for professional contacts.
                                 </p>
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="phone">Téléphone</Label>
+                                <Label htmlFor="phone">Phone</Label>
                                 <div className="relative">
                                     <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                                     <Input
@@ -103,28 +103,28 @@ export default function ContactPage() {
                                         className="pl-10"
                                     />
                                 </div>
-                                <p className="text-sm text-muted-foreground">Votre numéro de téléphone professionnel (optionnel).</p>
+                                <p className="text-sm text-muted-foreground">Your professional phone number (optional).</p>
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="address">Adresse professionnelle</Label>
+                                <Label htmlFor="address">Work Address</Label>
                                 <div className="relative">
                                     <MapPin className="absolute left-3 top-3 text-gray-400 h-4 w-4" />
                                     <Input
                                         id="address"
-                                        placeholder="123 Rue de l'Université, 75005 Paris, France"
+                                        placeholder="123 University Street, 75005 Paris, France"
                                         value={formData.address}
                                         onChange={(e) => handleInputChange("address", e.target.value)}
                                         className="pl-10"
                                     />
                                 </div>
-                                <p className="text-sm text-muted-foreground">Votre adresse professionnelle complète (optionnel).</p>
+                                <p className="text-sm text-muted-foreground">Your full professional address (optional).</p>
                             </div>
                         </CardContent>
                         <CardFooter>
                             <Button type="submit" disabled={isLoading} className="flex items-center gap-2">
                                 <Save className="h-4 w-4" />
-                                {isLoading ? "Enregistrement..." : "Enregistrer"}
+                                {isLoading ? "Saving..." : "Save"}
                             </Button>
                         </CardFooter>
                     </form>
@@ -132,12 +132,12 @@ export default function ContactPage() {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Aperçu</CardTitle>
-                        <CardDescription>Voici comment vos informations de contact apparaîtront sur votre site.</CardDescription>
+                        <CardTitle>Preview</CardTitle>
+                        <CardDescription>This is how your contact information will appear on your site.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
-                            <h3 className="font-semibold text-lg">Contactez-moi</h3>
+                            <h3 className="font-semibold text-lg">Contact Me</h3>
 
                             {formData.email && (
                                 <div className="flex items-center gap-3">
@@ -157,7 +157,7 @@ export default function ContactPage() {
                                         <Phone className="h-4 w-4 text-green-600" />
                                     </div>
                                     <div>
-                                        <p className="font-medium">Téléphone</p>
+                                        <p className="font-medium">Phone</p>
                                         <p className="text-sm text-gray-600">{formData.phone}</p>
                                     </div>
                                 </div>
@@ -169,7 +169,7 @@ export default function ContactPage() {
                                         <MapPin className="h-4 w-4 text-purple-600" />
                                     </div>
                                     <div>
-                                        <p className="font-medium">Adresse</p>
+                                        <p className="font-medium">Address</p>
                                         <p className="text-sm text-gray-600">{formData.address}</p>
                                     </div>
                                 </div>
@@ -177,7 +177,7 @@ export default function ContactPage() {
 
                             {!formData.email && !formData.phone && !formData.address && (
                                 <p className="text-gray-500 italic">
-                                    Remplissez les champs ci-contre pour voir l&apos;aperçu de votre section contact.
+                                    Fill in the fields on the left to see a preview of your contact section.
                                 </p>
                             )}
                         </div>

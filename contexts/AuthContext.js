@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        // Importer Firebase Auth seulement côté client
+        // Import Firebase Auth only on the client side
         const initializeAuth = async () => {
             if (typeof window !== "undefined") {
                 try {
@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
                         const unsubscribe = onAuthStateChanged(auth, async (user) => {
                             if (user) {
                                 setUser(user)
-                                // Récupérer les données utilisateur depuis Firestore
+                                // Retrieve user data from Firestore
                                 const { data } = await getUserData(user.uid)
                                 setUserData(data)
                             } else {
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
                         return () => unsubscribe()
                     }
                 } catch (error) {
-                    console.error("Erreur lors de l'initialisation de l'authentification:", error)
+                    console.error("Error during authentication initialization:", error)
                     setLoading(false)
                 }
             } else {

@@ -40,9 +40,9 @@ export default function DashboardPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Tableau de bord</h1>
+                <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
                 <p className="text-muted-foreground">
-                    Bienvenue {userData?.name || user?.displayName}, sur votre tableau de bord ResearchSite.
+                    Welcome {userData?.name || user?.displayName}, to your ResearchSite dashboard.
                 </p>
             </div>
 
@@ -54,32 +54,32 @@ export default function DashboardPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{loading ? "..." : publications.length}</div>
-                        <p className="text-xs text-muted-foreground">Publications dans votre base de données</p>
+                        <p className="text-xs text-muted-foreground">Publications in your database</p>
                         <Button variant="link" className="px-0 mt-2" asChild>
-                            <Link href="/dashboard/publications">Gérer les publications</Link>
+                            <Link href="/dashboard/publications">Manage publications</Link>
                         </Button>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Visites du site</CardTitle>
+                        <CardTitle className="text-sm font-medium">Site visits</CardTitle>
                         <BarChart className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">Bientôt</div>
-                        <p className="text-xs text-muted-foreground">Analytics en cours de développement</p>
+                        <div className="text-2xl font-bold">Coming soon</div>
+                        <p className="text-xs text-muted-foreground">Analytics under development</p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Profil</CardTitle>
+                        <CardTitle className="text-sm font-medium">Profile</CardTitle>
                         <User className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{getProfileCompleteness()}%</div>
-                        <p className="text-xs text-muted-foreground">Complétude de votre profil</p>
+                        <p className="text-xs text-muted-foreground">Your profile completeness</p>
                         <Button variant="link" className="px-0 mt-2" asChild>
-                            <Link href="/dashboard/profile">Compléter mon profil</Link>
+                            <Link href="/dashboard/profile">Complete my profile</Link>
                         </Button>
                     </CardContent>
                 </Card>
@@ -88,60 +88,60 @@ export default function DashboardPage() {
             <div className="grid gap-6 md:grid-cols-2">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Actions rapides</CardTitle>
-                        <CardDescription>Accédez rapidement aux fonctionnalités principales</CardDescription>
+                        <CardTitle>Quick actions</CardTitle>
+                        <CardDescription>Quickly access main features</CardDescription>
                     </CardHeader>
                     <CardContent className="grid gap-4">
                         <div className="flex items-center gap-4">
                             <User className="h-5 w-5" />
                             <div className="flex-1">
-                                <p className="text-sm font-medium">Mettre à jour mon profil</p>
+                                <p className="text-sm font-medium">Update my profile</p>
                                 <p className="text-sm text-muted-foreground">
-                                    Modifiez vos informations personnelles et professionnelles
+                                    Edit your personal and professional information
                                 </p>
                             </div>
                             <Button size="sm" variant="ghost" asChild>
-                                <Link href="/dashboard/profile">Modifier</Link>
+                                <Link href="/dashboard/profile">Edit</Link>
                             </Button>
                         </div>
                         <div className="flex items-center gap-4">
                             <FileText className="h-5 w-5" />
                             <div className="flex-1">
-                                <p className="text-sm font-medium">Gérer mes publications</p>
-                                <p className="text-sm text-muted-foreground">Visualisez et organisez vos publications scientifiques</p>
+                                <p className="text-sm font-medium">Manage my publications</p>
+                                <p className="text-sm text-muted-foreground">View and organize your scientific publications</p>
                             </div>
                             <Button size="sm" variant="ghost" asChild>
-                                <Link href="/dashboard/publications">Gérer</Link>
+                                <Link href="/dashboard/publications">Manage</Link>
                             </Button>
                         </div>
                         <div className="flex items-center gap-4">
                             <Settings className="h-5 w-5" />
                             <div className="flex-1">
-                                <p className="text-sm font-medium">Paramètres du site</p>
+                                <p className="text-sm font-medium">Site settings</p>
                                 <p className="text-sm text-muted-foreground">
-                                    Personnalisez l&apos;apparence et le contenu de votre site
+                                    Customize the appearance and content of your site
                                 </p>
                             </div>
                             <Button size="sm" variant="ghost" asChild>
-                                <Link href="/dashboard/settings">Configurer</Link>
+                                <Link href="/dashboard/settings">Configure</Link>
                             </Button>
                         </div>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader>
-                        <CardTitle>Votre site web</CardTitle>
-                        <CardDescription>Aperçu et gestion de votre site web de chercheur</CardDescription>
+                        <CardTitle>Your website</CardTitle>
+                        <CardDescription>Preview and manage your researcher website</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="rounded-md border bg-muted/50 p-4">
-                            <div className="text-sm font-medium">URL de votre site</div>
+                            <div className="text-sm font-medium">Your site URL</div>
                             <div className="mt-1 flex items-center gap-2">
                                 <code className="rounded bg-muted px-2 py-1 text-sm">
                                     {siteUrl}.{DOMAIN}
                                 </code>
                                 <Button size="icon" variant="ghost" className="h-8 w-8">
-                                    <span className="sr-only">Copier l&apos;URL</span>
+                                    <span className="sr-only">Copy URL</span>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         width="16"
@@ -162,11 +162,11 @@ export default function DashboardPage() {
                         </div>
                         <div className="flex justify-between">
                             <Button variant="outline" asChild>
-                                <Link href="/dashboard/settings">Personnaliser</Link>
+                                <Link href="/dashboard/settings">Customize</Link>
                             </Button>
                             <Button asChild>
                                 <Link href={`https://${siteUrl}.${DOMAIN}`} target="_blank" className="flex items-center gap-2">
-                                    <span>Voir mon site</span>
+                                    <span>View my site</span>
                                     <ExternalLink className="h-4 w-4" />
                                 </Link>
                             </Button>

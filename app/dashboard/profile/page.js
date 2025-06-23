@@ -14,10 +14,10 @@ import { toast } from "sonner"
 
 const defaultValues = {
     name: "John Doe",
-    title: "Professeur en Informatique",
-    institution: "Université de Paris",
+    title: "Professor of Computer Science",
+    institution: "University of Paris",
     email: "john.doe@univ-paris.fr",
-    bio: "Chercheur en intelligence artificielle et apprentissage automatique avec plus de 10 ans d'expérience dans le domaine.",
+    bio: "Researcher in artificial intelligence and machine learning with over 10 years of experience in the field.",
     orcid: "0000-0000-0000-0000",
     hIndex: "",
     twitter: "johndoe",
@@ -37,33 +37,33 @@ export default function ProfilePage() {
         const newErrors = {}
 
         if (formData.name.length < 2) {
-            newErrors.name = "Le nom doit contenir au moins 2 caractères."
+            newErrors.name = "Name must be at least 2 characters long."
         }
 
         if (formData.title.length < 2) {
-            newErrors.title = "Le titre doit contenir au moins 2 caractères."
+            newErrors.title = "Title must be at least 2 characters long."
         }
 
         if (formData.institution.length < 2) {
-            newErrors.institution = "L'institution doit contenir au moins 2 caractères."
+            newErrors.institution = "Institution must be at least 2 characters long."
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         if (!emailRegex.test(formData.email)) {
-            newErrors.email = "Veuillez entrer une adresse email valide."
+            newErrors.email = "Please enter a valid email address."
         }
 
         if (formData.bio.length < 10) {
-            newErrors.bio = "La biographie doit contenir au moins 10 caractères."
+            newErrors.bio = "Biography must be at least 10 characters long."
         }
 
         const orcidRegex = /^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/
         if (!orcidRegex.test(formData.orcid)) {
-            newErrors.orcid = "Veuillez entrer un identifiant ORCID valide (format: 0000-0000-0000-0000)."
+            newErrors.orcid = "Please enter a valid ORCID identifier (format: 0000-0000-0000-0000)."
         }
 
         if (formData.hIndex && (isNaN(formData.hIndex) || Number.parseInt(formData.hIndex) < 0)) {
-            newErrors.hIndex = "Le h-index doit être un nombre positif."
+            newErrors.hIndex = "h-index must be a positive number."
         }
 
         setErrors(newErrors)
@@ -100,8 +100,8 @@ export default function ProfilePage() {
         }
 
         if (!user) {
-            toast.error("Erreur", {
-                description: "Utilisateur non connecté.",
+            toast.error("Error", {
+                description: "User not logged in.",
             })
             return
         }
@@ -113,16 +113,16 @@ export default function ProfilePage() {
 
             if (result.success) {
                 await refreshUserData()
-                toast.success("Profil mis à jour", {
+                toast.success("Profile updated", {
                     description: result.message,
                 })
             } else {
                 throw new Error(result.error)
             }
         } catch (error) {
-            console.error("Erreur lors de la sauvegarde:", error)
-            toast.error("Erreur", {
-                description: error.message || "Une erreur est survenue lors de la sauvegarde de votre profil.",
+            console.error("Error while saving:", error)
+            toast.error("Error", {
+                description: error.message || "An error occurred while saving your profile.",
             })
         } finally {
             setIsLoading(false)
@@ -151,26 +151,26 @@ export default function ProfilePage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Profil</h1>
-                <p className="text-muted-foreground">Gérez vos informations personnelles et professionnelles.</p>
+                <h1 className="text-3xl font-bold tracking-tight">Profile</h1>
+                <p className="text-muted-foreground">Manage your personal and professional information.</p>
             </div>
 
             <Tabs defaultValue="personal" className="space-y-4">
                 <TabsList>
-                    <TabsTrigger value="personal">Informations personnelles</TabsTrigger>
-                    <TabsTrigger value="academic">Informations académiques</TabsTrigger>
-                    <TabsTrigger value="social">Réseaux sociaux</TabsTrigger>
+                    <TabsTrigger value="personal">Personal Information</TabsTrigger>
+                    <TabsTrigger value="academic">Academic Information</TabsTrigger>
+                    <TabsTrigger value="social">Social Networks</TabsTrigger>
                 </TabsList>
                 <form onSubmit={handleSubmit}>
                     <TabsContent value="personal" className="space-y-4">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Informations personnelles</CardTitle>
-                                <CardDescription>Ces informations seront affichées sur votre site web.</CardDescription>
+                                <CardTitle>Personal Information</CardTitle>
+                                <CardDescription>This information will be displayed on your website.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="name">Nom complet</Label>
+                                    <Label htmlFor="name">Full Name</Label>
                                     <Input
                                         id="name"
                                         placeholder="John Doe"
@@ -179,7 +179,7 @@ export default function ProfilePage() {
                                         className={errors.name ? "border-red-500" : ""}
                                     />
                                     <p className="text-sm text-muted-foreground">
-                                        Votre nom complet tel qu&apos;il apparaîtra sur votre site.
+                                        Your full name as it will appear on your site.
                                     </p>
                                     {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
                                 </div>
@@ -193,27 +193,27 @@ export default function ProfilePage() {
                                         onChange={(e) => handleInputChange("email", e.target.value)}
                                         className={errors.email ? "border-red-500" : ""}
                                     />
-                                    <p className="text-sm text-muted-foreground">Votre adresse email professionnelle.</p>
+                                    <p className="text-sm text-muted-foreground">Your professional email address.</p>
                                     {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="bio">Biographie</Label>
+                                    <Label htmlFor="bio">Biography</Label>
                                     <Textarea
                                         id="bio"
-                                        placeholder="Parlez de vous et de vos recherches..."
+                                        placeholder="Tell us about yourself and your research..."
                                         className="resize-none"
                                         value={formData.bio}
                                         onChange={(e) => handleInputChange("bio", e.target.value)}
                                     />
                                     <p className="text-sm text-muted-foreground">
-                                        Une brève description de votre parcours et de vos recherches.
+                                        A brief description of your background and research.
                                     </p>
                                     {errors.bio && <p className="text-sm text-red-500">{errors.bio}</p>}
                                 </div>
                             </CardContent>
                             <CardFooter>
                                 <Button type="submit" disabled={isLoading}>
-                                    {isLoading ? "Enregistrement..." : "Enregistrer"}
+                                    {isLoading ? "Saving..." : "Save"}
                                 </Button>
                             </CardFooter>
                         </Card>
@@ -222,32 +222,32 @@ export default function ProfilePage() {
                     <TabsContent value="academic" className="space-y-4">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Informations académiques</CardTitle>
-                                <CardDescription>Vos informations professionnelles et académiques.</CardDescription>
+                                <CardTitle>Academic Information</CardTitle>
+                                <CardDescription>Your professional and academic information.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="title">Titre</Label>
+                                    <Label htmlFor="title">Title</Label>
                                     <Input
                                         id="title"
-                                        placeholder="Professeur en Informatique"
+                                        placeholder="Professor of Computer Science"
                                         value={formData.title}
                                         onChange={(e) => handleInputChange("title", e.target.value)}
                                         className={errors.title ? "border-red-500" : ""}
                                     />
-                                    <p className="text-sm text-muted-foreground">Votre titre ou poste actuel.</p>
+                                    <p className="text-sm text-muted-foreground">Your current title or position.</p>
                                     {errors.title && <p className="text-sm text-red-500">{errors.title}</p>}
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="institution">Institution</Label>
                                     <Input
                                         id="institution"
-                                        placeholder="Université de Paris"
+                                        placeholder="University of Paris"
                                         value={formData.institution}
                                         onChange={(e) => handleInputChange("institution", e.target.value)}
                                         className={errors.institution ? "border-red-500" : ""}
                                     />
-                                    <p className="text-sm text-muted-foreground">Votre institution ou université actuelle.</p>
+                                    <p className="text-sm text-muted-foreground">Your current institution or university.</p>
                                     {errors.institution && <p className="text-sm text-red-500">{errors.institution}</p>}
                                 </div>
                                 <div className="space-y-2">
@@ -260,7 +260,7 @@ export default function ProfilePage() {
                                         className={errors.orcid ? "border-red-500" : ""}
                                     />
                                     <p className="text-sm text-muted-foreground">
-                                        Votre identifiant ORCID pour récupérer automatiquement vos publications.
+                                        Your ORCID identifier to automatically retrieve your publications.
                                     </p>
                                     {errors.orcid && <p className="text-sm text-red-500">{errors.orcid}</p>}
                                 </div>
@@ -282,18 +282,18 @@ export default function ProfilePage() {
                                             className="flex items-center gap-2 whitespace-nowrap"
                                         >
                                             <ExternalLink className="h-4 w-4" />
-                                            Vérifier sur Google Scholar
+                                            Check on Google Scholar
                                         </Button>
                                     </div>
                                     <p className="text-sm text-muted-foreground">
-                                        Votre h-index actuel. Cliquez sur le bouton pour le vérifier sur Google Scholar.
+                                        Your current h-index. Click the button to check it on Google Scholar.
                                     </p>
                                     {errors.hIndex && <p className="text-sm text-red-500">{errors.hIndex}</p>}
                                 </div>
                             </CardContent>
                             <CardFooter>
                                 <Button type="submit" disabled={isLoading}>
-                                    {isLoading ? "Enregistrement..." : "Enregistrer"}
+                                    {isLoading ? "Saving..." : "Save"}
                                 </Button>
                             </CardFooter>
                         </Card>
@@ -302,9 +302,9 @@ export default function ProfilePage() {
                     <TabsContent value="social" className="space-y-4">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Réseaux sociaux et profils académiques</CardTitle>
+                                <CardTitle>Social Networks and Academic Profiles</CardTitle>
                                 <CardDescription>
-                                    Vos profils sur les réseaux sociaux et plateformes académiques qui seront affichés sur votre site.
+                                    Your profiles on social networks and academic platforms that will be displayed on your site.
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
@@ -322,7 +322,7 @@ export default function ProfilePage() {
                                             className="rounded-l-none"
                                         />
                                     </div>
-                                    <p className="text-sm text-muted-foreground">Votre nom d&apos;utilisateur Twitter/X (sans @).</p>
+                                    <p className="text-sm text-muted-foreground">Your Twitter/X username (without @).</p>
                                 </div>
 
                                 <div className="space-y-2">
@@ -333,7 +333,7 @@ export default function ProfilePage() {
                                         value={formData.bluesky}
                                         onChange={(e) => handleInputChange("bluesky", e.target.value)}
                                     />
-                                    <p className="text-sm text-muted-foreground">Votre handle Bluesky complet.</p>
+                                    <p className="text-sm text-muted-foreground">Your full Bluesky handle.</p>
                                 </div>
 
                                 <div className="space-y-2">
@@ -350,7 +350,7 @@ export default function ProfilePage() {
                                             className="rounded-l-none"
                                         />
                                     </div>
-                                    <p className="text-sm text-muted-foreground">Votre nom de profil ResearchGate.</p>
+                                    <p className="text-sm text-muted-foreground">Your ResearchGate profile name.</p>
                                 </div>
 
                                 <div className="space-y-2">
@@ -367,7 +367,7 @@ export default function ProfilePage() {
                                             className="rounded-l-none"
                                         />
                                     </div>
-                                    <p className="text-sm text-muted-foreground">Votre identifiant OSF.</p>
+                                    <p className="text-sm text-muted-foreground">Your OSF identifier.</p>
                                 </div>
 
                                 <div className="space-y-2">
@@ -385,13 +385,13 @@ export default function ProfilePage() {
                                         />
                                     </div>
                                     <p className="text-sm text-muted-foreground">
-                                        Votre ID utilisateur Google Scholar (trouvable dans l&apos;URL de votre profil).
+                                        Your Google Scholar user ID (found in your profile URL).
                                     </p>
                                 </div>
                             </CardContent>
                             <CardFooter>
                                 <Button type="submit" disabled={isLoading}>
-                                    {isLoading ? "Enregistrement..." : "Enregistrer"}
+                                    {isLoading ? "Saving..." : "Save"}
                                 </Button>
                             </CardFooter>
                         </Card>

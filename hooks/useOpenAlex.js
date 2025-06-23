@@ -23,16 +23,15 @@ export function useOpenAlex() {
 
                 if (!response.ok) {
                     const errorData = await response.json()
-                    throw new Error(errorData.error || "Erreur lors de la recherche")
+                    throw new Error(errorData.error || "Error during search")
                 }
 
                 const data = await response.json()
                 return data
             } catch (err) {
                 setError(err.message)
-                toast({
+                toast("OpenAlex Error", {
                     variant: "destructive",
-                    title: "Erreur OpenAlex",
                     description: err.message,
                 })
                 throw err
@@ -60,7 +59,7 @@ export function useOpenAlex() {
 
                 if (!response.ok) {
                     const errorData = await response.json()
-                    throw new Error(errorData.error || "Erreur lors de la recherche")
+                    throw new Error(errorData.error || "Error during search")
                 }
 
                 const data = await response.json()
@@ -69,7 +68,7 @@ export function useOpenAlex() {
                 setError(err.message)
                 toast({
                     variant: "destructive",
-                    title: "Erreur de recherche",
+                    title: "Search error",
                     description: err.message,
                 })
                 throw err

@@ -31,11 +31,11 @@ export default function LoginPage() {
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         if (!emailRegex.test(formData.email)) {
-            newErrors.email = "Veuillez entrer une adresse email valide."
+            newErrors.email = "Please enter a valid email address."
         }
 
         if (formData.password.length < 1) {
-            newErrors.password = "Veuillez entrer votre mot de passe."
+            newErrors.password = "Please enter your password."
         }
 
         setErrors(newErrors)
@@ -69,20 +69,20 @@ export default function LoginPage() {
             const { user, error } = await signIn(formData.email, formData.password)
 
             if (error) {
-                toast("Erreur de connexion", {
+                toast("Login error", {
                     variant: "destructive",
                     description: error,
                 })
             } else {
-                toast("Connexion réussie", {
-                    description: "Vous allez être redirigé vers votre tableau de bord.",
+                toast("Login successful", {
+                    description: "You will be redirected to your dashboard.",
                 })
                 router.push("/dashboard")
             }
         } catch (error) {
-            toast("Erreur de connexion", {
+            toast("Login error", {
                 variant: "destructive",
-                description: "Une erreur est survenue. Veuillez réessayer.",
+                description: "An error occurred. Please try again.",
             })
         } finally {
             setIsLoading(false)
@@ -98,8 +98,8 @@ export default function LoginPage() {
                             <BookOpen className="h-6 w-6" />
                             <span>ResearchSite</span>
                         </Link>
-                        <h1 className="text-2xl font-semibold tracking-tight">Connexion</h1>
-                        <p className="text-sm text-muted-foreground">Entrez vos identifiants pour accéder à votre compte</p>
+                        <h1 className="text-2xl font-semibold tracking-tight">Login</h1>
+                        <p className="text-sm text-muted-foreground">Enter your credentials to access your account</p>
                     </div>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-2">
@@ -116,7 +116,7 @@ export default function LoginPage() {
                             {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="password">Mot de passe</Label>
+                            <Label htmlFor="password">Password</Label>
                             <Input
                                 id="password"
                                 type="password"
@@ -129,17 +129,17 @@ export default function LoginPage() {
                         </div>
                         <div className="flex items-center justify-end">
                             <Link href="/forgot-password" className="text-sm text-muted-foreground hover:underline">
-                                Mot de passe oublié?
+                                Forgot password?
                             </Link>
                         </div>
                         <Button type="submit" className="w-full" disabled={isLoading}>
-                            {isLoading ? "Connexion en cours..." : "Se connecter"}
+                            {isLoading ? "Logging in..." : "Log in"}
                         </Button>
                     </form>
                     <div className="text-center text-sm text-muted-foreground">
-                        Vous n&apos;avez pas de compte?{" "}
+                        Don&apos;t have an account?{" "}
                         <Link href="/register" className="underline underline-offset-4 hover:text-primary">
-                            S&apos;inscrire
+                            Sign up
                         </Link>
                     </div>
                 </div>

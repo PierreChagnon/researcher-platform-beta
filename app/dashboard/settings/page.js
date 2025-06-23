@@ -36,7 +36,7 @@ export default function SettingsPage() {
     const [errors, setErrors] = useState({})
     const { userData, refreshUserData } = useAuth()
 
-    // Charger les données utilisateur existantes
+    // Load existing user data
     useEffect(() => {
         if (userData?.siteSettings) {
             setFormData({
@@ -67,7 +67,7 @@ export default function SettingsPage() {
             }))
         }
 
-        // Vérification en temps réel pour l'URL du site
+        // Real-time check for site URL
         if (field === "siteUrl") {
             setUrlStatus(null)
             if (value && value.length >= 3) {
@@ -86,7 +86,7 @@ export default function SettingsPage() {
             }
         } catch (error) {
             setUrlStatus("invalid")
-            setErrors((prev) => ({ ...prev, siteUrl: "Erreur lors de la vérification" }))
+            setErrors((prev) => ({ ...prev, siteUrl: "Error during verification" }))
         } finally {
             setIsCheckingUrl(false)
         }
@@ -97,13 +97,13 @@ export default function SettingsPage() {
             const result = await updateSiteSettings(formData)
 
             if (result.success) {
-                toast.success("Paramètres mis à jour", {
+                toast.success("Settings updated", {
                     description: result.message,
                 })
-                // Rafraîchir les données utilisateur
+                // Refresh user data
                 await refreshUserData()
             } else {
-                toast.error("Erreur", {
+                toast.error("Error", {
                     description: result.error,
                 })
             }
@@ -127,21 +127,21 @@ export default function SettingsPage() {
         if (urlStatus === "available") {
             return (
                 <Badge variant="outline" className="text-green-600 border-green-600">
-                    Disponible
+                    Available
                 </Badge>
             )
         }
         if (urlStatus === "taken") {
             return (
                 <Badge variant="outline" className="text-red-600 border-red-600">
-                    Déjà pris
+                    Already taken
                 </Badge>
             )
         }
         if (urlStatus === "invalid") {
             return (
                 <Badge variant="outline" className="text-red-600 border-red-600">
-                    Invalide
+                    Invalid
                 </Badge>
             )
         }
@@ -151,14 +151,14 @@ export default function SettingsPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Paramètres</h1>
-                <p className="text-muted-foreground">Personnalisez l&apos;apparence et le contenu de votre site web.</p>
+                <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
+                <p className="text-muted-foreground">Customize the appearance and content of your website.</p>
             </div>
 
             <Tabs defaultValue="general" className="space-y-4">
                 <TabsList>
-                    <TabsTrigger value="general">Général</TabsTrigger>
-                    <TabsTrigger value="appearance">Apparence</TabsTrigger>
+                    <TabsTrigger value="general">General</TabsTrigger>
+                    <TabsTrigger value="appearance">Appearance</TabsTrigger>
                     <TabsTrigger value="publications">Publications</TabsTrigger>
                     <TabsTrigger value="analytics">Analytics</TabsTrigger>
                 </TabsList>
@@ -167,42 +167,42 @@ export default function SettingsPage() {
                     <TabsContent value="general" className="space-y-4">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Informations générales</CardTitle>
-                                <CardDescription>Configurez les informations de base de votre site web.</CardDescription>
+                                <CardTitle>General information</CardTitle>
+                                <CardDescription>Set up the basic information for your website.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="siteName">Nom du site</Label>
+                                    <Label htmlFor="siteName">Site name</Label>
                                     <Input
                                         id="siteName"
                                         name="siteName"
-                                        placeholder="John Doe - Chercheur en Informatique"
+                                        placeholder="John Doe - Computer Science Researcher"
                                         value={formData.siteName}
                                         onChange={(e) => handleInputChange("siteName", e.target.value)}
                                         className={errors.siteName ? "border-red-500" : ""}
                                     />
-                                    <p className="text-sm text-muted-foreground">Le titre principal de votre site web.</p>
+                                    <p className="text-sm text-muted-foreground">The main title of your website.</p>
                                     {errors.siteName && <p className="text-sm text-red-500">{errors.siteName}</p>}
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="siteDescription">Description du site</Label>
+                                    <Label htmlFor="siteDescription">Site description</Label>
                                     <Textarea
                                         id="siteDescription"
                                         name="siteDescription"
-                                        placeholder="Site personnel de John Doe, Professeur en Informatique..."
+                                        placeholder="Personal website of John Doe, Professor in Computer Science..."
                                         className="resize-none"
                                         value={formData.siteDescription}
                                         onChange={(e) => handleInputChange("siteDescription", e.target.value)}
                                     />
                                     <p className="text-sm text-muted-foreground">
-                                        Une brève description de votre site pour les moteurs de recherche.
+                                        A brief description of your site for search engines.
                                     </p>
                                     {errors.siteDescription && <p className="text-sm text-red-500">{errors.siteDescription}</p>}
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="siteUrl">URL du site</Label>
+                                    <Label htmlFor="siteUrl">Site URL</Label>
                                     <div className="flex items-center space-x-2">
                                         <span className="text-sm text-muted-foreground">https://</span>
                                         <div className="relative flex-1">
@@ -220,7 +220,7 @@ export default function SettingsPage() {
                                         {getUrlStatusBadge()}
                                     </div>
                                     <div className="flex items-center justify-between">
-                                        <p className="text-sm text-muted-foreground">L&apos;URL personnalisée de votre site web.</p>
+                                        <p className="text-sm text-muted-foreground">The custom URL of your website.</p>
                                         {formData.siteUrl && urlStatus === "available" && (
                                             <Button variant="outline" size="sm" asChild>
                                                 <a
@@ -230,7 +230,7 @@ export default function SettingsPage() {
                                                     className="flex items-center gap-1"
                                                 >
                                                     <ExternalLink className="h-3 w-3" />
-                                                    Voir le site
+                                                    View site
                                                 </a>
                                             </Button>
                                         )}
@@ -240,7 +240,7 @@ export default function SettingsPage() {
                             </CardContent>
                             <CardFooter>
                                 <Button type="submit" disabled={isPending || urlStatus === "taken" || urlStatus === "invalid"}>
-                                    {isPending ? "Enregistrement..." : "Enregistrer"}
+                                    {isPending ? "Saving..." : "Save"}
                                 </Button>
                             </CardFooter>
                         </Card>
@@ -249,55 +249,55 @@ export default function SettingsPage() {
                     <TabsContent value="appearance" className="space-y-4">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Apparence</CardTitle>
-                                <CardDescription>Personnalisez l&apos;apparence de votre site web.</CardDescription>
+                                <CardTitle>Appearance</CardTitle>
+                                <CardDescription>Customize the appearance of your website.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="theme">Thème</Label>
+                                    <Label htmlFor="theme">Theme</Label>
                                     <Select
                                         name="theme"
                                         onValueChange={(value) => handleInputChange("theme", value)}
                                         defaultValue={formData.theme}
                                     >
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Sélectionnez un thème" />
+                                            <SelectValue placeholder="Select a theme" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="light">Clair</SelectItem>
-                                            <SelectItem value="dark">Sombre</SelectItem>
-                                            <SelectItem value="system">Système</SelectItem>
+                                            <SelectItem value="light">Light</SelectItem>
+                                            <SelectItem value="dark">Dark</SelectItem>
+                                            <SelectItem value="system">System</SelectItem>
                                         </SelectContent>
                                     </Select>
-                                    <p className="text-sm text-muted-foreground">Choisissez le thème de couleur de votre site.</p>
+                                    <p className="text-sm text-muted-foreground">Choose the color theme for your site.</p>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="accentColor">Couleur d&apos;accent</Label>
+                                    <Label htmlFor="accentColor">Accent color</Label>
                                     <Select
                                         name="accentColor"
                                         onValueChange={(value) => handleInputChange("accentColor", value)}
                                         defaultValue={formData.accentColor}
                                     >
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Sélectionnez une couleur" />
+                                            <SelectValue placeholder="Select a color" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="blue">Bleu</SelectItem>
-                                            <SelectItem value="green">Vert</SelectItem>
-                                            <SelectItem value="purple">Violet</SelectItem>
+                                            <SelectItem value="blue">Blue</SelectItem>
+                                            <SelectItem value="green">Green</SelectItem>
+                                            <SelectItem value="purple">Purple</SelectItem>
                                             <SelectItem value="orange">Orange</SelectItem>
-                                            <SelectItem value="red">Rouge</SelectItem>
+                                            <SelectItem value="red">Red</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <p className="text-sm text-muted-foreground">
-                                        La couleur principale utilisée pour les liens et les boutons.
+                                        The main color used for links and buttons.
                                     </p>
                                 </div>
                             </CardContent>
                             <CardFooter>
                                 <Button type="submit" disabled={isPending}>
-                                    {isPending ? "Enregistrement..." : "Enregistrer"}
+                                    {isPending ? "Saving..." : "Save"}
                                 </Button>
                             </CardFooter>
                         </Card>
@@ -306,15 +306,15 @@ export default function SettingsPage() {
                     <TabsContent value="publications" className="space-y-4">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Affichage des publications</CardTitle>
-                                <CardDescription>Configurez comment vos publications sont affichées sur votre site.</CardDescription>
+                                <CardTitle>Publication display</CardTitle>
+                                <CardDescription>Configure how your publications are displayed on your site.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="flex flex-row items-center justify-between rounded-lg border p-4">
                                     <div className="space-y-0.5">
-                                        <Label className="text-base">Afficher les citations</Label>
+                                        <Label className="text-base">Show citations</Label>
                                         <p className="text-sm text-muted-foreground">
-                                            Affiche le nombre de citations pour chaque publication.
+                                            Display the number of citations for each publication.
                                         </p>
                                     </div>
                                     <Switch
@@ -326,9 +326,9 @@ export default function SettingsPage() {
 
                                 <div className="flex flex-row items-center justify-between rounded-lg border p-4">
                                     <div className="space-y-0.5">
-                                        <Label className="text-base">Afficher les résumés</Label>
+                                        <Label className="text-base">Show abstracts</Label>
                                         <p className="text-sm text-muted-foreground">
-                                            Affiche un extrait du résumé pour chaque publication.
+                                            Display an excerpt of the abstract for each publication.
                                         </p>
                                     </div>
                                     <Switch
@@ -340,9 +340,9 @@ export default function SettingsPage() {
 
                                 <div className="flex flex-row items-center justify-between rounded-lg border p-4">
                                     <div className="space-y-0.5">
-                                        <Label className="text-base">Afficher les co-auteurs</Label>
+                                        <Label className="text-base">Show co-authors</Label>
                                         <p className="text-sm text-muted-foreground">
-                                            Affiche la liste complète des auteurs pour chaque publication.
+                                            Display the full list of authors for each publication.
                                         </p>
                                     </div>
                                     <Switch
@@ -354,7 +354,7 @@ export default function SettingsPage() {
                             </CardContent>
                             <CardFooter>
                                 <Button type="submit" disabled={isPending}>
-                                    {isPending ? "Enregistrement..." : "Enregistrer"}
+                                    {isPending ? "Saving..." : "Save"}
                                 </Button>
                             </CardFooter>
                         </Card>
@@ -364,11 +364,11 @@ export default function SettingsPage() {
                         <Card>
                             <CardHeader>
                                 <CardTitle>Analytics</CardTitle>
-                                <CardDescription>Configurez le suivi des statistiques de votre site web.</CardDescription>
+                                <CardDescription>Set up website statistics tracking.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="googleAnalyticsId">ID Google Analytics</Label>
+                                    <Label htmlFor="googleAnalyticsId">Google Analytics ID</Label>
                                     <Input
                                         id="googleAnalyticsId"
                                         name="googleAnalyticsId"
@@ -377,21 +377,21 @@ export default function SettingsPage() {
                                         onChange={(e) => handleInputChange("googleAnalyticsId", e.target.value)}
                                     />
                                     <p className="text-sm text-muted-foreground">
-                                        Votre identifiant Google Analytics pour suivre les visites de votre site.
+                                        Your Google Analytics identifier to track your site&apos;s visits.
                                     </p>
                                 </div>
                                 <Separator />
                                 <div className="space-y-2">
-                                    <h4 className="text-sm font-medium">Statistiques intégrées</h4>
+                                    <h4 className="text-sm font-medium">Built-in statistics</h4>
                                     <p className="text-sm text-muted-foreground">
-                                        ResearchSite fournit des statistiques de base intégrées pour votre site, incluant le nombre de
-                                        visites, les pages les plus consultées et les publications les plus populaires.
+                                        ResearchSite provides basic built-in statistics for your site, including the number of
+                                        visits, most viewed pages, and most popular publications.
                                     </p>
                                 </div>
                             </CardContent>
                             <CardFooter>
                                 <Button type="submit" disabled={isPending}>
-                                    {isPending ? "Enregistrement..." : "Enregistrer"}
+                                    {isPending ? "Saving..." : "Save"}
                                 </Button>
                             </CardFooter>
                         </Card>

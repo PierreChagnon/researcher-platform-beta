@@ -21,7 +21,7 @@ import { toast } from "sonner"
 export function PublicationSyncModal({ isOpen, onClose, publications = [], orcid, onSyncComplete }) {
     const [selectedPublications, setSelectedPublications] = useState(
         publications.reduce((acc, pub, index) => {
-            acc[index] = !pub.alreadyExists // Sélectionner par défaut sauf si déjà existante
+            acc[index] = !pub.alreadyExists // Select by default unless already existing
             return acc
         }, {}),
     )
@@ -30,7 +30,7 @@ export function PublicationSyncModal({ isOpen, onClose, publications = [], orcid
     const handleSelectAll = (checked) => {
         const newSelected = {}
         publications.forEach((pub, index) => {
-            // Ne sélectionner que les publications qui n'existent pas déjà
+            // Only select publications that do not already exist
             newSelected[index] = checked && !pub.alreadyExists
         })
         setSelectedPublications(newSelected)
@@ -47,7 +47,7 @@ export function PublicationSyncModal({ isOpen, onClose, publications = [], orcid
         const selected = publications.filter((_, index) => selectedPublications[index])
 
         if (selected.length === 0) {
-            toast.error("Veuillez sélectionner au moins une publication")
+            toast.error("Please select at least one publication")
             return
         }
 
@@ -65,17 +65,17 @@ export function PublicationSyncModal({ isOpen, onClose, publications = [], orcid
     }
 
     useEffect(() => {
-        // Tout sélectionner au premier chargement si aucune publication n'existe déjà
+        // Select all on first load if no publication already exists
         if (publications.length > 0 && publications.every((pub) => !pub.alreadyExists)) {
             const initialSelection = publications.reduce((acc, pub, index) => {
-                acc[index] = true // Sélectionner toutes les nouvelles publications
+                acc[index] = true // Select all new publications
                 return acc
             }, {})
             setSelectedPublications(initialSelection)
         } else {
-            // Réinitialiser la sélection si des publications existent déjà
+            // Reset selection if some publications already exist
             const initialSelection = publications.reduce((acc, pub, index) => {
-                acc[index] = !pub.alreadyExists // Sélectionner par défaut sauf si déjà existante
+                acc[index] = !pub.alreadyExists // Select by default unless already existing
                 return acc
             }, {})
             setSelectedPublications(initialSelection)
@@ -91,35 +91,35 @@ export function PublicationSyncModal({ isOpen, onClose, publications = [], orcid
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-[700px] max-h-[80vh]">
                 <DialogHeader>
-                    <DialogTitle>Synchronisation ORCID - Sélection des publications</DialogTitle>
+                    <DialogTitle>ORCID Synchronization - Select Publications</DialogTitle>
                     <DialogDescription>
-                        {publications.length} publications trouvées. Sélectionnez celles que vous souhaitez synchroniser.
+                        {publications.length} publications found. Select those you wish to synchronize.
                     </DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-4">
-                    {/* Statistiques */}
+                    {/* Statistics */}
                     <div className="flex gap-4 p-4 bg-muted/50 rounded-lg">
                         <div className="flex items-center gap-2">
                             <CheckCircle className="h-4 w-4 text-green-600" />
                             <span className="text-sm">
-                                <strong>{availableCount}</strong> nouvelles
+                                <strong>{availableCount}</strong> new
                             </span>
                         </div>
                         {existingCount > 0 && (
                             <div className="flex items-center gap-2">
                                 <AlertTriangle className="h-4 w-4 text-orange-600" />
                                 <span className="text-sm">
-                                    <strong>{existingCount}</strong> déjà présentes
+                                    <strong>{existingCount}</strong> already present
                                 </span>
                             </div>
                         )}
                         <div className="flex items-center gap-2 ml-auto">
-                            <span className="text-sm font-medium">{selectedCount} sélectionnée(s)</span>
+                            <span className="text-sm font-medium">{selectedCount} selected</span>
                         </div>
                     </div>
 
-                    {/* Contrôles de sélection */}
+                    {/* Selection controls */}
                     <div className="flex items-center gap-4">
                         <div className="flex items-center space-x-2">
                             <Checkbox
@@ -129,14 +129,14 @@ export function PublicationSyncModal({ isOpen, onClose, publications = [], orcid
                                 disabled={availableCount === 0}
                             />
                             <label htmlFor="select-all" className="text-sm font-medium">
-                                Tout sélectionner ({availableCount} disponibles)
+                                Select all ({availableCount} available)
                             </label>
                         </div>
                     </div>
 
                     <Separator />
 
-                    {/* Liste des publications */}
+                    {/* List of publications */}
                     <ScrollArea className="h-[400px] w-full">
                         <div className="space-y-3">
                             {publications.map((publication, index) => (
@@ -171,7 +171,7 @@ export function PublicationSyncModal({ isOpen, onClose, publications = [], orcid
                                             {publication.alreadyExists && (
                                                 <Badge variant="secondary" className="text-xs">
                                                     <AlertTriangle className="h-3 w-3 mr-1" />
-                                                    Déjà présente
+                                                    Already present
                                                 </Badge>
                                             )}
                                         </div>
@@ -184,16 +184,16 @@ export function PublicationSyncModal({ isOpen, onClose, publications = [], orcid
 
                 <DialogFooter>
                     <Button variant="outline" onClick={onClose} disabled={isPending}>
-                        Annuler
+                        Cancel
                     </Button>
                     <Button onClick={handleSync} disabled={isPending || selectedCount === 0} className="flex items-center gap-2">
                         {isPending ? (
                             <>
                                 <RefreshCw className="h-4 w-4 animate-spin" />
-                                Synchronisation...
+                                Synchronizing...
                             </>
                         ) : (
-                            `Synchroniser ${selectedCount} publication(s)`
+                            `Synchronize ${selectedCount} publication(s)`
                         )}
                     </Button>
                 </DialogFooter>

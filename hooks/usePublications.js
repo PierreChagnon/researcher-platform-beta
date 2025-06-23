@@ -36,7 +36,7 @@ export function usePublications() {
         fetchPublications()
     }
 
-    // Statistiques calculées
+    // Computed statistics
     const stats = {
         total: publications.length,
         totalCitations: publications.reduce((sum, pub) => sum + (pub.citations || 0), 0),

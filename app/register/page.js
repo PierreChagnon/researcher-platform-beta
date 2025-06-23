@@ -33,16 +33,16 @@ export default function RegisterPage() {
         }
 
         if (formData.name.length < 2) {
-            newErrors.name = "Le nom doit contenir au moins 2 caractères."
+            newErrors.name = "Name must be at least 2 characters long."
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         if (!emailRegex.test(formData.email)) {
-            newErrors.email = "Veuillez entrer une adresse email valide."
+            newErrors.email = "Please enter a valid email address."
         }
 
         if (formData.password.length < 6) {
-            newErrors.password = "Le mot de passe doit contenir au moins 6 caractères."
+            newErrors.password = "Password must be at least 6 characters long."
         }
 
         setErrors(newErrors)
@@ -78,21 +78,21 @@ export default function RegisterPage() {
             if (error) {
                 toast({
                     variant: "destructive",
-                    title: "Erreur lors de l'inscription",
+                    title: "Error during registration",
                     description: error,
                 })
             } else {
                 toast({
-                    title: "Inscription réussie !",
-                    description: "Vous allez être redirigé vers votre tableau de bord.",
+                    title: "Registration successful!",
+                    description: "You will be redirected to your dashboard.",
                 })
                 router.push("/dashboard")
             }
         } catch (error) {
             toast({
                 variant: "destructive",
-                title: "Erreur lors de l'inscription",
-                description: "Une erreur est survenue. Veuillez réessayer.",
+                title: "Error during registration",
+                description: "An error occurred. Please try again.",
             })
         } finally {
             setIsLoading(false)
@@ -108,12 +108,12 @@ export default function RegisterPage() {
                             <BookOpen className="h-6 w-6" />
                             <span>ResearchSite</span>
                         </Link>
-                        <h1 className="text-2xl font-semibold tracking-tight">Créer un compte</h1>
-                        <p className="text-sm text-muted-foreground">Entrez vos informations ci-dessous pour créer votre compte</p>
+                        <h1 className="text-2xl font-semibold tracking-tight">Create an account</h1>
+                        <p className="text-sm text-muted-foreground">Enter your information below to create your account</p>
                     </div>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="name">Nom complet</Label>
+                            <Label htmlFor="name">Full name</Label>
                             <Input
                                 id="name"
                                 type="text"
@@ -139,7 +139,7 @@ export default function RegisterPage() {
                             {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="password">Mot de passe</Label>
+                            <Label htmlFor="password">Password</Label>
                             <Input
                                 id="password"
                                 type="password"
@@ -151,13 +151,13 @@ export default function RegisterPage() {
                             {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
                         </div>
                         <Button type="submit" className="w-full" disabled={isLoading}>
-                            {isLoading ? "Inscription en cours..." : "S'inscrire"}
+                            {isLoading ? "Registering..." : "Sign up"}
                         </Button>
                     </form>
                     <div className="text-center text-sm text-muted-foreground">
-                        Vous avez déjà un compte?{" "}
+                        Already have an account?{" "}
                         <Link href="/login" className="underline underline-offset-4 hover:text-primary">
-                            Se connecter
+                            Log in
                         </Link>
                     </div>
                 </div>

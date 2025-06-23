@@ -50,7 +50,7 @@ export async function GET(request) {
         const publications = data.results.map((work) => ({
             id: work.id,
             title: work.title,
-            journal: work.primary_location?.source?.display_name || "Non spécifié",
+            journal: work.primary_location?.source?.display_name || "Not specified",
             year: work.publication_year,
             authors: work.authorships.map((authorship) => authorship.author.display_name).join(", "),
             citations: work.cited_by_count || 0,
@@ -71,7 +71,7 @@ export async function GET(request) {
             },
         })
     } catch (error) {
-        console.error("Erreur OpenAlex search:", error)
-        return NextResponse.json({ error: "Erreur lors de la recherche", details: error.message }, { status: 500 })
+        console.error("OpenAlex search error:", error)
+        return NextResponse.json({ error: "Error during search", details: error.message }, { status: 500 })
     }
 }

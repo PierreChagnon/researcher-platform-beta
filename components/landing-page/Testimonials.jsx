@@ -6,7 +6,7 @@ export default function Testimonials() {
     return (
         <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center space-y-4 text-center mb-16">
-                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Ce qu&apos;en disent les chercheurs</h2>
+                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">What researchers are saying</h2>
             </div>
 
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -18,8 +18,8 @@ export default function Testimonials() {
                             ))}
                         </div>
                         <blockquote className="text-sm text-muted-foreground mb-4">
-                            &quot;ResearchSite m&apos;a permis de créer un site professionnel en quelques minutes. La synchronisation avec
-                            ORCID est parfaite !&quot;
+                            &quot;ResearchSite allowed me to create a professional website in just a few minutes. The synchronization with
+                            ORCID is perfect!&quot;
                         </blockquote>
                         <div className="flex items-center gap-3">
                             <div className="h-10 w-10 rounded-full border border-border flex items-center justify-center">
@@ -41,7 +41,7 @@ export default function Testimonials() {
                             ))}
                         </div>
                         <blockquote className="text-sm text-muted-foreground mb-4">
-                            &quot;Interface intuitive et résultat professionnel. Mes collègues me demandent tous comment j&apos;ai fait !&quot;
+                            &quot;Intuitive interface and professional result. All my colleagues are asking me how I did it!&quot;
                         </blockquote>
                         <div className="flex items-center gap-3">
                             <div className="h-10 w-10 rounded-full border border-border flex items-center justify-center">
@@ -49,7 +49,7 @@ export default function Testimonials() {
                             </div>
                             <div>
                                 <div className="text-sm font-medium">Prof. Pierre Martin</div>
-                                <div className="text-xs text-muted-foreground">Sorbonne Université</div>
+                                <div className="text-xs text-muted-foreground">Sorbonne University</div>
                             </div>
                         </div>
                     </CardContent>
@@ -63,7 +63,7 @@ export default function Testimonials() {
                             ))}
                         </div>
                         <blockquote className="text-sm text-muted-foreground mb-4">
-                            &quot;Enfin une solution simple pour avoir une présence en ligne académique. Je recommande vivement !&quot;
+                            &quot;Finally a simple solution for having an academic online presence. I highly recommend it!&quot;
                         </blockquote>
                         <div className="flex items-center gap-3">
                             <div className="h-10 w-10 rounded-full border border-border flex items-center justify-center">

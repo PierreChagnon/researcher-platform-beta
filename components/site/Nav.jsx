@@ -8,7 +8,7 @@ export default function Nav() {
     const [active, setActive] = useState('home')
 
     useEffect(() => {
-        // Observer pour détecter quelle section est centrée à l’écran
+        // Observer to detect which section is centered on the screen
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
@@ -57,7 +57,7 @@ export default function Nav() {
                     ))}
                 </div>
 
-                {/* bouton hamburger pour mobile */}
+                {/* hamburger button for mobile */}
                 <div className="md:hidden flex items-center gap-2">
                     <button className="md:hidden p-2 text-gray-600 hover:text-gray-900">
                         <svg

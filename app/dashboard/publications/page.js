@@ -111,7 +111,7 @@ export default function PublicationsPage() {
         if (selectedPublications.size === 0) return
 
         startTransition(async () => {
-            // Récupérer les vrais IDs Firestore
+            // Retrieve the real Firestore IDs
             const firestoreIds = Array.from(selectedPublications)
                 .map((id) => {
                     const pub = filteredPublications.find((p) => p.firestoreId === id)
@@ -122,7 +122,7 @@ export default function PublicationsPage() {
             const result = await deleteMultiplePublicationsAction(firestoreIds)
 
             if (result.success) {
-                toast.success(`${selectedPublications.size} publication(s) supprimée(s) avec succès`)
+                toast.success(`${selectedPublications.size} publication(s) successfully deleted`)
                 setSelectedPublications(new Set())
                 setIsDeleteMultipleDialogOpen(false)
                 refreshPublications()
@@ -134,7 +134,7 @@ export default function PublicationsPage() {
 
     const handleSyncOrcid = async () => {
         if (!userData?.orcid) {
-            toast.error("Veuillez d'abord ajouter votre identifiant ORCID dans votre profil.")
+            toast.error("Please add your ORCID identifier in your profile first.")
             return
         }
 
@@ -186,13 +186,13 @@ export default function PublicationsPage() {
         try {
             const result = await uploadPublicationPDF(publicationId, file)
             if (result.success) {
-                toast.success("PDF uploadé avec succès")
+                toast.success("PDF uploaded successfully")
                 refreshPublications()
             } else {
                 toast.error(result.error)
             }
         } catch (error) {
-            toast.error("Erreur lors de l'upload du PDF")
+            toast.error("Error uploading PDF")
         } finally {
             setUploadingPdf(null)
         }
@@ -246,7 +246,7 @@ export default function PublicationsPage() {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Publications</h1>
-                    <p className="text-muted-foreground">Gérez vos publications scientifiques récupérées via ORCID.</p>
+                    <p className="text-muted-foreground">Manage your scientific publications retrieved via ORCID.</p>
                 </div>
             </div>
 
@@ -255,9 +255,9 @@ export default function PublicationsPage() {
                     <CardContent className="flex items-center gap-3 pt-6">
                         <AlertCircle className="h-5 w-5 text-orange-600" />
                         <div>
-                            <p className="font-medium text-orange-800">ORCID non configuré</p>
+                            <p className="font-medium text-orange-800">ORCID not configured</p>
                             <p className="text-sm text-orange-700">
-                                Ajoutez votre identifiant ORCID dans votre profil pour synchroniser automatiquement vos publications.
+                                Add your ORCID identifier in your profile to automatically synchronize your publications.
                             </p>
                         </div>
                     </CardContent>
@@ -266,8 +266,8 @@ export default function PublicationsPage() {
 
             <Tabs defaultValue="list" className="space-y-4">
                 <TabsList>
-                    <TabsTrigger value="list">Liste ({stats.total})</TabsTrigger>
-                    <TabsTrigger value="stats">Statistiques</TabsTrigger>
+                    <TabsTrigger value="list">List ({stats.total})</TabsTrigger>
+                    <TabsTrigger value="stats">Statistics</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="list" className="space-y-4">
@@ -275,7 +275,7 @@ export default function PublicationsPage() {
                         <div className="flex items-center gap-2 flex-1">
                             <Search className="h-4 w-4 text-muted-foreground" />
                             <Input
-                                placeholder="Rechercher par titre, auteur ou journal..."
+                                placeholder="Search by title, author or journal..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="max-w-sm"
@@ -289,7 +289,7 @@ export default function PublicationsPage() {
                                     className="flex items-center gap-2"
                                 >
                                     <Trash2 className="h-4 w-4" />
-                                    Supprimer ({selectedPublications.size})
+                                    Delete ({selectedPublications.size})
                                 </Button>
                             )}
                             <Dialog
@@ -303,24 +303,24 @@ export default function PublicationsPage() {
                                 <DialogTrigger asChild>
                                     <Button variant="outline" className="flex items-center gap-2" onClick={openAddDialog}>
                                         <Plus className="h-4 w-4" />
-                                        Ajouter manuellement
+                                        Add manually
                                     </Button>
                                 </DialogTrigger>
                                 <DialogContent className="sm:max-w-[525px]">
                                     <form action={editingPublication ? handleUpdatePublication : handleAddManualPublication}>
                                         <DialogHeader>
                                             <DialogTitle>
-                                                {editingPublication ? "Modifier la publication" : "Ajouter une publication"}
+                                                {editingPublication ? "Edit publication" : "Add a publication"}
                                             </DialogTitle>
                                             <DialogDescription>
                                                 {editingPublication
-                                                    ? "Modifiez les informations de cette publication."
-                                                    : "Ajoutez manuellement une publication qui n'est pas dans OpenAlex."}
+                                                    ? "Edit the information for this publication."
+                                                    : "Manually add a publication that is not in OpenAlex."}
                                             </DialogDescription>
                                         </DialogHeader>
                                         <div className="grid gap-4 py-4">
                                             <div className="space-y-2">
-                                                <Label htmlFor="title">Titre *</Label>
+                                                <Label htmlFor="title">Title *</Label>
                                                 <Input id="title" name="title" defaultValue={editingPublication?.title} required />
                                             </div>
                                             <div className="space-y-2">
@@ -329,7 +329,7 @@ export default function PublicationsPage() {
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-2">
-                                                    <Label htmlFor="year">Année *</Label>
+                                                    <Label htmlFor="year">Year *</Label>
                                                     <Input
                                                         id="year"
                                                         name="year"
@@ -346,7 +346,7 @@ export default function PublicationsPage() {
                                                 </div>
                                             </div>
                                             <div className="space-y-2">
-                                                <Label htmlFor="authors">Auteurs *</Label>
+                                                <Label htmlFor="authors">Authors *</Label>
                                                 <Input
                                                     id="authors"
                                                     name="authors"
@@ -360,7 +360,7 @@ export default function PublicationsPage() {
                                                 <Input id="url" name="url" type="url" defaultValue={editingPublication?.url} />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label htmlFor="osfUrl">Lien OSF</Label>
+                                                <Label htmlFor="osfUrl">OSF Link</Label>
                                                 <Input
                                                     id="osfUrl"
                                                     name="osfUrl"
@@ -369,22 +369,22 @@ export default function PublicationsPage() {
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label htmlFor="abstract">Résumé</Label>
+                                                <Label htmlFor="abstract">Abstract</Label>
                                                 <Textarea id="abstract" name="abstract" rows={3} defaultValue={editingPublication?.abstract} />
                                             </div>
                                         </div>
                                         <DialogFooter>
                                             <Button type="button" variant="outline" onClick={closeAddDialog}>
-                                                Annuler
+                                                Cancel
                                             </Button>
                                             <Button type="submit" disabled={isPending}>
                                                 {isPending
                                                     ? editingPublication
-                                                        ? "Modification..."
-                                                        : "Ajout..."
+                                                        ? "Editing..."
+                                                        : "Adding..."
                                                     : editingPublication
-                                                        ? "Modifier"
-                                                        : "Ajouter"}
+                                                        ? "Edit"
+                                                        : "Add"}
                                             </Button>
                                         </DialogFooter>
                                     </form>
@@ -396,25 +396,25 @@ export default function PublicationsPage() {
                                 className="flex items-center gap-2"
                             >
                                 <RefreshCw className={`h-4 w-4 ${isPending ? "animate-spin" : ""}`} />
-                                {isPending ? "Synchronisation..." : "Synchroniser ORCID"}
+                                {isPending ? "Synchronizing..." : "Sync ORCID"}
                             </Button>
                         </div>
                     </div>
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>Vos publications</CardTitle>
+                            <CardTitle>Your publications</CardTitle>
                             <CardDescription>
                                 {stats.openAlexCount > 0 && (
                                     <span className="flex items-center gap-1">
                                         <CheckCircle className="h-4 w-4 text-green-600" />
-                                        {stats.openAlexCount} depuis OpenAlex
+                                        {stats.openAlexCount} from OpenAlex
                                     </span>
                                 )}
                                 {stats.manualCount > 0 && (
                                     <span className="flex items-center gap-1">
                                         <FileText className="h-4 w-4 text-blue-600" />
-                                        {stats.manualCount} ajoutées manuellement
+                                        {stats.manualCount} added manually
                                     </span>
                                 )}
                             </CardDescription>
@@ -423,7 +423,7 @@ export default function PublicationsPage() {
                             {loading ? (
                                 <div className="flex items-center justify-center py-8">
                                     <RefreshCw className="h-6 w-6 animate-spin" />
-                                    <span className="ml-2">Chargement des publications...</span>
+                                    <span className="ml-2">Loading publications...</span>
                                 </div>
                             ) : (
                                 <Table>
@@ -433,13 +433,13 @@ export default function PublicationsPage() {
                                                 <Checkbox
                                                     checked={isAllSelected}
                                                     onCheckedChange={handleSelectAll}
-                                                    aria-label="Sélectionner toutes les publications"
+                                                    aria-label="Select all publications"
                                                     {...(isIndeterminate && { "data-state": "indeterminate" })}
                                                 />
                                             </TableHead>
-                                            <TableHead>Titre</TableHead>
+                                            <TableHead>Title</TableHead>
                                             <TableHead className="hidden md:table-cell">Journal</TableHead>
-                                            <TableHead className="hidden md:table-cell">Année</TableHead>
+                                            <TableHead className="hidden md:table-cell">Year</TableHead>
                                             <TableHead className="hidden md:table-cell">Source</TableHead>
                                             <TableHead className="hidden md:table-cell">PDF</TableHead>
                                             <TableHead className="w-[50px]"></TableHead>
@@ -450,8 +450,8 @@ export default function PublicationsPage() {
                                             <TableRow>
                                                 <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                                                     {publications.length === 0
-                                                        ? "Aucune publication trouvée. Synchronisez avec ORCID ou ajoutez-en manuellement."
-                                                        : "Aucune publication ne correspond à votre recherche"}
+                                                        ? "No publications found. Sync with ORCID or add one manually."
+                                                        : "No publication matches your search"}
                                                 </TableCell>
                                             </TableRow>
                                         ) : (
@@ -461,7 +461,7 @@ export default function PublicationsPage() {
                                                         <Checkbox
                                                             checked={selectedPublications.has(pub.firestoreId)}
                                                             onCheckedChange={(checked) => handleSelectPublication(pub.firestoreId, checked)}
-                                                            aria-label={`Sélectionner ${pub.title}`}
+                                                            aria-label={`Select ${pub.title}`}
                                                         />
                                                     </TableCell>
                                                     <TableCell className="font-medium">
@@ -484,7 +484,7 @@ export default function PublicationsPage() {
                                                             ) : (
                                                                 <div className="flex items-center gap-1">
                                                                     <FileText className="h-3 w-3" />
-                                                                    Manuel
+                                                                    Manual
                                                                 </div>
                                                             )}
                                                         </Badge>
@@ -536,7 +536,7 @@ export default function PublicationsPage() {
                                                                     onClick={() => openEditDialog(pub)}
                                                                 >
                                                                     <Edit className="h-4 w-4" />
-                                                                    <span>Modifier</span>
+                                                                    <span>Edit</span>
                                                                 </DropdownMenuItem>
                                                                 {pub.url && (
                                                                     <DropdownMenuItem asChild>
@@ -547,7 +547,7 @@ export default function PublicationsPage() {
                                                                             className="flex items-center gap-2"
                                                                         >
                                                                             <ExternalLink className="h-4 w-4" />
-                                                                            <span>Ouvrir le lien</span>
+                                                                            <span>Open link</span>
                                                                         </a>
                                                                     </DropdownMenuItem>
                                                                 )}
@@ -560,13 +560,13 @@ export default function PublicationsPage() {
                                                                             className="flex items-center gap-2"
                                                                         >
                                                                             <ExternalLink className="h-4 w-4" />
-                                                                            <span>Voir sur OSF</span>
+                                                                            <span>View on OSF</span>
                                                                         </a>
                                                                     </DropdownMenuItem>
                                                                 )}
                                                                 <DropdownMenuItem className="flex items-center gap-2">
                                                                     <Download className="h-4 w-4" />
-                                                                    <span>Télécharger</span>
+                                                                    <span>Download</span>
                                                                 </DropdownMenuItem>
                                                                 <DropdownMenuSeparator />
                                                                 <DropdownMenuItem
@@ -574,7 +574,7 @@ export default function PublicationsPage() {
                                                                     onClick={() => openDeleteDialog(pub)}
                                                                 >
                                                                     <Trash className="h-4 w-4" />
-                                                                    <span>Supprimer</span>
+                                                                    <span>Delete</span>
                                                                 </DropdownMenuItem>
                                                             </DropdownMenuContent>
                                                         </DropdownMenu>
@@ -588,9 +588,9 @@ export default function PublicationsPage() {
                         </CardContent>
                         <CardFooter className="flex justify-between">
                             <div className="text-sm text-muted-foreground">
-                                Affichage de {filteredPublications.length} sur {publications.length} publications
+                                Displaying {filteredPublications.length} of {publications.length} publications
                                 {selectedPublications.size > 0 && (
-                                    <span className="ml-2 font-medium">• {selectedPublications.size} sélectionnée(s)</span>
+                                    <span className="ml-2 font-medium">• {selectedPublications.size} selected</span>
                                 )}
                             </div>
                         </CardFooter>
@@ -601,44 +601,44 @@ export default function PublicationsPage() {
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Total des publications</CardTitle>
+                                <CardTitle className="text-sm font-medium">Total publications</CardTitle>
                                 <FileText className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
                             <CardContent>
                                 <div className="text-2xl font-bold">{stats.total}</div>
                                 <p className="text-xs text-muted-foreground">
-                                    {stats.openAlexCount} OpenAlex • {stats.manualCount} manuelles
+                                    {stats.openAlexCount} OpenAlex • {stats.manualCount} manual
                                 </p>
                             </CardContent>
                         </Card>
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Accès libre</CardTitle>
+                                <CardTitle className="text-sm font-medium">Open access</CardTitle>
                                 <Globe className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
                             <CardContent>
                                 <div className="text-2xl font-bold">{stats.openAccessCount}</div>
                                 <p className="text-xs text-muted-foreground">
-                                    {stats.total > 0 ? Math.round((stats.openAccessCount / stats.total) * 100) : 0}% du total
+                                    {stats.total > 0 ? Math.round((stats.openAccessCount / stats.total) * 100) : 0}% of total
                                 </p>
                             </CardContent>
                         </Card>
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Publications récentes</CardTitle>
+                                <CardTitle className="text-sm font-medium">Recent publications</CardTitle>
                                 <FileText className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
                             <CardContent>
                                 <div className="text-2xl font-bold">{stats.recentPublications}</div>
-                                <p className="text-xs text-muted-foreground">5 dernières années</p>
+                                <p className="text-xs text-muted-foreground">Last 5 years</p>
                             </CardContent>
                         </Card>
                     </div>
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>Publications par année</CardTitle>
-                            <CardDescription>Évolution de vos publications au fil du temps</CardDescription>
+                            <CardTitle>Publications by year</CardTitle>
+                            <CardDescription>Evolution of your publications over time</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="h-[200px] w-full">
@@ -665,65 +665,61 @@ export default function PublicationsPage() {
                 </TabsContent>
             </Tabs>
 
-            {/* Dialogue de confirmation de suppression simple */}
+            {/* Single delete confirmation dialog */}
             <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Êtes-vous sûr de vouloir supprimer cette publication ?</AlertDialogTitle>
+                        <AlertDialogTitle>Are you sure you want to delete this publication?</AlertDialogTitle>
                         <AlertDialogDescription>
                             {publicationToDelete?.source === "openalex" ? (
                                 <>
-                                    Cette publication provient d&apos;OpenAlex. Elle sera supprimée de votre liste mais pourra être
-                                    récupérée lors d&apos;une prochaine synchronisation ORCID.
+                                    This publication comes from OpenAlex. It will be removed from your list but can be retrieved during a future ORCID synchronization.
                                 </>
                             ) : (
                                 <>
-                                    Cette publication a été ajoutée manuellement. Cette action est irréversible et la publication sera
-                                    définitivement supprimée.
+                                    This publication was added manually. This action is irreversible and the publication will be permanently deleted.
                                 </>
                             )}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel disabled={isPending}>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={handleDeletePublication}
                             disabled={isPending}
                             className="bg-destructive text-primary-foreground hover:bg-destructive/90"
                         >
-                            {isPending ? "Suppression..." : "Supprimer"}
+                            {isPending ? "Deleting..." : "Delete"}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
 
-            {/* Dialogue de confirmation de suppression multiple */}
+            {/* Multiple delete confirmation dialog */}
             <AlertDialog open={isDeleteMultipleDialogOpen} onOpenChange={setIsDeleteMultipleDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            Êtes-vous sûr de vouloir supprimer {selectedPublications.size} publication(s) ?
+                            Are you sure you want to delete {selectedPublications.size} publication(s)?
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            Cette action supprimera définitivement les publications sélectionnées. Les publications provenant
-                            d&apos;OpenAlex pourront être récupérées lors d&apos;une prochaine synchronisation ORCID, mais les
-                            publications ajoutées manuellement seront perdues définitivement.
+                            This action will permanently delete the selected publications. Publications from OpenAlex can be retrieved during a future ORCID synchronization, but manually added publications will be lost permanently.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel disabled={isPending}>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={handleDeleteMultiple}
                             disabled={isPending}
                             className="bg-destructive text-primary-foreground hover:bg-destructive/90"
                         >
-                            {isPending ? "Suppression..." : `Supprimer ${selectedPublications.size} publication(s)`}
+                            {isPending ? "Deleting..." : `Delete ${selectedPublications.size} publication(s)`}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
 
-            {/* Modale de synchronisation ORCID */}
+            {/* ORCID sync modal */}
             <PublicationSyncModal
                 isOpen={isSyncModalOpen}
                 onClose={() => setIsSyncModalOpen(false)}

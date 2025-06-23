@@ -17,53 +17,53 @@ export default function CVPage() {
     const templates = [
         {
             id: "academic",
-            name: "Académique",
-            description: "Template classique pour le milieu académique",
+            name: "Academic",
+            description: "Classic template for academia",
             preview: "/placeholder.svg?height=300&width=200",
         },
         {
             id: "modern",
-            name: "Moderne",
-            description: "Design moderne et épuré",
+            name: "Modern",
+            description: "Modern and clean design",
             preview: "/placeholder.svg?height=300&width=200",
         },
         {
             id: "compact",
             name: "Compact",
-            description: "Format condensé sur une page",
+            description: "Condensed one-page format",
             preview: "/placeholder.svg?height=300&width=200",
         },
     ]
 
     const handleGenerateCV = () => {
-        // Simulation de génération de CV
-        console.log("Génération du CV avec le template:", selectedTemplate)
-        // En production, cela déclencherait la génération du PDF
+        // Simulate CV generation
+        console.log("Generating CV with template:", selectedTemplate)
+        // In production, this would trigger PDF generation
     }
 
     const handlePreviewCV = () => {
-        // Simulation d'aperçu
-        console.log("Aperçu du CV avec le template:", selectedTemplate)
-        // En production, cela ouvrirait un aperçu du CV
+        // Simulate preview
+        console.log("Previewing CV with template:", selectedTemplate)
+        // In production, this would open a CV preview
     }
 
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Générateur de CV</h1>
+                    <h1 className="text-3xl font-bold tracking-tight">CV Generator</h1>
                     <p className="text-muted-foreground">
-                        Générez automatiquement votre CV à partir de vos données de profil et publications.
+                        Automatically generate your CV from your profile data and publications.
                     </p>
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline" onClick={handlePreviewCV} className="flex items-center gap-2">
                         <Eye className="h-4 w-4" />
-                        Aperçu
+                        Preview
                     </Button>
                     <Button onClick={handleGenerateCV} className="flex items-center gap-2">
                         <Download className="h-4 w-4" />
-                        Télécharger PDF
+                        Download PDF
                     </Button>
                 </div>
             </div>
@@ -71,15 +71,15 @@ export default function CVPage() {
             <Tabs defaultValue="templates" className="space-y-4">
                 <TabsList>
                     <TabsTrigger value="templates">Templates</TabsTrigger>
-                    <TabsTrigger value="content">Contenu</TabsTrigger>
-                    <TabsTrigger value="settings">Paramètres</TabsTrigger>
+                    <TabsTrigger value="content">Content</TabsTrigger>
+                    <TabsTrigger value="settings">Settings</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="templates" className="space-y-4">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Choisissez un template</CardTitle>
-                            <CardDescription>Sélectionnez le style de CV qui correspond le mieux à vos besoins.</CardDescription>
+                            <CardTitle>Choose a template</CardTitle>
+                            <CardDescription>Select the CV style that best fits your needs.</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="grid gap-6 md:grid-cols-3">
@@ -97,7 +97,7 @@ export default function CVPage() {
                                         </div>
                                         <h3 className="font-semibold mb-1">{template.name}</h3>
                                         <p className="text-sm text-gray-600">{template.description}</p>
-                                        {selectedTemplate === template.id && <Badge className="absolute top-2 right-2">Sélectionné</Badge>}
+                                        {selectedTemplate === template.id && <Badge className="absolute top-2 right-2">Selected</Badge>}
                                     </div>
                                 ))}
                             </div>
@@ -109,20 +109,20 @@ export default function CVPage() {
                     <div className="grid gap-6 md:grid-cols-2">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Données disponibles</CardTitle>
-                                <CardDescription>Informations qui seront automatiquement incluses dans votre CV.</CardDescription>
+                                <CardTitle>Available data</CardTitle>
+                                <CardDescription>Information that will be automatically included in your CV.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="flex items-center justify-between">
-                                    <span>Informations personnelles</span>
+                                    <span>Personal information</span>
                                     <Badge variant={userData?.name ? "default" : "secondary"}>
-                                        {userData?.name ? "Complètes" : "Incomplètes"}
+                                        {userData?.name ? "Complete" : "Incomplete"}
                                     </Badge>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <span>Informations académiques</span>
+                                    <span>Academic information</span>
                                     <Badge variant={userData?.title && userData?.institution ? "default" : "secondary"}>
-                                        {userData?.title && userData?.institution ? "Complètes" : "Incomplètes"}
+                                        {userData?.title && userData?.institution ? "Complete" : "Incomplete"}
                                     </Badge>
                                 </div>
                                 <div className="flex items-center justify-between">
@@ -132,13 +132,13 @@ export default function CVPage() {
                                 <div className="flex items-center justify-between">
                                     <span>h-index</span>
                                     <Badge variant={userData?.hIndex ? "default" : "secondary"}>
-                                        {userData?.hIndex ? `h-index: ${userData.hIndex}` : "Non renseigné"}
+                                        {userData?.hIndex ? `h-index: ${userData.hIndex}` : "Not provided"}
                                     </Badge>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <span>Réseaux sociaux</span>
+                                    <span>Social networks</span>
                                     <Badge variant={userData?.social ? "default" : "secondary"}>
-                                        {userData?.social ? "Configurés" : "Non configurés"}
+                                        {userData?.social ? "Configured" : "Not configured"}
                                     </Badge>
                                 </div>
                             </CardContent>
@@ -146,21 +146,21 @@ export default function CVPage() {
 
                         <Card>
                             <CardHeader>
-                                <CardTitle>Sections du CV</CardTitle>
-                                <CardDescription>Sections qui seront incluses dans votre CV généré.</CardDescription>
+                                <CardTitle>CV sections</CardTitle>
+                                <CardDescription>Sections that will be included in your generated CV.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-3">
                                 <div className="flex items-center gap-2">
                                     <input type="checkbox" defaultChecked className="rounded" />
-                                    <span>Informations personnelles</span>
+                                    <span>Personal information</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <input type="checkbox" defaultChecked className="rounded" />
-                                    <span>Formation académique</span>
+                                    <span>Academic background</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <input type="checkbox" defaultChecked className="rounded" />
-                                    <span>Expérience professionnelle</span>
+                                    <span>Professional experience</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <input type="checkbox" defaultChecked className="rounded" />
@@ -168,19 +168,19 @@ export default function CVPage() {
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <input type="checkbox" defaultChecked className="rounded" />
-                                    <span>Présentations</span>
+                                    <span>Presentations</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <input type="checkbox" defaultChecked className="rounded" />
-                                    <span>Enseignement</span>
+                                    <span>Teaching</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <input type="checkbox" defaultChecked className="rounded" />
-                                    <span>Compétences</span>
+                                    <span>Skills</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <input type="checkbox" className="rounded" />
-                                    <span>Références</span>
+                                    <span>References</span>
                                 </div>
                             </CardContent>
                         </Card>
@@ -190,40 +190,40 @@ export default function CVPage() {
                 <TabsContent value="settings" className="space-y-4">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Paramètres de génération</CardTitle>
-                            <CardDescription>Personnalisez la génération de votre CV.</CardDescription>
+                            <CardTitle>Generation settings</CardTitle>
+                            <CardDescription>Customize your CV generation.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Langue du CV</label>
+                                <label className="text-sm font-medium">CV language</label>
                                 <select className="w-full p-2 border rounded-md">
-                                    <option value="fr">Français</option>
-                                    <option value="en">Anglais</option>
+                                    <option value="fr">French</option>
+                                    <option value="en">English</option>
                                 </select>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Nombre maximum de publications</label>
+                                <label className="text-sm font-medium">Maximum number of publications</label>
                                 <select className="w-full p-2 border rounded-md">
                                     <option value="10">10 publications</option>
                                     <option value="20">20 publications</option>
-                                    <option value="all">Toutes les publications</option>
+                                    <option value="all">All publications</option>
                                 </select>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Tri des publications</label>
+                                <label className="text-sm font-medium">Publication sorting</label>
                                 <select className="w-full p-2 border rounded-md">
-                                    <option value="year">Par année (décroissant)</option>
-                                    <option value="citations">Par nombre de citations</option>
-                                    <option value="journal">Par journal</option>
+                                    <option value="year">By year (descending)</option>
+                                    <option value="citations">By number of citations</option>
+                                    <option value="journal">By journal</option>
                                 </select>
                             </div>
                             <div className="flex items-center gap-2">
                                 <input type="checkbox" defaultChecked className="rounded" />
-                                <span className="text-sm">Inclure les liens vers les publications</span>
+                                <span className="text-sm">Include links to publications</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <input type="checkbox" className="rounded" />
-                                <span className="text-sm">Inclure les résumés des publications</span>
+                                <span className="text-sm">Include publication abstracts</span>
                             </div>
                         </CardContent>
                     </Card>

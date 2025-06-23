@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
 export default function ResearcherSite({ researcher, publications = [], customDomain = null }) {
-    // Données par défaut si pas de chercheur
+    // Default data if no researcher
     const defaultResearcher = {
         name: "Dr. Researcher",
         title: "Professor",
@@ -39,7 +39,7 @@ export default function ResearcherSite({ researcher, publications = [], customDo
                                 </div>
                             </div>
 
-                            {/* Informations */}
+                            {/* Information */}
                             <div className="flex-1 text-center lg:text-left">
                                 <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-2">{data.name}</h1>
 
@@ -56,7 +56,7 @@ export default function ResearcherSite({ researcher, publications = [], customDo
                                     )}
                                 </div>
 
-                                {/* Domaines de recherche */}
+                                {/* Research domains */}
                                 {data.domains && data.domains.length > 0 && (
                                     <div className="flex flex-wrap gap-2 justify-center lg:justify-start mb-6">
                                         {data.domains.map((domain, index) => (
@@ -92,7 +92,7 @@ export default function ResearcherSite({ researcher, publications = [], customDo
                                         ))}
                                 </div>
 
-                                {/* Statistiques */}
+                                {/* Statistics */}
                                 {publications.length > 0 && (
                                     <div className="grid grid-cols-3 gap-4 mt-8 pt-8 border-t">
                                         <div className="text-center">
@@ -124,13 +124,13 @@ export default function ResearcherSite({ researcher, publications = [], customDo
                 <section className="py-16">
                     <div className="container mx-auto px-4">
                         <div className="max-w-4xl mx-auto">
-                            {/* Titre de section */}
+                            {/* Section title */}
                             <div className="text-center mb-12">
                                 <h2 className="text-3xl font-bold text-gray-900 mb-4">Publications</h2>
                                 <div className="w-20 h-1 bg-blue-600 mx-auto"></div>
                             </div>
 
-                            {/* Liste des publications */}
+                            {/* List of publications */}
                             <div className="space-y-6">
                                 {publications.map((publication) => (
                                     <article
@@ -170,7 +170,7 @@ export default function ResearcherSite({ researcher, publications = [], customDo
                                         )}
 
                                         <div className="flex flex-wrap items-center gap-4">
-                                            {/* Mots-clés */}
+                                            {/* Keywords */}
                                             {publication.keywords && publication.keywords.length > 0 && (
                                                 <div className="flex flex-wrap gap-1">
                                                     {publication.keywords.slice(0, 3).map((keyword, index) => (
@@ -206,7 +206,7 @@ export default function ResearcherSite({ researcher, publications = [], customDo
                 </section>
             )}
 
-            {/* Footer simple */}
+            {/* Simple footer */}
             <footer className="bg-gray-50 border-t py-8">
                 <div className="container mx-auto px-4">
                     <div className="max-w-4xl mx-auto text-center text-gray-600">

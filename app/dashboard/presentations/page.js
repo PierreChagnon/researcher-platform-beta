@@ -111,32 +111,32 @@ export default function PresentationsPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Présentations</h1>
-                    <p className="text-muted-foreground">Gérez vos présentations et conférences.</p>
+                    <h1 className="text-3xl font-bold tracking-tight">Presentations</h1>
+                    <p className="text-muted-foreground">Manage your presentations and conferences.</p>
                 </div>
                 <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
                     <DialogTrigger asChild>
                         <Button className="flex items-center gap-2">
                             <Plus className="h-4 w-4" />
-                            Ajouter une présentation
+                            Add a presentation
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[525px]">
                         <form action={handleAddPresentation}>
                             <DialogHeader>
-                                <DialogTitle>Ajouter une présentation</DialogTitle>
-                                <DialogDescription>Ajoutez une nouvelle présentation ou conférence à votre profil.</DialogDescription>
+                                <DialogTitle>Add a presentation</DialogTitle>
+                                <DialogDescription>Add a new presentation or conference to your profile.</DialogDescription>
                             </DialogHeader>
                             <div className="grid gap-4 py-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="title">Titre *</Label>
+                                    <Label htmlFor="title">Title *</Label>
                                     <Input id="title" name="title" required />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="category">Catégorie *</Label>
+                                    <Label htmlFor="category">Category *</Label>
                                     <Select name="category" required>
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Sélectionnez une catégorie" />
+                                            <SelectValue placeholder="Select a category" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {PRESENTATION_CATEGORIES.map((category) => (
@@ -148,12 +148,12 @@ export default function PresentationsPage() {
                                     </Select>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="coAuthors">Co-auteurs</Label>
+                                    <Label htmlFor="coAuthors">Co-authors</Label>
                                     <Input id="coAuthors" name="coAuthors" placeholder="Doe, J., Smith, A." />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label htmlFor="location">Localisation *</Label>
+                                        <Label htmlFor="location">Location *</Label>
                                         <Input id="location" name="location" placeholder="Paris, France" required />
                                     </div>
                                     <div className="space-y-2">
@@ -164,10 +164,10 @@ export default function PresentationsPage() {
                             </div>
                             <DialogFooter>
                                 <Button type="button" variant="outline" onClick={() => setIsAddDialogOpen(false)}>
-                                    Annuler
+                                    Cancel
                                 </Button>
                                 <Button type="submit" disabled={isPending}>
-                                    {isPending ? "Ajout..." : "Ajouter"}
+                                    {isPending ? "Adding..." : "Add"}
                                 </Button>
                             </DialogFooter>
                         </form>
@@ -175,24 +175,24 @@ export default function PresentationsPage() {
                 </Dialog>
             </div>
 
-            {/* Dialog de modification */}
+            {/* Edit dialog */}
             <Dialog open={!!editingPresentation} onOpenChange={() => setEditingPresentation(null)}>
                 <DialogContent className="sm:max-w-[525px]">
                     <form action={handleUpdatePresentation}>
                         <DialogHeader>
-                            <DialogTitle>Modifier la présentation</DialogTitle>
-                            <DialogDescription>Modifiez les informations de votre présentation.</DialogDescription>
+                            <DialogTitle>Edit presentation</DialogTitle>
+                            <DialogDescription>Edit your presentation information.</DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
                             <div className="space-y-2">
-                                <Label htmlFor="edit-title">Titre *</Label>
+                                <Label htmlFor="edit-title">Title *</Label>
                                 <Input id="edit-title" name="title" defaultValue={editingPresentation?.title} required />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="edit-category">Catégorie *</Label>
+                                <Label htmlFor="edit-category">Category *</Label>
                                 <Select name="category" defaultValue={editingPresentation?.category} required>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Sélectionnez une catégorie" />
+                                        <SelectValue placeholder="Select a category" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {PRESENTATION_CATEGORIES.map((category) => (
@@ -204,7 +204,7 @@ export default function PresentationsPage() {
                                 </Select>
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="edit-coAuthors">Co-auteurs</Label>
+                                <Label htmlFor="edit-coAuthors">Co-authors</Label>
                                 <Input
                                     id="edit-coAuthors"
                                     name="coAuthors"
@@ -214,7 +214,7 @@ export default function PresentationsPage() {
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="edit-location">Localisation *</Label>
+                                    <Label htmlFor="edit-location">Location *</Label>
                                     <Input
                                         id="edit-location"
                                         name="location"
@@ -231,34 +231,33 @@ export default function PresentationsPage() {
                         </div>
                         <DialogFooter>
                             <Button type="button" variant="outline" onClick={() => setEditingPresentation(null)}>
-                                Annuler
+                                Cancel
                             </Button>
                             <Button type="submit" disabled={isPending}>
-                                {isPending ? "Modification..." : "Modifier"}
+                                {isPending ? "Updating..." : "Update"}
                             </Button>
                         </DialogFooter>
                     </form>
                 </DialogContent>
             </Dialog>
 
-            {/* Dialog de confirmation de suppression */}
+            {/* Delete confirmation dialog */}
             <AlertDialog open={!!deletingPresentation} onOpenChange={() => setDeletingPresentation(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Supprimer la présentation</AlertDialogTitle>
+                        <AlertDialogTitle>Delete presentation</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Êtes-vous sûr de vouloir supprimer la présentation &quot;{deletingPresentation?.title}&quot; ? Cette action est
-                            irréversible.
+                            Are you sure you want to delete the presentation &quot;{deletingPresentation?.title}&quot;? This action is irreversible.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={handleDeletePresentation}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                             disabled={isPending}
                         >
-                            {isPending ? "Suppression..." : "Supprimer"}
+                            {isPending ? "Deleting..." : "Delete"}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
@@ -266,23 +265,23 @@ export default function PresentationsPage() {
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Vos présentations</CardTitle>
-                    <CardDescription>Liste de toutes vos présentations et conférences</CardDescription>
+                    <CardTitle>Your presentations</CardTitle>
+                    <CardDescription>List of all your presentations and conferences</CardDescription>
                 </CardHeader>
                 <CardContent>
                     {presentations.length === 0 ? (
                         <div className="text-center py-8 text-muted-foreground">
                             <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                            <p>Aucune présentation ajoutée pour le moment.</p>
-                            <p className="text-sm">Cliquez sur &quot;Ajouter une présentation&quot; pour commencer.</p>
+                            <p>No presentations added yet.</p>
+                            <p className="text-sm">Click on &quot;Add a presentation&quot; to get started.</p>
                         </div>
                     ) : (
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Titre</TableHead>
-                                    <TableHead className="hidden md:table-cell">Catégorie</TableHead>
-                                    <TableHead className="hidden md:table-cell">Localisation</TableHead>
+                                    <TableHead>Title</TableHead>
+                                    <TableHead className="hidden md:table-cell">Category</TableHead>
+                                    <TableHead className="hidden md:table-cell">Location</TableHead>
                                     <TableHead className="hidden md:table-cell">Date</TableHead>
                                     <TableHead className="w-[50px]"></TableHead>
                                 </TableRow>
@@ -338,7 +337,7 @@ export default function PresentationsPage() {
                                                             onClick={() => setEditingPresentation(presentation)}
                                                         >
                                                             <Edit className="h-4 w-4" />
-                                                            <span>Modifier</span>
+                                                            <span>Edit</span>
                                                         </DropdownMenuItem>
                                                         <DropdownMenuSeparator />
                                                         <DropdownMenuItem
@@ -346,7 +345,7 @@ export default function PresentationsPage() {
                                                             onClick={() => setDeletingPresentation(presentation)}
                                                         >
                                                             <Trash className="h-4 w-4" />
-                                                            <span>Supprimer</span>
+                                                            <span>Delete</span>
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>

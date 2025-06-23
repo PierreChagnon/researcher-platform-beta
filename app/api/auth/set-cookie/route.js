@@ -6,7 +6,7 @@ export async function POST(request) {
         const { token } = await request.json()
 
         if (!token) {
-            return NextResponse.json({ error: "Token manquant" }, { status: 400 })
+            return NextResponse.json({ error: "Missing token" }, { status: 400 })
         }
 
         // Définir le cookie avec le token

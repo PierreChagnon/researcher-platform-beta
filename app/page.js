@@ -28,29 +28,29 @@ export default function Home() {
               href="#features"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
-              Fonctionnalités
+              Features
             </Link>
             <Link
               href="#testimonials"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
-              Témoignages
+              Testimonials
             </Link>
             <Link
               href="#pricing"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
-              Tarifs
+              Pricing
             </Link>
             <div className="flex items-center gap-3">
               <Link href="/login">
                 <Button variant="ghost" size="sm">
-                  Connexion
+                  Login
                 </Button>
               </Link>
               <Link href="/register">
                 <Button size="sm" className="hover:cursor-pointer">
-                  Commencer
+                  Get Started
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
