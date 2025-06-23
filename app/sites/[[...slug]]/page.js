@@ -161,7 +161,6 @@ async function getResearcherTeaching(userId) {
         })
 
         // Sort by descending year
-        console.log("Retrieved teaching data:", teaching)
         return teaching.sort((a, b) => (b.year || 0) - (a.year || 0))
     } catch (error) {
         console.error("Error retrieving teaching:", error)

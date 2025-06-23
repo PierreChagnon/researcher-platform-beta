@@ -18,8 +18,6 @@ export default function ResearcherSite({ researcher, publications = [], presenta
     }
 
     const data = researcher || defaultResearcher
-    console.log("🔄 Rendering ResearcherSite for", data)
-    console.log("📊 Publications:", publications.length, "Presentations:", presentations?.length || 0, "Teaching:", teaching?.length || 0)
 
     return (
         <div className="min-h-screen bg-white">
