@@ -100,7 +100,7 @@ export default function DashboardPage() {
                                     Edit your personal and professional information
                                 </p>
                             </div>
-                            <Button size="sm" variant="ghost" asChild>
+                            <Button size="sm" variant="outline" className="min-w-28" asChild>
                                 <Link href="/dashboard/profile">Edit</Link>
                             </Button>
                         </div>
@@ -110,7 +110,7 @@ export default function DashboardPage() {
                                 <p className="text-sm font-medium">Manage my publications</p>
                                 <p className="text-sm text-muted-foreground">View and organize your scientific publications</p>
                             </div>
-                            <Button size="sm" variant="ghost" asChild>
+                            <Button size="sm" variant="outline" className="min-w-28" asChild>
                                 <Link href="/dashboard/publications">Manage</Link>
                             </Button>
                         </div>
@@ -122,7 +122,7 @@ export default function DashboardPage() {
                                     Customize the appearance and content of your site
                                 </p>
                             </div>
-                            <Button size="sm" variant="ghost" asChild>
+                            <Button size="sm" variant="outline" className="min-w-28" asChild>
                                 <Link href="/dashboard/settings">Configure</Link>
                             </Button>
                         </div>

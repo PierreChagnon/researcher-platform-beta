@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Phone, Mail, MapPin, Save } from "lucide-react"
 import { useAuth } from "@/contexts/AuthContext"
 import { toast } from "sonner"
+import { updateContactAction } from "@/lib/actions/contact-actions"
 
 export default function ContactPage() {
     const [isLoading, setIsLoading] = useState(false)
@@ -30,15 +31,27 @@ export default function ContactPage() {
         setIsLoading(true)
 
         try {
-            // Simulation - in production, you would use a Server Action
-            await new Promise((resolve) => setTimeout(resolve, 1000))
+            const formDataObj = new FormData()
+            formDataObj.append("email", formData.email)
+            formDataObj.append("phone", formData.phone)
+            formDataObj.append("address", formData.address)
 
-            toast.success("Contact information updated", {
-                description: "Your contact information has been successfully saved.",
-            })
+            const result = await updateContactAction(formDataObj)
+
+            if (result.success) {
+                toast.success("Contact information updated", {
+                    description: result.message,
+                })
+                // Rafraîchir les données utilisateur
+                await refreshUserData()
+            } else {
+                toast.error("Error", {
+                    description: result.error,
+                })
+            }
         } catch (error) {
             toast.error("Error", {
-                description: "An error occurred while saving.",
+                description: "An unexpected error occurred while saving.",
             })
         } finally {
             setIsLoading(false)
@@ -48,7 +61,7 @@ export default function ContactPage() {
     useEffect(() => {
         if (userData) {
             setFormData({
-                email: userData.email || "",
+                email: userData.contact?.email || userData.email || "",
                 phone: userData.contact?.phone || "",
                 address: userData.contact?.address || "",
             })
@@ -65,7 +78,7 @@ export default function ContactPage() {
             <div className="grid gap-6 md:grid-cols-2">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Contact Information</CardTitle>
+                        <CardTitle>Contact information</CardTitle>
                         <CardDescription>
                             This information will be displayed in the contact section of your website.
                         </CardDescription>
@@ -73,7 +86,7 @@ export default function ContactPage() {
                     <form onSubmit={handleSubmit}>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="email">Work Email</Label>
+                                <Label htmlFor="email">Professional email</Label>
                                 <div className="relative">
                                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                                     <Input
@@ -83,11 +96,10 @@ export default function ContactPage() {
                                         value={formData.email}
                                         onChange={(e) => handleInputChange("email", e.target.value)}
                                         className="pl-10"
+                                        required
                                     />
                                 </div>
-                                <p className="text-sm text-muted-foreground">
-                                    Your primary email address for professional contacts.
-                                </p>
+                                <p className="text-sm text-muted-foreground">Your primary email address for professional contacts.</p>
                             </div>
 
                             <div className="space-y-2">
@@ -97,7 +109,7 @@ export default function ContactPage() {
                                     <Input
                                         id="phone"
                                         type="tel"
-                                        placeholder="+33 1 23 45 67 89"
+                                        placeholder="+1 (555) 123-4567"
                                         value={formData.phone}
                                         onChange={(e) => handleInputChange("phone", e.target.value)}
                                         className="pl-10"
@@ -107,18 +119,18 @@ export default function ContactPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="address">Work Address</Label>
+                                <Label htmlFor="address">Professional address</Label>
                                 <div className="relative">
                                     <MapPin className="absolute left-3 top-3 text-gray-400 h-4 w-4" />
                                     <Input
                                         id="address"
-                                        placeholder="123 University Street, 75005 Paris, France"
+                                        placeholder="123 University Street, 12345 City, Country"
                                         value={formData.address}
                                         onChange={(e) => handleInputChange("address", e.target.value)}
                                         className="pl-10"
                                     />
                                 </div>
-                                <p className="text-sm text-muted-foreground">Your full professional address (optional).</p>
+                                <p className="text-sm text-muted-foreground">Your complete professional address (optional).</p>
                             </div>
                         </CardContent>
                         <CardFooter>
@@ -133,11 +145,11 @@ export default function ContactPage() {
                 <Card>
                     <CardHeader>
                         <CardTitle>Preview</CardTitle>
-                        <CardDescription>This is how your contact information will appear on your site.</CardDescription>
+                        <CardDescription>Here&apos;s how your contact information will appear on your site.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
-                            <h3 className="font-semibold text-lg">Contact Me</h3>
+                            <h3 className="font-semibold text-lg">Contact me</h3>
 
                             {formData.email && (
                                 <div className="flex items-center gap-3">

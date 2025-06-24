@@ -1,49 +1,26 @@
 "use client"
 
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Download, FileText, Eye } from "lucide-react"
+import { Download, Eye } from "lucide-react"
 import { useAuth } from "@/contexts/AuthContext"
 import { usePublications } from "@/hooks/usePublications"
 
 export default function CVPage() {
-    const [selectedTemplate, setSelectedTemplate] = useState("academic")
     const { userData } = useAuth()
     const { publications, stats } = usePublications()
 
-    const templates = [
-        {
-            id: "academic",
-            name: "Academic",
-            description: "Classic template for academia",
-            preview: "/placeholder.svg?height=300&width=200",
-        },
-        {
-            id: "modern",
-            name: "Modern",
-            description: "Modern and clean design",
-            preview: "/placeholder.svg?height=300&width=200",
-        },
-        {
-            id: "compact",
-            name: "Compact",
-            description: "Condensed one-page format",
-            preview: "/placeholder.svg?height=300&width=200",
-        },
-    ]
-
     const handleGenerateCV = () => {
         // Simulate CV generation
-        console.log("Generating CV with template:", selectedTemplate)
+        console.log("Generating CV:")
         // In production, this would trigger PDF generation
     }
 
     const handlePreviewCV = () => {
         // Simulate preview
-        console.log("Previewing CV with template:", selectedTemplate)
+        console.log("Previewing CV:")
         // In production, this would open a CV preview
     }
 
@@ -68,42 +45,11 @@ export default function CVPage() {
                 </div>
             </div>
 
-            <Tabs defaultValue="templates" className="space-y-4">
+            <Tabs defaultValue="content" className="space-y-4">
                 <TabsList>
-                    <TabsTrigger value="templates">Templates</TabsTrigger>
                     <TabsTrigger value="content">Content</TabsTrigger>
                     <TabsTrigger value="settings">Settings</TabsTrigger>
                 </TabsList>
-
-                <TabsContent value="templates" className="space-y-4">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Choose a template</CardTitle>
-                            <CardDescription>Select the CV style that best fits your needs.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="grid gap-6 md:grid-cols-3">
-                                {templates.map((template) => (
-                                    <div
-                                        key={template.id}
-                                        className={`relative cursor-pointer rounded-lg border-2 p-4 transition-all ${selectedTemplate === template.id
-                                                ? "border-primary bg-primary/5"
-                                                : "border-gray-200 hover:border-gray-300"
-                                            }`}
-                                        onClick={() => setSelectedTemplate(template.id)}
-                                    >
-                                        <div className="aspect-[3/4] bg-gray-100 rounded-md mb-4 flex items-center justify-center">
-                                            <FileText className="h-12 w-12 text-gray-400" />
-                                        </div>
-                                        <h3 className="font-semibold mb-1">{template.name}</h3>
-                                        <p className="text-sm text-gray-600">{template.description}</p>
-                                        {selectedTemplate === template.id && <Badge className="absolute top-2 right-2">Selected</Badge>}
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
 
                 <TabsContent value="content" className="space-y-4">
                     <div className="grid gap-6 md:grid-cols-2">
