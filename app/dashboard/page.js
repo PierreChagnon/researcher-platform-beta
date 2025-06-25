@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { FileText, Settings, User, ExternalLink, BarChart } from "lucide-react"
@@ -11,16 +12,33 @@ import { getUserPublications } from "@/lib/firestore"
 const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN || "researcher-platform-beta.vercel.app"
 
 export default function DashboardPage() {
-    const { user, userData } = useAuth()
+    const { user, userData, loading } = useAuth()
     const [publications, setPublications] = useState([])
-    const [loading, setLoading] = useState(true)
+    const [publicationsLoading, setPublicationsLoading] = useState(true)
+    const router = useRouter()
+
+    // Vérifier l'authentification côté client
+    useEffect(() => {
+        if (!loading) {
+            if (!user) {
+                console.log("❌ No user found, redirecting to login...")
+                router.push("/login")
+                return
+            }
+        }
+    }, [user, loading, router])
 
     useEffect(() => {
         const fetchPublications = async () => {
             if (user) {
-                const { publications: userPubs } = await getUserPublications(user.uid)
-                setPublications(userPubs)
-                setLoading(false)
+                try {
+                    const { publications: userPubs } = await getUserPublications(user.uid)
+                    setPublications(userPubs)
+                } catch (error) {
+                    console.error("Error fetching publications:", error)
+                } finally {
+                    setPublicationsLoading(false)
+                }
             }
         }
 
@@ -35,7 +53,24 @@ export default function DashboardPage() {
         return Math.round((completedFields.length / fields.length) * 100)
     }
 
-    const siteUrl = userData?.siteSettings?.siteUrl || "votre-site"
+    const siteUrl = userData?.siteSettings?.siteUrl || "your-site"
+
+    // Afficher un loading pendant la vérification d'auth
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+                    <p className="mt-2 text-muted-foreground">Loading...</p>
+                </div>
+            </div>
+        )
+    }
+
+    // Si pas d'utilisateur après le loading, ne rien afficher (redirection en cours)
+    if (!user) {
+        return null
+    }
 
     return (
         <div className="space-y-6">
@@ -53,7 +88,7 @@ export default function DashboardPage() {
                         <FileText className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{loading ? "..." : publications.length}</div>
+                        <div className="text-2xl font-bold">{publicationsLoading ? "..." : publications.length}</div>
                         <p className="text-xs text-muted-foreground">Publications in your database</p>
                         <Button variant="link" className="px-0 mt-2" asChild>
                             <Link href="/dashboard/publications">Manage publications</Link>
