@@ -76,22 +76,19 @@ export default function RegisterPage() {
             const { user, error } = await signUp(formData.email, formData.password, formData.name)
 
             if (error) {
-                toast({
+                toast("Error during registration", {
                     variant: "destructive",
-                    title: "Error during registration",
                     description: error,
                 })
             } else {
-                toast({
-                    title: "Registration successful!",
+                toast("Registration successful", {
                     description: "You will be redirected to your dashboard.",
                 })
                 router.push("/dashboard")
             }
         } catch (error) {
-            toast({
+            toast("An unexpected error occurred", {
                 variant: "destructive",
-                title: "Error during registration",
                 description: "An error occurred. Please try again.",
             })
         } finally {

@@ -17,6 +17,7 @@ import {
     GraduationCap,
     Phone,
     FileIcon as FileUser,
+    CreditCard
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -47,6 +48,7 @@ const navigation = [
     { type: "separator" },
     { name: "CV", href: "/dashboard/cv", icon: FileUser },
     { name: "Settings", href: "/dashboard/settings", icon: Settings },
+    { name: "Billing", href: "/dashboard/billing", icon: CreditCard },
 ]
 
 export default function DashboardLayout({ children }) {
