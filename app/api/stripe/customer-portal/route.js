@@ -9,9 +9,10 @@ export async function POST() {
         const userId = await verifyAuthOrRedirect()
 
         // Récupérer les informations d'abonnement
-        const subscription = await getUserSubscription(userId)
+        const { subscription } = await getUserSubscription(userId)
+        console.log("User Subscription:", subscription)
 
-        if (!subscription?.stripeCustomerId) {
+        if (!subscription?.customerId) {
             return NextResponse.json({ error: "No subscription found" }, { status: 404 })
         }
 
