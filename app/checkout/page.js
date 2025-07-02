@@ -136,7 +136,7 @@ export default function CheckoutPage() {
                             </CardTitle>
                             <CardDescription>Perfect to get started</CardDescription>
                             <div className="text-3xl font-bold">
-                                €{process.env.NEXT_PUBLIC_STRIPE_PRICE_MONTHLY}
+                                €5
                                 <span className="text-lg font-normal">/month</span>
                             </div>
                         </CardHeader>
@@ -165,11 +165,11 @@ export default function CheckoutPage() {
                             </CardTitle>
                             <CardDescription>Best value for committed researchers</CardDescription>
                             <div className="text-3xl font-bold">
-                                €{process.env.NEXT_PUBLIC_STRIPE_PRICE_YEARLY}
+                                €50
                                 <span className="text-lg font-normal">/year</span>
                             </div>
                             <p className="text-sm text-gray-500">
-                                €{Math.round((process.env.NEXT_PUBLIC_STRIPE_PRICE_YEARLY / 12) * 100) / 100}/month billed annually
+                                €{Math.round((50 / 12) * 100) / 100}/month billed annually
                             </p>
                         </CardHeader>
                         <CardContent className="flex flex-col justify-between h-full">

@@ -6,7 +6,8 @@ import admin from "@/lib/firebase-admin"
 export async function POST(request) {
     try {
         // Vérifier l'authentification
-        const userId = await verifyAuthOrRedirect()
+        const { userId } = await verifyAuthOrRedirect()
+        console.log("Authenticated User ID:", userId)
 
         // Récupérer l'email de l'utilisateur
         const userDoc = await admin.db.collection("users").doc(userId).get()

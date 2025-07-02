@@ -10,6 +10,8 @@ import { Separator } from "@/components/ui/separator"
 import { CreditCard, Calendar, DollarSign, ExternalLink, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { getUserSubscription } from "@/lib/firestore"
+import { STRIPE_PRICES } from "@/lib/stripe"
+
 
 export default function BillingPage() {
     const { user, userData, loading: authLoading } = useAuth()
@@ -130,10 +132,10 @@ export default function BillingPage() {
 
     const getPlanName = (priceId) => {
         // Mapper les price IDs aux noms de plans
-        if (priceId === process.env.NEXT_PUBLIC_STRIPE_PRICE_MONTHLY) {
+        if (priceId === process.env.STRIPE_PRICES.monthly) {
             return "Monthly"
         }
-        if (priceId === process.env.NEXT_PUBLIC_STRIPE_PRICE_YEARLY) {
+        if (priceId === process.env.STRIPE_PRICES.yearly) {
             return "Yearly"
         }
         return "ResearchSite Pro"

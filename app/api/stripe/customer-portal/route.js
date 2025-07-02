@@ -6,7 +6,7 @@ import { getUserSubscription } from "@/lib/firestore"
 export async function POST() {
     try {
         // Vérifier l'authentification
-        const userId = await verifyAuthOrRedirect()
+        const {userId} = await verifyAuthOrRedirect()
 
         // Récupérer les informations d'abonnement
         const { subscription } = await getUserSubscription(userId)
