@@ -19,6 +19,7 @@ export async function POST(request) {
         const userEmail = userData.email
 
         const { priceType } = await request.json()
+        console.log("Price Type:", priceType)
 
         // Valider le type de prix
         if (!priceType || !STRIPE_PRICES[priceType]) {
