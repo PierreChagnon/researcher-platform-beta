@@ -8,26 +8,29 @@ import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Switch } from "@/components/ui/switch"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle, XCircle, Loader2, ExternalLink } from "lucide-react"
 import { useAuth } from "@/contexts/AuthContext"
-import { updateSiteSettings, checkSiteUrlAvailability } from "@/lib/actions/settings-actions"
+import {
+    updateGeneralSettings,
+    updateAppearanceSettings,
+    updateAnalyticsSettings,
+    checkSiteUrlAvailability,
+} from "@/lib/actions/settings-actions"
+import SiteThemeSelector from "@/components/SiteThemeSelector"
 
 const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN || "researcher-platform-beta.vercel.app"
 
 export default function SettingsPage() {
     const [isPending, startTransition] = useTransition()
     const [isCheckingUrl, setIsCheckingUrl] = useState(false)
-    const [urlStatus, setUrlStatus] = useState(null) // null, 'available', 'taken', 'invalid'
+    const [urlStatus, setUrlStatus] = useState(null)
     const [formData, setFormData] = useState({
         siteName: "",
         siteDescription: "",
         siteUrl: "",
-        theme: "system",
-        accentColor: "blue",
+        siteTheme: "default",
         showCitations: true,
         showAbstract: true,
         showCoauthors: true,
@@ -43,8 +46,7 @@ export default function SettingsPage() {
                 siteName: userData.siteSettings.siteName || "",
                 siteDescription: userData.siteSettings.siteDescription || "",
                 siteUrl: userData.siteSettings.siteUrl || "",
-                theme: userData.siteSettings.theme || "system",
-                accentColor: userData.siteSettings.accentColor || "blue",
+                siteTheme: userData.siteSettings.siteTheme || "default",
                 showCitations: userData.siteSettings.showCitations ?? true,
                 showAbstract: userData.siteSettings.showAbstract ?? true,
                 showCoauthors: userData.siteSettings.showCoauthors ?? true,
@@ -59,7 +61,6 @@ export default function SettingsPage() {
             [field]: value,
         }))
 
-        // Clear error when user starts typing
         if (errors[field]) {
             setErrors((prev) => ({
                 ...prev,
@@ -67,7 +68,6 @@ export default function SettingsPage() {
             }))
         }
 
-        // Real-time check for site URL
         if (field === "siteUrl") {
             setUrlStatus(null)
             if (value && value.length >= 3) {
@@ -86,26 +86,46 @@ export default function SettingsPage() {
             }
         } catch (error) {
             setUrlStatus("invalid")
-            setErrors((prev) => ({ ...prev, siteUrl: "Error during verification" }))
+            setErrors((prev) => ({ ...prev, siteUrl: "Error checking availability" }))
         } finally {
             setIsCheckingUrl(false)
         }
     }
 
-    const handleSubmit = async (formData) => {
+    // Separate submit handlers for each tab
+    const handleGeneralSubmit = async (formData) => {
         startTransition(async () => {
-            const result = await updateSiteSettings(formData)
-
+            const result = await updateGeneralSettings(formData)
             if (result.success) {
-                toast.success("Settings updated", {
-                    description: result.message,
-                })
-                // Refresh user data
+                toast.success("Settings updated", { description: result.message })
                 await refreshUserData()
             } else {
-                toast.error("Error", {
-                    description: result.error,
-                })
+                toast.error("Error", { description: result.error })
+            }
+        })
+    }
+
+    const handleAppearanceSubmit = async (formData) => {
+        startTransition(async () => {
+            const result = await updateAppearanceSettings(formData)
+            if (result.success) {
+                toast.success("Theme updated", { description: result.message })
+                await refreshUserData()
+            } else {
+                toast.error("Error", { description: result.error })
+            }
+        })
+    }
+
+
+    const handleAnalyticsSubmit = async (formData) => {
+        startTransition(async () => {
+            const result = await updateAnalyticsSettings(formData)
+            if (result.success) {
+                toast.success("Settings updated", { description: result.message })
+                await refreshUserData()
+            } else {
+                toast.error("Error", { description: result.error })
             }
         })
     }
@@ -134,7 +154,7 @@ export default function SettingsPage() {
         if (urlStatus === "taken") {
             return (
                 <Badge variant="outline" className="text-red-600 border-red-600">
-                    Already taken
+                    Taken
                 </Badge>
             )
         }
@@ -159,16 +179,16 @@ export default function SettingsPage() {
                 <TabsList>
                     <TabsTrigger value="general">General</TabsTrigger>
                     <TabsTrigger value="appearance">Appearance</TabsTrigger>
-                    <TabsTrigger value="publications">Publications</TabsTrigger>
-                    <TabsTrigger value="analytics">Analytics</TabsTrigger>
+                    <TabsTrigger value="analytics" disabled>Analytics</TabsTrigger>
                 </TabsList>
 
-                <form action={handleSubmit}>
-                    <TabsContent value="general" className="space-y-4">
+                {/* GENERAL TAB */}
+                <TabsContent value="general" className="space-y-4">
+                    <form action={handleGeneralSubmit}>
                         <Card>
                             <CardHeader>
-                                <CardTitle>General information</CardTitle>
-                                <CardDescription>Set up the basic information for your website.</CardDescription>
+                                <CardTitle>General Information</CardTitle>
+                                <CardDescription>Configure the basic information of your website.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
@@ -190,21 +210,19 @@ export default function SettingsPage() {
                                     <Textarea
                                         id="siteDescription"
                                         name="siteDescription"
-                                        placeholder="Personal website of John Doe, Professor in Computer Science..."
+                                        placeholder="Personal website of John Doe, Professor of Computer Science..."
                                         className="resize-none"
                                         value={formData.siteDescription}
                                         onChange={(e) => handleInputChange("siteDescription", e.target.value)}
                                     />
-                                    <p className="text-sm text-muted-foreground">
-                                        A brief description of your site for search engines.
-                                    </p>
+                                    <p className="text-sm text-muted-foreground">A brief description of your site for search engines.</p>
                                     {errors.siteDescription && <p className="text-sm text-red-500">{errors.siteDescription}</p>}
                                 </div>
 
                                 <div className="space-y-2">
                                     <Label htmlFor="siteUrl">Site URL</Label>
                                     <div className="flex items-center space-x-2">
-                                        <span className="text-sm text-muted-foreground">https://</span>
+                                        <span className="text-sm text-muted-foreground">https://{DOMAIN}/sites/</span>
                                         <div className="relative flex-1">
                                             <Input
                                                 id="siteUrl"
@@ -216,7 +234,6 @@ export default function SettingsPage() {
                                             />
                                             <div className="absolute right-3 top-1/2 transform -translate-y-1/2">{getUrlStatusIcon()}</div>
                                         </div>
-                                        <span className="text-sm text-muted-foreground">.{DOMAIN}</span>
                                         {getUrlStatusBadge()}
                                     </div>
                                     <div className="flex items-center justify-between">
@@ -224,7 +241,7 @@ export default function SettingsPage() {
                                         {formData.siteUrl && urlStatus === "available" && (
                                             <Button variant="outline" size="sm" asChild>
                                                 <a
-                                                    href={`https://${formData.siteUrl}.${DOMAIN}`}
+                                                    href={`https://${DOMAIN}/sites/${formData.siteUrl}`}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="flex items-center gap-1"
@@ -240,131 +257,38 @@ export default function SettingsPage() {
                             </CardContent>
                             <CardFooter>
                                 <Button type="submit" disabled={isPending || urlStatus === "taken" || urlStatus === "invalid"}>
-                                    {isPending ? "Saving..." : "Save"}
+                                    {isPending ? "Saving..." : "Save General Settings"}
                                 </Button>
                             </CardFooter>
                         </Card>
-                    </TabsContent>
+                    </form>
+                </TabsContent>
 
-                    <TabsContent value="appearance" className="space-y-4">
+                {/* APPEARANCE TAB */}
+                <TabsContent value="appearance" className="space-y-4">
+                    <form action={handleAppearanceSubmit}>
+                        <SiteThemeSelector
+                            currentTheme={formData.siteTheme}
+                            onThemeChange={(theme) => handleInputChange("siteTheme", theme)}
+                        />
+                        <input type="hidden" name="siteTheme" value={formData.siteTheme} />
                         <Card>
-                            <CardHeader>
-                                <CardTitle>Appearance</CardTitle>
-                                <CardDescription>Customize the appearance of your website.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="theme">Theme</Label>
-                                    <Select
-                                        name="theme"
-                                        onValueChange={(value) => handleInputChange("theme", value)}
-                                        defaultValue={formData.theme}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select a theme" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="light">Light</SelectItem>
-                                            <SelectItem value="dark">Dark</SelectItem>
-                                            <SelectItem value="system">System</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <p className="text-sm text-muted-foreground">Choose the color theme for your site.</p>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="accentColor">Accent color</Label>
-                                    <Select
-                                        name="accentColor"
-                                        onValueChange={(value) => handleInputChange("accentColor", value)}
-                                        defaultValue={formData.accentColor}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select a color" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="blue">Blue</SelectItem>
-                                            <SelectItem value="green">Green</SelectItem>
-                                            <SelectItem value="purple">Purple</SelectItem>
-                                            <SelectItem value="orange">Orange</SelectItem>
-                                            <SelectItem value="red">Red</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <p className="text-sm text-muted-foreground">
-                                        The main color used for links and buttons.
-                                    </p>
-                                </div>
-                            </CardContent>
                             <CardFooter>
                                 <Button type="submit" disabled={isPending}>
-                                    {isPending ? "Saving..." : "Save"}
+                                    {isPending ? "Saving..." : "Save Theme"}
                                 </Button>
                             </CardFooter>
                         </Card>
-                    </TabsContent>
+                    </form>
+                </TabsContent>
 
-                    <TabsContent value="publications" className="space-y-4">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Publication display</CardTitle>
-                                <CardDescription>Configure how your publications are displayed on your site.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-6">
-                                <div className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                    <div className="space-y-0.5">
-                                        <Label className="text-base">Show citations</Label>
-                                        <p className="text-sm text-muted-foreground">
-                                            Display the number of citations for each publication.
-                                        </p>
-                                    </div>
-                                    <Switch
-                                        name="showCitations"
-                                        checked={formData.showCitations}
-                                        onCheckedChange={(checked) => handleInputChange("showCitations", checked)}
-                                    />
-                                </div>
-
-                                <div className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                    <div className="space-y-0.5">
-                                        <Label className="text-base">Show abstracts</Label>
-                                        <p className="text-sm text-muted-foreground">
-                                            Display an excerpt of the abstract for each publication.
-                                        </p>
-                                    </div>
-                                    <Switch
-                                        name="showAbstract"
-                                        checked={formData.showAbstract}
-                                        onCheckedChange={(checked) => handleInputChange("showAbstract", checked)}
-                                    />
-                                </div>
-
-                                <div className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                    <div className="space-y-0.5">
-                                        <Label className="text-base">Show co-authors</Label>
-                                        <p className="text-sm text-muted-foreground">
-                                            Display the full list of authors for each publication.
-                                        </p>
-                                    </div>
-                                    <Switch
-                                        name="showCoauthors"
-                                        checked={formData.showCoauthors}
-                                        onCheckedChange={(checked) => handleInputChange("showCoauthors", checked)}
-                                    />
-                                </div>
-                            </CardContent>
-                            <CardFooter>
-                                <Button type="submit" disabled={isPending}>
-                                    {isPending ? "Saving..." : "Save"}
-                                </Button>
-                            </CardFooter>
-                        </Card>
-                    </TabsContent>
-
-                    <TabsContent value="analytics" className="space-y-4">
+                {/* ANALYTICS TAB */}
+                <TabsContent value="analytics" className="space-y-4">
+                    <form action={handleAnalyticsSubmit}>
                         <Card>
                             <CardHeader>
                                 <CardTitle>Analytics</CardTitle>
-                                <CardDescription>Set up website statistics tracking.</CardDescription>
+                                <CardDescription>Configure tracking for your website statistics.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
@@ -377,26 +301,26 @@ export default function SettingsPage() {
                                         onChange={(e) => handleInputChange("googleAnalyticsId", e.target.value)}
                                     />
                                     <p className="text-sm text-muted-foreground">
-                                        Your Google Analytics identifier to track your site&apos;s visits.
+                                        Your Google Analytics identifier to track visits to your site.
                                     </p>
                                 </div>
                                 <Separator />
                                 <div className="space-y-2">
                                     <h4 className="text-sm font-medium">Built-in statistics</h4>
                                     <p className="text-sm text-muted-foreground">
-                                        ResearchSite provides basic built-in statistics for your site, including the number of
-                                        visits, most viewed pages, and most popular publications.
+                                        ResearchSite provides basic built-in statistics for your site, including visit counts, most viewed
+                                        pages, and most popular publications.
                                     </p>
                                 </div>
                             </CardContent>
                             <CardFooter>
                                 <Button type="submit" disabled={isPending}>
-                                    {isPending ? "Saving..." : "Save"}
+                                    {isPending ? "Saving..." : "Save Analytics Settings"}
                                 </Button>
                             </CardFooter>
                         </Card>
-                    </TabsContent>
-                </form>
+                    </form>
+                </TabsContent>
             </Tabs>
         </div>
     )
