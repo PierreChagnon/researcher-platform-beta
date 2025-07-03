@@ -7,11 +7,9 @@ export async function POST(request) {
     try {
         // Vérifier l'authentification
         const { userId } = await verifyAuthOrRedirect()
-        console.log("Authenticated User ID:", userId)
 
         // Récupérer l'email de l'utilisateur
         const userDoc = await admin.db.collection("users").doc(userId).get()
-        console.log("User Document:", userDoc.id, userDoc.exists)
         const userData = userDoc.data()
 
         if (!userData || !userData.email) {
@@ -19,10 +17,8 @@ export async function POST(request) {
         }
 
         const userEmail = userData.email
-        console.log("User Email:", userEmail)
 
         const { priceType } = await request.json()
-        console.log("Received priceType:", priceType)
 
         // Valider le type de prix
         if (!priceType || !STRIPE_PRICES[priceType]) {
