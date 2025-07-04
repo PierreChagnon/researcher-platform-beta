@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { FileText, Settings, User, ExternalLink, BarChart } from "lucide-react"
 import { useAuth } from "@/contexts/AuthContext"
 import { getUserPublications } from "@/lib/firestore"
+import { useSearchParams } from "next/navigation"
 
 const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN || "researcher-platform-beta.vercel.app"
 
@@ -16,6 +17,7 @@ export default function DashboardPage() {
     const [publications, setPublications] = useState([])
     const [publicationsLoading, setPublicationsLoading] = useState(true)
     const router = useRouter()
+    const searchParams = useSearchParams()
 
     // Vérifier l'authentification côté client
     useEffect(() => {
@@ -27,6 +29,22 @@ export default function DashboardPage() {
             }
         }
     }, [user, loading, router])
+
+    // Gérer les messages de retour
+    useEffect(() => {
+        const payment = searchParams.get("payment")
+        const sessionId = searchParams.get("session_id")
+        if (payment === "cancelled") {
+            toast.error("Payment cancelled", {
+                description: "You can try again when you're ready.",
+            })
+        } else if (payment === "success") {
+            toast.success("Payment successful", {
+                description: "Thank you for your subscription!",
+            })
+            fetchVerifyPayment(sessionId)
+        }
+    }, [searchParams])
 
     useEffect(() => {
         const fetchPublications = async () => {
@@ -44,6 +62,31 @@ export default function DashboardPage() {
 
         fetchPublications()
     }, [user])
+
+    const fetchVerifyPayment = async (sessionId) => {
+        // On appelle cette fonction pour vérifier le statut du paiement (route verify-payment)
+        try {
+            const response = await fetch("/api/stripe/verify-payment", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ sessionId }),
+            })
+            if (!response.ok) {
+                throw new Error("Failed to verify payment")
+            }
+            const data = await response.json()
+            console.log("Payment verification response:", data)
+            if (data.error) {
+                console.error("Payment verification error:", data.error)
+            } else {
+                console.log("Payment verified successfully")
+            }
+        } catch (error) {
+            console.error("Error verifying payment:", error)
+        }
+    }
 
     const getProfileCompleteness = () => {
         if (!userData) return 0

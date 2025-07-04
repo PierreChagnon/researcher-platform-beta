@@ -29,15 +29,36 @@ export async function POST(request) {
         const priceId = STRIPE_PRICES[priceType]
         const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
 
-        const successUrl = `${baseUrl}/dashboard?payment=success`
-        const cancelUrl = `${baseUrl}/checkout?payment=cancelled`
-
-        const { session, error } = await createCheckoutSession(userId, userEmail, priceId, successUrl, cancelUrl)
+        const { session, error } = await createCheckoutSession(userId, userEmail, priceId)
 
         if (error) {
             return NextResponse.json({ error: "Failed to create checkout session" }, { status: 500 })
         }
 
+        // Mise à jour préventive dans Firestore (contourne le webhook a la premiere création de session)
+        try {
+            const planType = priceId === process.env.STRIPE_PRICE_YEARLY ? "yearly" : "monthly"
+
+            await admin.db
+                .collection("users")
+                .doc(userId)
+                .update({
+                    subscription: {
+                        status: "pending",
+                        plan: planType,
+                        sessionId: session.id,
+                        pendingSince: new Date().toISOString(),
+                        subscriptionId: session.subscription || null,
+                        subscriptionStatus: "active",
+                        customerId: session.customer,
+                    },
+                })
+
+            console.log("✅ Subscription status updated to pending for user:", userId)
+        } catch (firestoreError) {
+            console.error("⚠️ Failed to update Firestore (non-critical):", firestoreError)
+            // On ne fait pas échouer la création de session pour ça
+        }
         return NextResponse.json({ sessionId: session.id })
     } catch (error) {
         console.error("Checkout API error:", error)

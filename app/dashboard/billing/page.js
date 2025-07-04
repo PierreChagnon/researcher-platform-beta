@@ -10,15 +10,16 @@ import { Separator } from "@/components/ui/separator"
 import { CreditCard, Calendar, DollarSign, ExternalLink, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { getUserSubscription } from "@/lib/firestore"
+import { getSubscription } from "@/lib/stripe"
 import { STRIPE_PRICES } from "@/lib/stripe"
-
+import { useSubscription } from "@/hooks/useSubscription"
 
 export default function BillingPage() {
     const { user, userData, loading: authLoading } = useAuth()
     const router = useRouter()
-    const [subscription, setSubscription] = useState(null)
     const [loading, setLoading] = useState(true)
     const [portalLoading, setPortalLoading] = useState(false)
+    const { subscription, loading: subscriptionLoading, error: subscriptionError, refresh } = useSubscription()
 
     // Rediriger si pas connecté
     useEffect(() => {
@@ -26,38 +27,6 @@ export default function BillingPage() {
             router.push("/login")
         }
     }, [user, authLoading, router])
-
-    // Charger les données d'abonnement depuis Firestore
-    useEffect(() => {
-        const loadSubscription = async () => {
-            if (!user) return
-
-            try {
-                console.log("Loading subscription for user:", user.uid)
-
-                // Récupérer les données d'abonnement depuis Firestore
-                const { subscription: subscriptionData, error } = await getUserSubscription(user.uid)
-
-                if (error) {
-                    console.error("Error loading subscription:", error)
-                    toast.error("Failed to load subscription data")
-                    return
-                }
-
-                console.log("Subscription data:", subscriptionData)
-                setSubscription(subscriptionData)
-            } catch (error) {
-                console.error("Error loading subscription:", error)
-                toast.error("Failed to load subscription data")
-            } finally {
-                setLoading(false)
-            }
-        }
-
-        if (user) {
-            loadSubscription()
-        }
-    }, [user])
 
     const handleManageSubscription = async () => {
         if (!subscription?.customerId) {
@@ -132,16 +101,16 @@ export default function BillingPage() {
 
     const getPlanName = (priceId) => {
         // Mapper les price IDs aux noms de plans
-        if (priceId === process.env.STRIPE_PRICES.monthly) {
+        if (priceId === STRIPE_PRICES.monthly) {
             return "Monthly"
         }
-        if (priceId === process.env.STRIPE_PRICES.yearly) {
+        if (priceId === STRIPE_PRICES.yearly) {
             return "Yearly"
         }
         return "ResearchSite Pro"
     }
 
-    if (authLoading || loading) {
+    if (authLoading || subscriptionLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
                 <Loader2 className="h-8 w-8 animate-spin" />
@@ -150,7 +119,7 @@ export default function BillingPage() {
     }
 
     // Pas d'abonnement trouvé
-    if (!subscription || subscription.status === "pending") {
+    if (!subscription || subscription.status !== "pending") {
         return (
             <div className="space-y-6">
                 <div>
