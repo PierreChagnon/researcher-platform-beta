@@ -141,60 +141,6 @@ export default function ContactPage() {
                         </CardFooter>
                     </form>
                 </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Preview</CardTitle>
-                        <CardDescription>Here&apos;s how your contact information will appear on your site.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
-                            <h3 className="font-semibold text-lg">Contact me</h3>
-
-                            {formData.email && (
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-blue-100 rounded-full">
-                                        <Mail className="h-4 w-4 text-blue-600" />
-                                    </div>
-                                    <div>
-                                        <p className="font-medium">Email</p>
-                                        <p className="text-sm text-gray-600">{formData.email}</p>
-                                    </div>
-                                </div>
-                            )}
-
-                            {formData.phone && (
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-green-100 rounded-full">
-                                        <Phone className="h-4 w-4 text-green-600" />
-                                    </div>
-                                    <div>
-                                        <p className="font-medium">Phone</p>
-                                        <p className="text-sm text-gray-600">{formData.phone}</p>
-                                    </div>
-                                </div>
-                            )}
-
-                            {formData.address && (
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-purple-100 rounded-full">
-                                        <MapPin className="h-4 w-4 text-purple-600" />
-                                    </div>
-                                    <div>
-                                        <p className="font-medium">Address</p>
-                                        <p className="text-sm text-gray-600">{formData.address}</p>
-                                    </div>
-                                </div>
-                            )}
-
-                            {!formData.email && !formData.phone && !formData.address && (
-                                <p className="text-gray-500 italic">
-                                    Fill in the fields on the left to see a preview of your contact section.
-                                </p>
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
             </div>
         </div>
     )

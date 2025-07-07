@@ -12,13 +12,13 @@ export async function POST() {
         const { subscription } = await getUserSubscription(userId)
         console.log("User Subscription:", subscription)
 
-        if (!subscription?.customerId) {
-            return NextResponse.json({ error: "No subscription found" }, { status: 404 })
-        }
+        // if (!subscription?.customerId) {
+        //     return NextResponse.json({ error: "No subscription found" }, { status: 404 })
+        // }
 
         // Créer une session Customer Portal
         const portalSession = await stripe.billingPortal.sessions.create({
-            customer: subscription.stripeCustomerId,
+            // customer: subscription.stripeCustomerId,
             return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/billing`,
         })
 

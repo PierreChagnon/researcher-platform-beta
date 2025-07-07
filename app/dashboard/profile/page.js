@@ -71,6 +71,39 @@ export default function ProfilePage() {
     }
 
     const handleInputChange = (field, value) => {
+        // if (field === "bluesky") {
+        //     // Automatically add the domain if not present
+        //     if (value && !value.includes(".bsky.social")) {
+        //         value += ".bsky.social"
+        //     }
+        //     // build the full URL with https://bsky.app/profile/ at the beginning if not already present
+        //     if (!value.startsWith("https://bsky.app/profile/")) {
+        //         value = `https://bsky.app/profile/${value}`
+        //     }
+        // } else if (field === "researchgate") {
+        //     // Automatically add the domain if not present
+        //     if (value && !value.startsWith("researchgate.net/profile/")) {
+        //         value = `researchgate.net/profile/${value}`
+        //     }
+        // } else if (field === "osf") {
+        //     // Automatically add the domain if not present
+        //     if (value && !value.startsWith("osf.io/")) {
+        //         value = `osf.io/${value}`
+        //     }
+        // } else if (field === "googlescholar") {
+        //     // Automatically add the domain if not present
+        //     if (value && !value.startsWith("scholar.google.com/citations?user="
+
+        //     )) {
+        //         value = `scholar.google.com/citations?user=${value}`
+        //     }
+        // } else if (field === "twitter") {
+        //     // Automatically add the @ if not present
+        //     if (value && !value.startsWith("@")) {
+        //         value = `@${value}`
+        //     }
+        // }
+
         setFormData((prev) => ({
             ...prev,
             [field]: value,
@@ -311,82 +344,64 @@ export default function ProfilePage() {
                                 <div className="space-y-2">
                                     <Label htmlFor="twitter">Twitter / X</Label>
                                     <div className="flex">
-                                        <span className="inline-flex items-center px-3 text-sm text-gray-500 bg-gray-50 border border-r-0 border-gray-300 rounded-l-md">
-                                            @
-                                        </span>
                                         <Input
                                             id="twitter"
-                                            placeholder="johndoe"
+                                            placeholder="https://x.com/johndoe/"
                                             value={formData.twitter}
                                             onChange={(e) => handleInputChange("twitter", e.target.value)}
-                                            className="rounded-l-none"
+                                            className=""
                                         />
                                     </div>
-                                    <p className="text-sm text-muted-foreground">Your Twitter/X username (without @).</p>
                                 </div>
 
                                 <div className="space-y-2">
                                     <Label htmlFor="bluesky">Bluesky</Label>
                                     <Input
                                         id="bluesky"
-                                        placeholder="johndoe.bsky.social"
+                                        placeholder="https://bsky.app/profile/johndoe.bsky.social"
                                         value={formData.bluesky}
                                         onChange={(e) => handleInputChange("bluesky", e.target.value)}
                                     />
-                                    <p className="text-sm text-muted-foreground">Your full Bluesky handle.</p>
                                 </div>
 
                                 <div className="space-y-2">
                                     <Label htmlFor="researchgate">ResearchGate</Label>
                                     <div className="flex">
-                                        <span className="inline-flex items-center px-3 text-sm text-gray-500 bg-gray-50 border border-r-0 border-gray-300 rounded-l-md">
-                                            researchgate.net/profile/
-                                        </span>
                                         <Input
                                             id="researchgate"
-                                            placeholder="John-Doe"
+                                            placeholder="https://www.researchgate.net/profile/John-Doe"
                                             value={formData.researchgate}
                                             onChange={(e) => handleInputChange("researchgate", e.target.value)}
-                                            className="rounded-l-none"
+                                            className=""
                                         />
                                     </div>
-                                    <p className="text-sm text-muted-foreground">Your ResearchGate profile name.</p>
                                 </div>
 
                                 <div className="space-y-2">
                                     <Label htmlFor="osf">OSF (Open Science Framework)</Label>
                                     <div className="flex">
-                                        <span className="inline-flex items-center px-3 text-sm text-gray-500 bg-gray-50 border border-r-0 border-gray-300 rounded-l-md">
-                                            osf.io/
-                                        </span>
+
                                         <Input
                                             id="osf"
-                                            placeholder="johndoe"
+                                            placeholder="https://osf.io/x0xxx/"
                                             value={formData.osf}
                                             onChange={(e) => handleInputChange("osf", e.target.value)}
-                                            className="rounded-l-none"
+                                            className=""
                                         />
                                     </div>
-                                    <p className="text-sm text-muted-foreground">Your OSF identifier.</p>
                                 </div>
 
                                 <div className="space-y-2">
                                     <Label htmlFor="googlescholar">Google Scholar</Label>
                                     <div className="flex">
-                                        <span className="inline-flex items-center px-3 text-sm text-gray-500 bg-gray-50 border border-r-0 border-gray-300 rounded-l-md">
-                                            scholar.google.com/citations?user=
-                                        </span>
                                         <Input
                                             id="googlescholar"
-                                            placeholder="XXXXXXXXX"
+                                            placeholder="https://scholar.google.com/citations?user=P5IBib8XXXXJ&hl"
                                             value={formData.googlescholar}
                                             onChange={(e) => handleInputChange("googlescholar", e.target.value)}
-                                            className="rounded-l-none"
+                                            className=""
                                         />
                                     </div>
-                                    <p className="text-sm text-muted-foreground">
-                                        Your Google Scholar user ID (found in your profile URL).
-                                    </p>
                                 </div>
                             </CardContent>
                             <CardFooter>

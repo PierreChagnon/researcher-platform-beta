@@ -222,7 +222,6 @@ export default function SettingsPage() {
                                 <div className="space-y-2">
                                     <Label htmlFor="siteUrl">Site URL</Label>
                                     <div className="flex items-center space-x-2">
-                                        <span className="text-sm text-muted-foreground">https://{DOMAIN}/sites/</span>
                                         <div className="relative flex-1">
                                             <Input
                                                 id="siteUrl"
@@ -234,6 +233,7 @@ export default function SettingsPage() {
                                             />
                                             <div className="absolute right-3 top-1/2 transform -translate-y-1/2">{getUrlStatusIcon()}</div>
                                         </div>
+                                        <span className="text-sm text-muted-foreground">{DOMAIN}</span>
                                         {getUrlStatusBadge()}
                                     </div>
                                     <div className="flex items-center justify-between">

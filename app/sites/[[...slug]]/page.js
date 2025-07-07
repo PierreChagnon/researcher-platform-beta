@@ -194,6 +194,8 @@ export default async function DynamicSitePage() {
                 teaching: teaching.length,
             })
 
+            console.log("researcher", researcher)
+
             // Researcher found → Display their site with all their data
             return (
                 <ResearcherSite

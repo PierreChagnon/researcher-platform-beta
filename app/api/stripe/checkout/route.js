@@ -30,6 +30,7 @@ export async function POST(request) {
         const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
 
         const { session, error } = await createCheckoutSession(userId, userEmail, priceId)
+        console.log("Checkout Session:", session)
 
         if (error) {
             return NextResponse.json({ error: "Failed to create checkout session" }, { status: 500 })

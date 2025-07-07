@@ -21,6 +21,8 @@ export default function BillingPage() {
     const [portalLoading, setPortalLoading] = useState(false)
     const { subscription, loading: subscriptionLoading, error: subscriptionError, refresh } = useSubscription()
 
+    console.log("use subscription:", subscription)
+
     // Rediriger si pas connecté
     useEffect(() => {
         if (!authLoading && !user) {
@@ -29,10 +31,10 @@ export default function BillingPage() {
     }, [user, authLoading, router])
 
     const handleManageSubscription = async () => {
-        if (!subscription?.customerId) {
-            toast.error("No customer ID found")
-            return
-        }
+        // if (!subscription?.customerId) {
+        //     toast.error("No customer ID found")
+        //     return
+        // }
 
         setPortalLoading(true)
         try {
@@ -210,7 +212,7 @@ export default function BillingPage() {
                 <CardContent>
                     <Button
                         onClick={handleManageSubscription}
-                        disabled={portalLoading || !subscription.customerId}
+                        // disabled={portalLoading || !subscription.customerId}
                         className="w-full sm:w-auto"
                     >
                         {portalLoading ? (
