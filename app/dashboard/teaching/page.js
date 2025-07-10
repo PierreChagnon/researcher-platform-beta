@@ -198,7 +198,7 @@ export default function TeachingPage() {
 
                 <TabsContent value="teaching" className="space-y-4">
                     <div className="flex justify-end">
-                        <Dialog open={isTeachingDialogOpen} onOpenChange={closeTeachingDialog}>
+                        <Dialog open={isTeachingDialogOpen} onOpenChange={setIsTeachingDialogOpen}>
                             <DialogTrigger asChild>
                                 <Button className="flex items-center gap-2">
                                     <Plus className="h-4 w-4" />
@@ -226,8 +226,6 @@ export default function TeachingPage() {
                                                     <SelectContent>
                                                         <SelectItem value="spring">Spring</SelectItem>
                                                         <SelectItem value="summer">Summer</SelectItem>
-                                                        <SelectItem value="fall">Fall</SelectItem>
-                                                        <SelectItem value="winter">Winter</SelectItem>
                                                     </SelectContent>
                                                 </Select>
                                             </div>
@@ -394,7 +392,7 @@ export default function TeachingPage() {
 
                 <TabsContent value="lectures" className="space-y-4">
                     <div className="flex justify-end">
-                        <Dialog open={isLectureDialogOpen} onOpenChange={closeLectureDialog}>
+                        <Dialog open={isLectureDialogOpen} onOpenChange={setIsLectureDialogOpen}>
                             <DialogTrigger asChild>
                                 <Button className="flex items-center gap-2">
                                     <Plus className="h-4 w-4" />

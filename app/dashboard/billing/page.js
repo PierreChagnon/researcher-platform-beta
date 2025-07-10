@@ -19,7 +19,7 @@ export default function BillingPage() {
     const router = useRouter()
     const [loading, setLoading] = useState(true)
     const [portalLoading, setPortalLoading] = useState(false)
-    const { subscription, loading: subscriptionLoading, error: subscriptionError, refresh } = useSubscription()
+    const { subscription, loading: subscriptionLoading, error: subscriptionError, refresh, isActive: subscriptionIsActive } = useSubscription()
 
     console.log("use subscription:", subscription)
 
@@ -121,7 +121,8 @@ export default function BillingPage() {
     }
 
     // Pas d'abonnement trouvé
-    if (!subscription || subscription.status !== "pending") {
+    if (!subscription || subscription.status !== "pending" || !subscriptionIsActive) {
+        console.log(subscription, subscriptionIsActive)
         return (
             <div className="space-y-6">
                 <div>
@@ -234,7 +235,7 @@ export default function BillingPage() {
             </Card>
 
             {/* Billing Information */}
-            <Card>
+            {/* <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <DollarSign className="h-5 w-5" />
@@ -261,7 +262,7 @@ export default function BillingPage() {
                         </p>
                     </div>
                 </CardContent>
-            </Card>
+            </Card> */}
         </div>
     )
 }

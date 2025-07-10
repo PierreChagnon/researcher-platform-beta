@@ -133,9 +133,8 @@ export default function ContactPage() {
                                 <p className="text-sm text-muted-foreground">Your complete professional address (optional).</p>
                             </div>
                         </CardContent>
-                        <CardFooter>
+                        <CardFooter className="mt-4">
                             <Button type="submit" disabled={isLoading} className="flex items-center gap-2">
-                                <Save className="h-4 w-4" />
                                 {isLoading ? "Saving..." : "Save"}
                             </Button>
                         </CardFooter>

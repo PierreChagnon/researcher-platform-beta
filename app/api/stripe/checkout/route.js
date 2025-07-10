@@ -18,6 +18,14 @@ export async function POST(request) {
 
         const userEmail = userData.email
 
+        // Récupérer le customerId de l'utilisateur
+        if (!userData.subscription || !userData.subscription.customerId) {
+            return NextResponse.json({ error: "User does not have a Stripe customer ID" },
+                { status: 400 }
+            )
+        }
+        const customerId = userData.subscription.customerId
+
         const { priceType } = await request.json()
         console.log("Price Type:", priceType)
 
@@ -29,7 +37,7 @@ export async function POST(request) {
         const priceId = STRIPE_PRICES[priceType]
         const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
 
-        const { session, error } = await createCheckoutSession(userId, userEmail, priceId)
+        const { session, error } = await createCheckoutSession(userId, userEmail, priceId, customerId)
         console.log("Checkout Session:", session)
 
         if (error) {
@@ -51,7 +59,7 @@ export async function POST(request) {
                         pendingSince: new Date().toISOString(),
                         subscriptionId: session.subscription || null,
                         subscriptionStatus: "active",
-                        customerId: session.customer,
+                        customerId: customerId,
                     },
                 })
 

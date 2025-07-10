@@ -62,15 +62,23 @@ export function useSubscription() {
         return () => clearInterval(interval)
     }, [fetchSubscription, loading])
 
+    console.log("useSubscription hook state:", {
+        subscription,
+        loading,
+        error,
+        isActive: subscription?.subscriptionStatus === "active",
+    })
+
     return {
         subscription,
         loading,
         error,
         refresh,
         // Helpers utiles
-        isActive: subscription?.status === "active",
-        isPending: subscription?.status === "pending",
-        isCancelled: subscription?.status === "cancelled",
+        isActive: subscription?.subscriptionStatus === "active",
+        isPending: subscription?.subscriptionStatus === "pending",
+        isCancelled: subscription?.subscriptionStatus === "cancelled",
         plan: subscription?.plan || null,
+        customerId: subscription?.customerId || null,
     }
 }
