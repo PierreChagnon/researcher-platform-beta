@@ -1,7 +1,8 @@
 "use client"
 
+import { useState } from "react"
 import Image from "next/image"
-import { Mail, MapPin, ExternalLink, Calendar, Globe, Building, Phone, X, Flower, GraduationCap, Blinds, Book, ChevronRight, Quote } from "lucide-react"
+import { Mail, MapPin, ExternalLink, Calendar, Globe, Building, Phone, X, Flower, GraduationCap, Blinds, Book, ChevronRight, ChevronDown, ChevronUp, Quote } from "lucide-react"
 import { generateSiteThemeCSS } from "@/lib/site-themes"
 import Nav from "@/components/site/Nav"
 
@@ -12,6 +13,22 @@ export default function ResearcherSite({
     teaching = [],
     customDomain = null,
 }) {
+    // État pour gérer l'ouverture/fermeture des abstracts
+    const [expandedAbstracts, setExpandedAbstracts] = useState(new Set())
+
+    // Fonction pour toggle l'abstract
+    const toggleAbstract = (publicationId) => {
+        setExpandedAbstracts(prev => {
+            const newSet = new Set(prev)
+            if (newSet.has(publicationId)) {
+                newSet.delete(publicationId)
+            } else {
+                newSet.add(publicationId)
+            }
+            return newSet
+        })
+    }
+
     // Récupérer le thème du chercheur
     const siteTheme = researcher?.siteSettings?.siteTheme || "default"
     const themeCSS = generateSiteThemeCSS(siteTheme, false)
@@ -238,10 +255,6 @@ export default function ResearcherSite({
                         <div className="grid gap-8">
                             {pubsToShow.map((publication, index) => (
                                 <div key={publication.id} className="group relative bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
-                                    <div className="absolute top-4 right-4 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                        <span className="text-blue-600 font-bold text-sm">{index + 1}</span>
-                                    </div>
-
                                     <div className="pr-12">
                                         <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-blue-600 transition-colors">
                                             {publication.url ? (
@@ -263,7 +276,7 @@ export default function ResearcherSite({
                                         )}
 
                                         <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500 mb-4">
-                                            {publication.journal && (
+                                            {publication.journal && publication.journal !== "Not specified" && (
                                                 <span className="flex items-center gap-2 bg-white px-3 py-1 rounded-full">
                                                     <Book className="h-4 w-4" />
                                                     {publication.journal}
@@ -275,15 +288,31 @@ export default function ResearcherSite({
                                                     {publication.year}
                                                 </span>
                                             )}
-                                            {publication.citations && (
-                                                <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">
-                                                    {publication.citations} citations
-                                                </span>
-                                            )}
                                         </div>
 
+                                        {/* Accordéon pour l'abstract */}
                                         {publication.abstract && (
-                                            <p className="text-gray-700 mb-4 leading-relaxed">{publication.abstract}</p>
+                                            <div className="mb-4">
+                                                <button
+                                                    onClick={() => toggleAbstract(publication.id)}
+                                                    className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors font-medium text-sm"
+                                                >
+                                                    {expandedAbstracts.has(publication.id) ? (
+                                                        <ChevronUp className="h-4 w-4" />
+                                                    ) : (
+                                                        <ChevronDown className="h-4 w-4" />
+                                                    )}
+                                                    {expandedAbstracts.has(publication.id) ? 'Hide' : 'Show'} Abstract
+                                                </button>
+
+                                                {expandedAbstracts.has(publication.id) && (
+                                                    <div className="mt-3 p-4 bg-white rounded-xl border border-gray-200 animate-in slide-in-from-top-2 duration-200">
+                                                        <p className="text-gray-700 leading-relaxed text-sm">
+                                                            {publication.abstract}
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
                                         )}
 
                                         {publication.keywords && publication.keywords.length > 0 && (
@@ -501,7 +530,7 @@ export default function ResearcherSite({
                         <span className="font-bold text-xl">{data.name}</span>
                     </div>
                     <p className="text-gray-400 mb-2">
-                        © {new Date().getFullYear()} {data.name}. All rights reserved.
+                        © {new Date().getFullYear()} Beyond Games. All rights reserved.
                     </p>
                     {customDomain && (
                         <p className="text-sm text-gray-500">

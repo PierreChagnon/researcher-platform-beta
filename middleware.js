@@ -6,16 +6,6 @@ export function middleware(request) {
     const { pathname } = request.nextUrl
     const hostname = request.headers.get("host")
 
-    // Vérifier si cette requête a déjà été rewritée
-    const isRewritten = request.headers.get("x-rewritten") === "true"
-    console.log("x-rewritten header:", request.headers.get("x-rewritten"))
-
-    // Early return pour éviter les boucles sur les rewrites internes
-    if (isRewritten) {
-        console.log("Requête déjà réécrite, passage à la suite")
-        return NextResponse.next()
-    }
-
     // Vérifier si l'utilisateur a un token d'authentification
     const authToken = request.cookies.get("auth-token")?.value
 
@@ -56,7 +46,7 @@ export function middleware(request) {
                 
                 // Créer les headers de requête avec le marqueur de rewrite
                 const requestHeaders = new Headers(request.headers)
-                requestHeaders.set("x-rewritten", "true")
+                // requestHeaders.set("x-rewritten", "true")
                 requestHeaders.set("x-researcher-id", researcherId)
                 requestHeaders.set("x-is-premium", isPremium.toString())
                 requestHeaders.set("x-hostname", hostname)
@@ -86,7 +76,6 @@ export function middleware(request) {
 
                 // Créer les headers de requête avec le marqueur de rewrite
                 const requestHeaders = new Headers(request.headers)
-                requestHeaders.set("x-rewritten", "true")
                 requestHeaders.set("x-researcher-id", researcherId)
                 requestHeaders.set("x-is-premium", isPremium.toString())
                 requestHeaders.set("x-hostname", hostname)
