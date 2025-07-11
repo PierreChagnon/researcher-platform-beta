@@ -30,19 +30,43 @@ export default function DashboardPage() {
         }
     }, [user, loading, router])
 
-    // Gérer les messages de retour
+    // Gérer les messages de retour de Stripe avec Sonner
     useEffect(() => {
-        const payment = searchParams.get("payment")
+        const paymentParam = searchParams.get("payment")
         const sessionId = searchParams.get("session_id")
-        if (payment === "cancelled") {
+
+        if (paymentParam === "success" && sessionId) {
+            console.log("✅ Payment success detected - webhook will handle activation")
+
+            // Toast de succès avec Sonner
+            toast.success("Payment successful!", {
+                description: "Your subscription is being activated. This may take a few moments.",
+                duration: 6000,
+                action: {
+                    label: "Refresh",
+                    onClick: () => window.location.reload(),
+                },
+            })
+
+            // Nettoyer l'URL après affichage du toast
+            setTimeout(() => {
+                const url = new URL(window.location)
+                url.searchParams.delete("payment")
+                url.searchParams.delete("session_id")
+                window.history.replaceState({}, "", url)
+            }, 1000)
+        } else if (paymentParam === "cancelled") {
             toast.error("Payment cancelled", {
-                description: "You can try again when you're ready.",
+                description: "You can try again anytime from your billing settings.",
+                duration: 4000,
             })
-        } else if (payment === "success") {
-            toast.success("Payment successful", {
-                description: "Thank you for your subscription!",
-            })
-            fetchVerifyPayment(sessionId)
+
+            // Nettoyer l'URL
+            setTimeout(() => {
+                const url = new URL(window.location)
+                url.searchParams.delete("payment")
+                window.history.replaceState({}, "", url)
+            }, 1000)
         }
     }, [searchParams])
 
@@ -62,31 +86,6 @@ export default function DashboardPage() {
 
         fetchPublications()
     }, [user])
-
-    const fetchVerifyPayment = async (sessionId) => {
-        // On appelle cette fonction pour vérifier le statut du paiement (route verify-payment)
-        try {
-            const response = await fetch("/api/stripe/verify-payment", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ sessionId }),
-            })
-            if (!response.ok) {
-                throw new Error("Failed to verify payment")
-            }
-            const data = await response.json()
-            console.log("Payment verification response:", data)
-            if (data.error) {
-                console.error("Payment verification error:", data.error)
-            } else {
-                console.log("Payment verified successfully")
-            }
-        } catch (error) {
-            console.error("Error verifying payment:", error)
-        }
-    }
 
     const getProfileCompleteness = () => {
         if (!userData) return 0

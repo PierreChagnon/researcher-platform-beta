@@ -2,6 +2,13 @@ import { NextResponse } from "next/server"
 import { stripe } from "@/lib/stripe"
 import { updateUserSubscription } from "@/lib/firestore"
 
+// Ne PAS utiliser le body parser de Next (important pour Stripe)
+export const config = {
+    api: {
+        bodyParser: false,
+    },
+};
+
 export async function POST(request) {
     const body = await request.text()
     const signature = request.headers.get("stripe-signature")

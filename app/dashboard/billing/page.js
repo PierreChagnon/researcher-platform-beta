@@ -1,18 +1,28 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useTransition } from "react"
 import { useAuth } from "@/contexts/AuthContext"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { CreditCard, Calendar, DollarSign, ExternalLink, Loader2 } from "lucide-react"
+import { CreditCard, Calendar, DollarSign, ExternalLink, Loader2, Trash, Ban } from "lucide-react"
 import { toast } from "sonner"
-import { getUserSubscription } from "@/lib/firestore"
-import { getSubscription } from "@/lib/stripe"
 import { STRIPE_PRICES } from "@/lib/stripe"
 import { useSubscription } from "@/hooks/useSubscription"
+import { cancelSubscriptionAction } from "@/lib/actions/stripe-actions"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 export default function BillingPage() {
     const { user, userData, loading: authLoading } = useAuth()
@@ -20,6 +30,7 @@ export default function BillingPage() {
     const [loading, setLoading] = useState(true)
     const [portalLoading, setPortalLoading] = useState(false)
     const { subscription, loading: subscriptionLoading, error: subscriptionError, refresh, isActive: subscriptionIsActive } = useSubscription()
+    const [isPending, startTransition] = useTransition()
 
     console.log("use subscription:", subscription)
 
@@ -31,11 +42,6 @@ export default function BillingPage() {
     }, [user, authLoading, router])
 
     const handleManageSubscription = async () => {
-        // if (!subscription?.customerId) {
-        //     toast.error("No customer ID found")
-        //     return
-        // }
-
         setPortalLoading(true)
         try {
             const response = await fetch("/api/stripe/customer-portal", {
@@ -57,6 +63,17 @@ export default function BillingPage() {
         } finally {
             setPortalLoading(false)
         }
+    }
+
+    const handleCancelSubscription = async () => {
+        startTransition(async () => {
+            const res = await cancelSubscriptionAction(user.uid)
+            if (res.success) {
+                toast.success("Subscription canceled successfully")
+            } else {
+                toast.error(res.error || "Failed to cancel subscription")
+            }
+        })
     }
 
     const getStatusBadge = (status) => {
@@ -210,27 +227,52 @@ export default function BillingPage() {
                     <CardTitle>Manage Subscription</CardTitle>
                     <CardDescription>Update your payment method, download invoices, or cancel your subscription</CardDescription>
                 </CardHeader>
-                <CardContent>
-                    <Button
-                        onClick={handleManageSubscription}
-                        // disabled={portalLoading || !subscription.customerId}
-                        className="w-full sm:w-auto"
-                    >
-                        {portalLoading ? (
-                            <>
-                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                Opening...
-                            </>
-                        ) : (
-                            <>
-                                <ExternalLink className="h-4 w-4 mr-2" />
-                                Manage Subscription
-                            </>
-                        )}
-                    </Button>
-                    <p className="text-sm text-muted-foreground mt-2">
-                        You&apos;ll be redirected to Stripe to manage your subscription securely.
-                    </p>
+                <CardContent className="flex flex-col gap-4">
+                    <div>
+                        <Button
+                            onClick={handleManageSubscription}
+                            disabled={portalLoading || !subscription.customerId}
+                            className="w-full sm:w-auto"
+                        >
+                            {portalLoading ? (
+                                <>
+                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                    Opening...
+                                </>
+                            ) : (
+                                <>
+                                    <ExternalLink className="h-4 w-4 mr-2" />
+                                    Manage Subscription
+                                </>
+                            )}
+                        </Button>
+                        <p className="text-sm text-muted-foreground mt-2">
+                            You&apos;ll be redirected to Stripe to manage your subscription securely.
+                        </p>
+                    </div>
+                    <Separator className="my-4" />
+                    <div>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button className="w-full sm:w-auto" variant="destructive"><Ban className="h-4 w-4 mr-2" />Cancel subscription</Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        Canceling your subscription will unpublish your website at the end of your current billing period. Your site will no longer be accessible online, but you will still be able to reactivate your subscription and restore your website later if you wish.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction asChild><Button className="bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60" variant="destructive" onClick={handleCancelSubscription}>{isPending ? "Cancelling..." : "Confirm cancellation"}</Button></AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                        <p className="text-sm text-muted-foreground mt-2">
+                            You can reactivate your subscription later and bring your website back online.
+                        </p>
+                    </div>
                 </CardContent>
             </Card>
 
