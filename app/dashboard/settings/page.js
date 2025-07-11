@@ -238,19 +238,6 @@ export default function SettingsPage() {
                                     </div>
                                     <div className="flex items-center justify-between">
                                         <p className="text-sm text-muted-foreground">The custom URL of your website.</p>
-                                        {formData.siteUrl && urlStatus === "available" && (
-                                            <Button variant="outline" size="sm" asChild>
-                                                <a
-                                                    href={`https://${DOMAIN}/sites/${formData.siteUrl}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex items-center gap-1"
-                                                >
-                                                    <ExternalLink className="h-3 w-3" />
-                                                    View site
-                                                </a>
-                                            </Button>
-                                        )}
                                     </div>
                                     {errors.siteUrl && <p className="text-sm text-red-500">{errors.siteUrl}</p>}
                                 </div>
