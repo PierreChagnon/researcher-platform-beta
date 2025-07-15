@@ -7,14 +7,12 @@ import { db } from "@/lib/firebase"
 
 export function useTeaching() {
     const [teachings, setTeachings] = useState([])
-    const [guestLectures, setGuestLectures] = useState([])
     const [loading, setLoading] = useState(true)
     const { user } = useAuth()
 
     const fetchTeachingData = async () => {
         if (!user || !db) {
             setTeachings([])
-            setGuestLectures([])
             setLoading(false)
             return
         }
@@ -29,34 +27,17 @@ export function useTeaching() {
                 orderBy("year", "desc"),
             )
 
-            // Fetch guest lectures
-            const guestLecturesQuery = query(
-                collection(db, "guestLectures"),
-                where("userId", "==", user.uid),
-                orderBy("year", "desc"),
-            )
-
-            const [teachingsSnapshot, guestLecturesSnapshot] = await Promise.all([
-                getDocs(teachingsQuery),
-                getDocs(guestLecturesQuery),
-            ])
+            const teachingsSnapshot = await getDocs(teachingsQuery)
 
             const teachingsData = teachingsSnapshot.docs.map((doc) => ({
                 id: doc.id,
                 ...doc.data(),
             }))
 
-            const guestLecturesData = guestLecturesSnapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-            }))
-
             setTeachings(teachingsData)
-            setGuestLectures(guestLecturesData)
         } catch (error) {
             console.error("Error while fetching teaching data:", error)
             setTeachings([])
-            setGuestLectures([])
         } finally {
             setLoading(false)
         }
@@ -72,7 +53,6 @@ export function useTeaching() {
 
     return {
         teachings,
-        guestLectures,
         loading,
         refreshTeachingData,
     }

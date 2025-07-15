@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+
 import { Checkbox } from "@/components/ui/checkbox"
 import {
     DropdownMenu,
@@ -67,6 +69,14 @@ import {
 import { toast } from "sonner"
 import { PublicationSyncModal } from "@/components/PublicationSyncModal"
 
+const PUBLICATION_CATEGORIES = [
+    { value: "journal-articles", label: "Journal Articles", color: "bg-purple-100 text-purple-800" },
+    { value: "working-papers", label: "Working Papers", color: "bg-red-100 text-red-800" },
+    { value: "revisions", label: "Articles in revision", color: "bg-blue-100 text-blue-800" },
+    { value: "letters", label: "Letters and Commentaries", color: "bg-blue-100 text-blue-800" },
+    { value: "book-chapters", label: "Book Chapters", color: "bg-blue-100 text-blue-800" },
+]
+
 export default function PublicationsPage() {
     const [searchTerm, setSearchTerm] = useState("")
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
@@ -81,6 +91,10 @@ export default function PublicationsPage() {
     const [editingPublication, setEditingPublication] = useState(null)
     const [isSyncModalOpen, setIsSyncModalOpen] = useState(false)
     const [publicationsPreview, setPublicationsPreview] = useState([])
+
+    const getCategoryInfo = (categoryValue) => {
+        return PUBLICATION_CATEGORIES.find((cat) => cat.value === categoryValue) || PUBLICATION_CATEGORIES[0]
+    }
 
     const filteredPublications = publications.filter(
         (pub) =>
@@ -327,6 +341,21 @@ export default function PublicationsPage() {
                                                 <Label htmlFor="journal">Journal *</Label>
                                                 <Input id="journal" name="journal" defaultValue={editingPublication?.journal} required />
                                             </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="category">Category *</Label>
+                                                <Select name="category" required>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select a category" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {PUBLICATION_CATEGORIES.map((category) => (
+                                                            <SelectItem key={category.value} value={category.value}>
+                                                                {category.label}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-2">
                                                     <Label htmlFor="year">Year *</Label>
@@ -439,6 +468,7 @@ export default function PublicationsPage() {
                                             </TableHead>
                                             <TableHead>Title</TableHead>
                                             <TableHead className="hidden md:table-cell">Journal</TableHead>
+                                            <TableHead className="hidden md:table-cell">Category</TableHead>
                                             <TableHead className="hidden md:table-cell">Year</TableHead>
                                             <TableHead className="hidden md:table-cell">Source</TableHead>
                                             <TableHead className="hidden md:table-cell">PDF</TableHead>
@@ -455,132 +485,138 @@ export default function PublicationsPage() {
                                                 </TableCell>
                                             </TableRow>
                                         ) : (
-                                            filteredPublications.map((pub) => (
-                                                <TableRow key={pub.firestoreId}>
-                                                    <TableCell>
-                                                        <Checkbox
-                                                            checked={selectedPublications.has(pub.firestoreId)}
-                                                            onCheckedChange={(checked) => handleSelectPublication(pub.firestoreId, checked)}
-                                                            aria-label={`Select ${pub.title}`}
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell className="font-medium">
-                                                        <div>
-                                                            <div className="font-medium">{pub.title}</div>
-                                                            <div className="text-sm text-muted-foreground md:hidden">
-                                                                {pub.journal} • {pub.year}
-                                                            </div>
-                                                        </div>
-                                                    </TableCell>
-                                                    <TableCell className="hidden md:table-cell">{pub.journal}</TableCell>
-                                                    <TableCell className="hidden md:table-cell">{pub.year}</TableCell>
-                                                    <TableCell className="hidden md:table-cell">
-                                                        <Badge variant={pub.source === "openalex" ? "default" : "secondary"}>
-                                                            {pub.source === "openalex" ? (
-                                                                <div className="flex items-center gap-1">
-                                                                    <Globe className="h-3 w-3" />
-                                                                    OpenAlex
+                                            filteredPublications.map((pub) => {
+                                                const categoryInfo = getCategoryInfo(pub.category)
+                                                return (
+                                                    <TableRow key={pub.firestoreId}>
+                                                        <TableCell>
+                                                            <Checkbox
+                                                                checked={selectedPublications.has(pub.firestoreId)}
+                                                                onCheckedChange={(checked) => handleSelectPublication(pub.firestoreId, checked)}
+                                                                aria-label={`Select ${pub.title}`}
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell className="font-medium">
+                                                            <div>
+                                                                <div className="font-medium">{pub.title}</div>
+                                                                <div className="text-sm text-muted-foreground md:hidden">
+                                                                    {pub.journal} • {pub.year}
                                                                 </div>
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="hidden md:table-cell">{pub.journal}</TableCell>
+                                                        <TableCell className="hidden md:table-cell">
+                                                            <Badge className={categoryInfo.color}>{categoryInfo.label}</Badge>
+                                                        </TableCell>
+                                                        <TableCell className="hidden md:table-cell">{pub.year}</TableCell>
+                                                        <TableCell className="hidden md:table-cell">
+                                                            <Badge variant={pub.source === "openalex" ? "default" : "secondary"}>
+                                                                {pub.source === "openalex" ? (
+                                                                    <div className="flex items-center gap-1">
+                                                                        <Globe className="h-3 w-3" />
+                                                                        OpenAlex
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="flex items-center gap-1">
+                                                                        <FileText className="h-3 w-3" />
+                                                                        Manual
+                                                                    </div>
+                                                                )}
+                                                            </Badge>
+                                                        </TableCell>
+                                                        <TableCell className="hidden md:table-cell">
+                                                            {pub.pdfUrl ? (
+                                                                <Button variant="outline" size="sm" asChild>
+                                                                    <a href={pub.pdfUrl} target="_blank" rel="noopener noreferrer">
+                                                                        <File className="h-3 w-3 mr-1" />
+                                                                        PDF
+                                                                    </a>
+                                                                </Button>
                                                             ) : (
-                                                                <div className="flex items-center gap-1">
-                                                                    <FileText className="h-3 w-3" />
-                                                                    Manual
+                                                                <div className="relative">
+                                                                    <input
+                                                                        type="file"
+                                                                        accept=".pdf"
+                                                                        onChange={(e) => {
+                                                                            const file = e.target.files?.[0]
+                                                                            if (file) handlePdfUpload(pub.id, file)
+                                                                        }}
+                                                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                                                        disabled={uploadingPdf === pub.id}
+                                                                    />
+                                                                    <Button variant="outline" size="sm" disabled={uploadingPdf === pub.id}>
+                                                                        {uploadingPdf === pub.id ? (
+                                                                            <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+                                                                        ) : (
+                                                                            <Upload className="h-3 w-3 mr-1" />
+                                                                        )}
+                                                                        Upload PDF
+                                                                    </Button>
                                                                 </div>
                                                             )}
-                                                        </Badge>
-                                                    </TableCell>
-                                                    <TableCell className="hidden md:table-cell">
-                                                        {pub.pdfUrl ? (
-                                                            <Button variant="outline" size="sm" asChild>
-                                                                <a href={pub.pdfUrl} target="_blank" rel="noopener noreferrer">
-                                                                    <File className="h-3 w-3 mr-1" />
-                                                                    PDF
-                                                                </a>
-                                                            </Button>
-                                                        ) : (
-                                                            <div className="relative">
-                                                                <input
-                                                                    type="file"
-                                                                    accept=".pdf"
-                                                                    onChange={(e) => {
-                                                                        const file = e.target.files?.[0]
-                                                                        if (file) handlePdfUpload(pub.id, file)
-                                                                    }}
-                                                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                                                    disabled={uploadingPdf === pub.id}
-                                                                />
-                                                                <Button variant="outline" size="sm" disabled={uploadingPdf === pub.id}>
-                                                                    {uploadingPdf === pub.id ? (
-                                                                        <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
-                                                                    ) : (
-                                                                        <Upload className="h-3 w-3 mr-1" />
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <DropdownMenu>
+                                                                <DropdownMenuTrigger asChild>
+                                                                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                                        <MoreHorizontal className="h-4 w-4" />
+                                                                        <span className="sr-only">Actions</span>
+                                                                    </Button>
+                                                                </DropdownMenuTrigger>
+                                                                <DropdownMenuContent align="end">
+                                                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                                    <DropdownMenuSeparator />
+                                                                    <DropdownMenuItem
+                                                                        className="flex items-center gap-2"
+                                                                        onClick={() => openEditDialog(pub)}
+                                                                    >
+                                                                        <Edit className="h-4 w-4" />
+                                                                        <span>Edit</span>
+                                                                    </DropdownMenuItem>
+                                                                    {pub.url && (
+                                                                        <DropdownMenuItem asChild>
+                                                                            <a
+                                                                                href={pub.url}
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                                className="flex items-center gap-2"
+                                                                            >
+                                                                                <ExternalLink className="h-4 w-4" />
+                                                                                <span>Open link</span>
+                                                                            </a>
+                                                                        </DropdownMenuItem>
                                                                     )}
-                                                                    Upload PDF
-                                                                </Button>
-                                                            </div>
-                                                        )}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <DropdownMenu>
-                                                            <DropdownMenuTrigger asChild>
-                                                                <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                                    <MoreHorizontal className="h-4 w-4" />
-                                                                    <span className="sr-only">Actions</span>
-                                                                </Button>
-                                                            </DropdownMenuTrigger>
-                                                            <DropdownMenuContent align="end">
-                                                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                                <DropdownMenuSeparator />
-                                                                <DropdownMenuItem
-                                                                    className="flex items-center gap-2"
-                                                                    onClick={() => openEditDialog(pub)}
-                                                                >
-                                                                    <Edit className="h-4 w-4" />
-                                                                    <span>Edit</span>
-                                                                </DropdownMenuItem>
-                                                                {pub.url && (
-                                                                    <DropdownMenuItem asChild>
-                                                                        <a
-                                                                            href={pub.url}
-                                                                            target="_blank"
-                                                                            rel="noopener noreferrer"
-                                                                            className="flex items-center gap-2"
-                                                                        >
-                                                                            <ExternalLink className="h-4 w-4" />
-                                                                            <span>Open link</span>
-                                                                        </a>
+                                                                    {pub.osfUrl && (
+                                                                        <DropdownMenuItem asChild>
+                                                                            <a
+                                                                                href={pub.osfUrl}
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                                className="flex items-center gap-2"
+                                                                            >
+                                                                                <ExternalLink className="h-4 w-4" />
+                                                                                <span>View on OSF</span>
+                                                                            </a>
+                                                                        </DropdownMenuItem>
+                                                                    )}
+                                                                    <DropdownMenuItem className="flex items-center gap-2">
+                                                                        <Download className="h-4 w-4" />
+                                                                        <span>Download</span>
                                                                     </DropdownMenuItem>
-                                                                )}
-                                                                {pub.osfUrl && (
-                                                                    <DropdownMenuItem asChild>
-                                                                        <a
-                                                                            href={pub.osfUrl}
-                                                                            target="_blank"
-                                                                            rel="noopener noreferrer"
-                                                                            className="flex items-center gap-2"
-                                                                        >
-                                                                            <ExternalLink className="h-4 w-4" />
-                                                                            <span>View on OSF</span>
-                                                                        </a>
+                                                                    <DropdownMenuSeparator />
+                                                                    <DropdownMenuItem
+                                                                        className="flex items-center gap-2 text-destructive focus:text-destructive"
+                                                                        onClick={() => openDeleteDialog(pub)}
+                                                                    >
+                                                                        <Trash className="h-4 w-4" />
+                                                                        <span>Delete</span>
                                                                     </DropdownMenuItem>
-                                                                )}
-                                                                <DropdownMenuItem className="flex items-center gap-2">
-                                                                    <Download className="h-4 w-4" />
-                                                                    <span>Download</span>
-                                                                </DropdownMenuItem>
-                                                                <DropdownMenuSeparator />
-                                                                <DropdownMenuItem
-                                                                    className="flex items-center gap-2 text-destructive focus:text-destructive"
-                                                                    onClick={() => openDeleteDialog(pub)}
-                                                                >
-                                                                    <Trash className="h-4 w-4" />
-                                                                    <span>Delete</span>
-                                                                </DropdownMenuItem>
-                                                            </DropdownMenuContent>
-                                                        </DropdownMenu>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))
+                                                                </DropdownMenuContent>
+                                                            </DropdownMenu>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )
+                                            })
                                         )}
                                     </TableBody>
                                 </Table>
