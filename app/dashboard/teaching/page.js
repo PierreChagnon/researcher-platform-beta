@@ -100,7 +100,7 @@ export default function TeachingPage() {
         if (!teachingToDelete) return
 
         startTransition(async () => {
-            const result = await deleteTeachingAction(teachingToDelete.firestoreId)
+            const result = await deleteTeachingAction(teachingToDelete.id)
             if (result.success) {
                 toast.success(result.message)
                 setIsDeleteTeachingDialogOpen(false)
@@ -150,10 +150,6 @@ export default function TeachingPage() {
                     <h1 className="text-3xl font-bold tracking-tight">Teaching</h1>
                     <p className="text-muted-foreground">Manage your teaching activities and guest lectures.</p>
                 </div>
-            </div>
-
-
-            <div className="flex justify-end">
                 <Dialog open={isTeachingDialogOpen} onOpenChange={setIsTeachingDialogOpen}>
                     <DialogTrigger asChild>
                         <Button className="flex items-center gap-2">

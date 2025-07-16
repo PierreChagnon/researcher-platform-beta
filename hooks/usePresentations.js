@@ -5,6 +5,15 @@ import { useAuth } from "@/contexts/AuthContext"
 import { collection, query, where, orderBy, getDocs } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 
+const PRESENTATION_CATEGORIES = [
+    { value: "invited-speaker", label: "Invited Speaker", color: "bg-purple-100 text-purple-800" },
+    { value: "keynote", label: "Conference Keynote Speaker", color: "bg-red-100 text-red-800" },
+    { value: "long-talk", label: "Conference Long Talk", color: "bg-blue-100 text-blue-800" },
+    { value: "short-talk", label: "Conference Short Talk", color: "bg-green-100 text-green-800" },
+    { value: "flash-talk", label: "Conference Flash Talk", color: "bg-yellow-100 text-yellow-800" },
+    { value: "poster", label: "Poster", color: "bg-gray-100 text-gray-800" },
+]
+
 export function usePresentations() {
     const [presentations, setPresentations] = useState([])
     const [loading, setLoading] = useState(true)
@@ -41,6 +50,16 @@ export function usePresentations() {
         }
     }
 
+    // Filtered presentations by category
+    const categorizedPresentations = PRESENTATION_CATEGORIES.map((category) => {
+        const filtered = presentations.filter((pres) => pres.category === category.value)
+        return {
+            ...category,
+            presentations: filtered,
+            count: filtered.length,
+        }
+    }).filter((cat) => cat.count > 0)
+
     useEffect(() => {
         fetchPresentations()
     }, [user])
@@ -51,6 +70,7 @@ export function usePresentations() {
 
     return {
         presentations,
+        categorizedPresentations,
         loading,
         refreshPresentations,
     }

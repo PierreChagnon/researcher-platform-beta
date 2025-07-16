@@ -5,6 +5,12 @@ import { useAuth } from "@/contexts/AuthContext"
 import { collection, query, where, orderBy, getDocs } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 
+const TEACHING_CATEGORIES = [
+    { value: "lecturer", label: "Lecturer", color: "bg-purple-100 text-purple-800" },
+    { value: "teaching-assistant", label: "Teaching Assistant", color: "bg-red-100 text-red-800" },
+    { value: "guest-lecture", label: "Guest Lecture", color: "bg-blue-100 text-blue-800" },
+]
+
 export function useTeaching() {
     const [teachings, setTeachings] = useState([])
     const [loading, setLoading] = useState(true)
@@ -43,6 +49,17 @@ export function useTeaching() {
         }
     }
 
+    // Filtered teachings by category
+    const categorizedTeachings = TEACHING_CATEGORIES.map((category) => {
+        const filtered = teachings.filter((teach) => teach.category === category.value)
+        return {
+            ...category,
+            teachings: filtered,
+            count: filtered.length,
+        }
+    }
+    ).filter((cat) => cat.count > 0)
+
     useEffect(() => {
         fetchTeachingData()
     }, [user])
@@ -53,6 +70,7 @@ export function useTeaching() {
 
     return {
         teachings,
+        categorizedTeachings,
         loading,
         refreshTeachingData,
     }

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useAuth } from "@/contexts/AuthContext"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -12,6 +12,9 @@ import { updateCvData, getCvData } from "@/lib/actions/cv-actions"
 import { doc, getDoc, collection, query, where, getDocs, orderBy } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { toast } from "sonner"
+import { usePublications } from "@/hooks/usePublications"
+import { usePresentations } from "@/hooks/usePresentations"
+import { useTeaching } from "@/hooks/useTeaching"
 
 export default function CvPreview() {
     const { user } = useAuth()
@@ -22,11 +25,16 @@ export default function CvPreview() {
         funding: [],
         awards: [],
         reviewing: [],
-        expertise: [],
-        languages: [],
+        presentations: [],
+        teaching: [],
         skills: [],
     })
-    const [publications, setPublications] = useState([])
+    const { publications, categorizedPublications } = usePublications()
+    const { presentations, categorizedPresentations } = usePresentations()
+    const { teaching, categorizedTeachings } = useTeaching()
+    console.log("categorizedteachings", categorizedTeachings)
+    console.log("teaching", teaching)
+
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
 
@@ -50,20 +58,6 @@ export default function CvPreview() {
                         setCvData((prev) => ({ ...prev, ...existingCvData }))
                     }
                 }
-                // Charger les publications
-                const publicationsRef = collection(db, "publications")
-                const publicationsQuery = query(
-                    publicationsRef,
-                    where("userId", "==", user.uid),
-                    where("isVisible", "==", true),
-                    orderBy("year", "desc"),
-                )
-                const publicationsSnapshot = await getDocs(publicationsQuery)
-                const publicationsData = publicationsSnapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    ...doc.data(),
-                }))
-                setPublications(publicationsData)
             } catch (error) {
                 console.error("Error loading data:", error)
             } finally {
@@ -83,8 +77,8 @@ export default function CvPreview() {
             formData.append("funding", JSON.stringify(cvData.funding))
             formData.append("awards", JSON.stringify(cvData.awards))
             formData.append("reviewing", JSON.stringify(cvData.reviewing))
-            formData.append("expertise", JSON.stringify(cvData.expertise))
-            formData.append("languages", JSON.stringify(cvData.languages))
+            formData.append("presentations", JSON.stringify(cvData.presentations))
+            formData.append("teaching", JSON.stringify(cvData.teaching))
             formData.append("skills", JSON.stringify(cvData.skills))
 
             const result = await updateCvData(formData)
@@ -140,7 +134,7 @@ export default function CvPreview() {
             case "awards":
                 return { title: "", organization: "", year: "", description: "" }
             case "reviewing":
-                return { journal: "", years: "", description: "" }
+                return { journal: "" }
             case "expertise":
                 return { organization: "", role: "", years: "", description: "" }
             case "languages":
@@ -171,7 +165,7 @@ export default function CvPreview() {
 
     return (
         <>
-            <div className="max-w-6xl mx-auto p-6">
+            <div className="p-6">
                 <div className="flex justify-between items-center mb-6 no-print">
                     <h1 className="text-2xl font-bold">CV Builder</h1>
                     <div className="flex gap-2">
@@ -189,22 +183,28 @@ export default function CvPreview() {
                     {/* Formulaire d'édition */}
                     <div className="space-y-6 no-print">
                         <Tabs defaultValue="positions" className="w-full">
-                            <TabsList className="grid w-full grid-cols-3">
+                            <TabsList className="grid w-full grid-cols-4">
                                 <TabsTrigger value="positions">Positions</TabsTrigger>
                                 <TabsTrigger value="education">Education</TabsTrigger>
                                 <TabsTrigger value="funding">Funding</TabsTrigger>
+                                <TabsTrigger value="reviewing">Reviewing</TabsTrigger>
                             </TabsList>
 
                             <TabsContent value="positions">
                                 <Card>
-                                    <CardContent className="p-6">
+                                    <CardHeader className="p-6">
                                         <div className="flex justify-between items-center mb-4">
-                                            <h3 className="text-lg font-semibold">Academic Positions</h3>
+                                            <CardTitle className="text-lg font-semibold">Academic Positions</CardTitle>
                                             <Button onClick={() => addItem("positions")} size="sm">
                                                 <Plus className="h-4 w-4 mr-2" />
                                                 Add Position
                                             </Button>
                                         </div>
+                                        <CardDescription>
+                                            Add your academic positions, including job title, institution, location, and description.
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="p-6">
                                         <div className="space-y-4">
                                             {cvData.positions.map((position, index) => (
                                                 <div key={index} className="border rounded-lg p-4">
@@ -259,14 +259,19 @@ export default function CvPreview() {
 
                             <TabsContent value="education">
                                 <Card>
-                                    <CardContent className="p-6">
+                                    <CardHeader className="p-6">
                                         <div className="flex justify-between items-center mb-4">
-                                            <h3 className="text-lg font-semibold">Education</h3>
+                                            <CardTitle className="text-lg font-semibold">Education</CardTitle>
                                             <Button onClick={() => addItem("education")} size="sm">
                                                 <Plus className="h-4 w-4 mr-2" />
-                                                Add Degree
+                                                Add Education
                                             </Button>
                                         </div>
+                                        <CardDescription>
+                                            Add your educational background, including degree, institution, location, and year.
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="p-6">
                                         <div className="space-y-4">
                                             {cvData.education.map((edu, index) => (
                                                 <div key={index} className="border rounded-lg p-4">
@@ -314,14 +319,19 @@ export default function CvPreview() {
 
                             <TabsContent value="funding">
                                 <Card>
-                                    <CardContent className="p-6">
+                                    <CardHeader className="p-6">
                                         <div className="flex justify-between items-center mb-4">
-                                            <h3 className="text-lg font-semibold">Research Funding & Awards</h3>
+                                            <CardTitle className="text-lg font-semibold">Research, Funding & Award</CardTitle>
                                             <Button onClick={() => addItem("funding")} size="sm">
                                                 <Plus className="h-4 w-4 mr-2" />
-                                                Add Funding
+                                                Add Fundings
                                             </Button>
                                         </div>
+                                        <CardDescription>
+                                            Add your research funding and awards, including title, agency, amount, year, role, and description.
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="p-6">
                                         <div className="space-y-4">
                                             {cvData.funding.map((fund, index) => (
                                                 <div key={index} className="border rounded-lg p-4">
@@ -366,6 +376,44 @@ export default function CvPreview() {
                                                         onChange={(e) => updateItem("funding", index, "description", e.target.value)}
                                                         rows={2}
                                                     />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </TabsContent>
+
+                            <TabsContent value="reviewing">
+                                <Card>
+                                    <CardHeader className="p-6">
+                                        <div className="flex justify-between items-center mb-4">
+                                            <CardTitle className="text-lg font-semibold">Reviewing</CardTitle>
+                                            <Button onClick={() => addItem("reviewing")} size="sm">
+                                                <Plus className="h-4 w-4 mr-2" />
+                                                Add Reviews
+                                            </Button>
+                                        </div>
+                                        <CardDescription>
+                                            List journals you have reviewed for.
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="p-6">
+                                        <div className="space-y-4">
+                                            {cvData.reviewing.map((review, index) => (
+                                                <div key={index} className="border rounded-lg p-4">
+                                                    <div className="flex justify-between items-start mb-3">
+                                                        <h4 className="font-medium">Review {index + 1}</h4>
+                                                        <Button onClick={() => removeItem("reviewing", index)} size="sm" variant="destructive">
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-3">
+                                                        <Input
+                                                            placeholder="Journal"
+                                                            value={review.journal}
+                                                            onChange={(e) => updateItem("reviewing", index, "journal", e.target.value)}
+                                                        />
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>
@@ -481,25 +529,86 @@ export default function CvPreview() {
                                     )}
 
                                     {/* Publications */}
-                                    {publications.length > 0 && (
+                                    {categorizedPublications.length > 0 && (
                                         <div className="mb-6">
                                             <h2 className="text-lg font-bold border-b border-gray-400 mb-3">Publications</h2>
-                                            <div className="space-y-6">
-                                                {publications.map((pub, index) => (
-                                                    <div key={pub.id} className="text-sm flex flex-col">
-                                                        <div className="font-medium flex flex-col">
-                                                            <div>{pub.authors} ({pub.year}).</div>
-                                                            <div><strong>{pub.title}</strong>.</div>
-                                                        </div>
-                                                        <div className="text-gray-700 italic">
-                                                            {pub.journal !== "Not specified" ? `${pub.journal}, ` : ""}
-                                                            {/* {pub.citations && ` (Citations: ${pub.citations})`} */}
-                                                        </div>
-                                                        {pub.doi && <div className="text-gray-600 text-xs">DOI: {pub.doi}</div>}
+                                            {categorizedPublications.map((category) => (
+                                                <div key={category.value} className="mb-4">
+                                                    <h3 className="text-md font-semibold mb-2 underline">
+                                                        {category.label}
+                                                    </h3>
+                                                    <div className="space-y-2">
+                                                        {category.publications.map((pub, index) => (
+                                                            <div key={index} className="text-sm">
+                                                                <div className="font-medium">
+                                                                    {pub.authors} ({pub.year}). <strong>{pub.title}</strong>.
+                                                                </div>
+                                                                <div className="text-gray-700 italic">
+                                                                    {pub.journal && `${pub.journal}, `}
+                                                                </div>
+                                                                {pub.doi && <div className="text-gray-600 text-xs">DOI: {pub.doi}</div>}
+                                                            </div>
+                                                        ))}
                                                     </div>
-                                                ))}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
 
-                                            </div>
+                                    {/* Presentations */}
+                                    {categorizedPresentations.length > 0 && (
+                                        <div className="mb-6">
+                                            <h2 className="text-lg font-bold border-b border-gray-400 mb-3">Presentations</h2>
+                                            {categorizedPresentations.map((category) => (
+                                                <div key={category.value} className="mb-4">
+                                                    <h3 className="text-md font-semibold mb-2 underline">
+                                                        {category.label}
+                                                    </h3>
+                                                    <div className="space-y-2">
+                                                        {category.presentations.map((pres, index) => (
+                                                            <div key={index} className="text-sm">
+                                                                <div className="font-medium">
+                                                                    {pres.title} ({pres.date})
+                                                                </div>
+                                                                <div className="text-gray-700 italic">
+                                                                    {pres.venue && `${pres.venue}, `}
+                                                                    {pres.location && `${pres.location}, `}
+                                                                    {pres.type && `Type: ${pres.type}`}
+                                                                </div>
+                                                                {pres.abstract && <div className="text-gray-600 mt-1">{pres.abstract}</div>}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {/* Teaching */}
+                                    {categorizedTeachings.length > 0 && (
+                                        <div className="mb-6">
+                                            <h2 className="text-lg font-bold border-b border-gray-400 mb-3">Teaching</h2>
+                                            {categorizedTeachings.map((category) => (
+                                                <div key={category.value} className="mb-4">
+                                                    <h3 className="text-md font-semibold mb-2 underline">
+                                                        {category.label}
+                                                    </h3>
+                                                    <div className="space-y-2">
+                                                        {category.teachings.map((teach, index) => (
+                                                            <div key={index} className="text-sm">
+                                                                <div className="font-medium">
+                                                                    {teach.course} ({teach.year})
+                                                                </div>
+                                                                <div className="text-gray-700 italic">
+                                                                    {teach.institution && `${teach.institution}, `}
+                                                                    {teach.location && `${teach.location}`}
+                                                                </div>
+                                                                {teach.description && <div className="text-gray-600 mt-1">{teach.description}</div>}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
                                     )}
                                 </div>
@@ -560,7 +669,7 @@ export default function CvPreview() {
           
           /* Optimiser la mise en page pour l'impression */
           @page {
-            margin: 1in;
+            margin: 4px;
             size: A4;
              /* Supprimer les en-têtes et pieds de page par défaut */
             @top-left { content: ""; }
@@ -582,9 +691,6 @@ export default function CvPreview() {
             page-break-after: avoid;
           }
           
-          .cv-preview > div {
-            page-break-inside: avoid;
-          }
         }
         
         /* Styles spécifiques quand on imprime le CV */

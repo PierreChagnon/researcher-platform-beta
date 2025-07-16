@@ -37,7 +37,7 @@ export async function GET(request, { params }) {
             year: work.publication_year,
             authors: work.authorships.map((authorship) => authorship.author.display_name).join(", "),
             citations: work.cited_by_count || 0,
-            type: work.type_crossref || "article",
+            type: work.type || "article",
             abstract: work.abstract_inverted_index ? reconstructAbstract(work.abstract_inverted_index) : null,
             doi: work.doi,
             url: work.primary_location?.landing_page_url,

@@ -70,12 +70,34 @@ import { toast } from "sonner"
 import { PublicationSyncModal } from "@/components/PublicationSyncModal"
 
 const PUBLICATION_CATEGORIES = [
-    { value: "journal-articles", label: "Journal Articles", color: "bg-purple-100 text-purple-800" },
-    { value: "working-papers", label: "Working Papers", color: "bg-red-100 text-red-800" },
-    { value: "revisions", label: "Articles in revision", color: "bg-blue-100 text-blue-800" },
-    { value: "letters", label: "Letters and Commentaries", color: "bg-blue-100 text-blue-800" },
-    { value: "book-chapters", label: "Book Chapters", color: "bg-blue-100 text-blue-800" },
-]
+    { value: "article", label: "Articles", color: "bg-purple-100 text-purple-800" },
+    { value: "preprint", label: "Preprints", color: "bg-pink-100 text-pink-800" },
+    { value: "book-chapter", label: "Book Chapters", color: "bg-blue-100 text-blue-800" },
+    { value: "book", label: "Books & Monographs", color: "bg-yellow-100 text-yellow-800" },
+    { value: "book-section", label: "Book Sections/Parts", color: "bg-lime-100 text-lime-800" },
+    { value: "review", label: "Review Articles", color: "bg-indigo-100 text-indigo-800" },
+    { value: "dissertation", label: "Dissertations & Theses", color: "bg-green-100 text-green-800" },
+    { value: "report", label: "Reports", color: "bg-sky-100 text-sky-800" },
+    { value: "dataset", label: "Datasets", color: "bg-orange-100 text-orange-800" },
+    { value: "editorial", label: "Editorials", color: "bg-rose-100 text-rose-800" },
+    { value: "letter", label: "Letters", color: "bg-teal-100 text-teal-800" },
+    { value: "erratum", label: "Errata & Corrections", color: "bg-red-100 text-red-800" },
+    { value: "paratext", label: "Paratexts", color: "bg-fuchsia-100 text-fuchsia-800" },
+    { value: "libguides", label: "Library Guides", color: "bg-cyan-100 text-cyan-800" },
+    { value: "reference-entry", label: "Reference Entries", color: "bg-emerald-100 text-emerald-800" },
+    { value: "peer-review", label: "Peer Reviews", color: "bg-gray-100 text-gray-800" },
+    { value: "supplementary-materials", label: "Supplementary Materials", color: "bg-yellow-100 text-yellow-800" },
+    { value: "standard", label: "Standards", color: "bg-blue-100 text-blue-800" },
+    { value: "grant", label: "Grants", color: "bg-green-100 text-green-800" },
+    { value: "retraction", label: "Retractions", color: "bg-red-100 text-red-800" },
+    { value: "proceedings", label: "Conference Proceedings", color: "bg-indigo-100 text-indigo-800" },
+    { value: "journal", label: "Journals (as entities)", color: "bg-indigo-200 text-indigo-900" },
+    { value: "book-set", label: "Book Sets", color: "bg-yellow-200 text-yellow-900" },
+    { value: "component", label: "Components", color: "bg-gray-100 text-gray-800" },
+    { value: "posted-content", label: "Posted Content", color: "bg-pink-50 text-pink-800" },
+    { value: "other", label: "Other", color: "bg-gray-200 text-gray-800" }
+];
+
 
 export default function PublicationsPage() {
     const [searchTerm, setSearchTerm] = useState("")
@@ -222,7 +244,8 @@ export default function PublicationsPage() {
 
     const handleUpdatePublication = async (formData) => {
         if (!editingPublication) return
-
+        console.log("Editing publication:", editingPublication)
+        console.log("Form data:", formData)
         startTransition(async () => {
             const result = await updatePublicationAction(editingPublication.firestoreId, formData)
             if (result.success) {
@@ -343,7 +366,7 @@ export default function PublicationsPage() {
                                             </div>
                                             <div className="space-y-2">
                                                 <Label htmlFor="category">Category *</Label>
-                                                <Select name="category" required>
+                                                <Select defaultValue={editingPublication?.type} name="category" required>
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Select a category" />
                                                     </SelectTrigger>
@@ -486,7 +509,7 @@ export default function PublicationsPage() {
                                             </TableRow>
                                         ) : (
                                             filteredPublications.map((pub) => {
-                                                const categoryInfo = getCategoryInfo(pub.category)
+                                                const categoryInfo = getCategoryInfo(pub.type)
                                                 return (
                                                     <TableRow key={pub.firestoreId}>
                                                         <TableCell>
@@ -506,7 +529,23 @@ export default function PublicationsPage() {
                                                         </TableCell>
                                                         <TableCell className="hidden md:table-cell">{pub.journal}</TableCell>
                                                         <TableCell className="hidden md:table-cell">
-                                                            <Badge className={categoryInfo.color}>{categoryInfo.label}</Badge>
+                                                            <Select value={pub.type} onValueChange={(value) => {
+                                                                const updatedPub = { ...pub, type: value }
+                                                                setEditingPublication(updatedPub)
+                                                                handleUpdatePublication(updatedPub)
+                                                            }}>
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder={categoryInfo.label} />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {PUBLICATION_CATEGORIES.map((category) => (
+                                                                        <SelectItem key={category.value} value={category.value} className="flex justify-center items-center">
+                                                                            <Badge className={category.color}>{category.label}</Badge>
+                                                                        </SelectItem>
+                                                                    ))}
+                                                                </SelectContent>
+                                                            </Select>
+                                                            {/* <Badge className={categoryInfo.color}>{categoryInfo.label}</Badge> */}
                                                         </TableCell>
                                                         <TableCell className="hidden md:table-cell">{pub.year}</TableCell>
                                                         <TableCell className="hidden md:table-cell">

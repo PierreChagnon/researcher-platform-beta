@@ -19,7 +19,7 @@ import {
     FileIcon as FileUser,
     CreditCard
 } from "lucide-react"
-
+import { Kotta_One } from "next/font/google"
 import { Button } from "@/components/ui/button"
 import {
     DropdownMenu,
@@ -50,6 +50,11 @@ const navigation = [
     { name: "Settings", href: "/dashboard/settings", icon: Settings },
     { name: "Billing", href: "/dashboard/billing", icon: CreditCard },
 ]
+
+const kottaOne = Kotta_One({
+    subsets: ['latin'],
+    weight: '400',
+})
 
 export default function DashboardLayout({ children }) {
     const pathname = usePathname()
@@ -113,7 +118,7 @@ export default function DashboardLayout({ children }) {
                             <SheetContent side="left" className="w-[240px] sm:w-[300px]">
                                 <div className="flex items-center gap-2 font-bold text-xl mb-8">
                                     <BookOpen className="h-6 w-6" />
-                                    <span>ResearchSite</span>
+                                    <span className={`${kottaOne.className}`}>Lokus</span>
                                 </div>
                                 <nav className="flex flex-col gap-2">
                                     {navigation.map((item, index) => renderNavigationItem(item, index, true))}
@@ -122,7 +127,7 @@ export default function DashboardLayout({ children }) {
                         </Sheet>
                         <Link href="/dashboard" className="flex items-center gap-2 font-bold text-xl">
                             <BookOpen className="h-6 w-6" />
-                            <span className="hidden md:inline">ResearchSite</span>
+                            <span className={`hidden md:inline ${kottaOne.className}`}>Lokus</span>
                         </Link>
                     </div>
                     <div className="flex items-center gap-4">
