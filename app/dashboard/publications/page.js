@@ -68,6 +68,7 @@ import {
 } from "@/lib/actions/publication-actions"
 import { toast } from "sonner"
 import { PublicationSyncModal } from "@/components/PublicationSyncModal"
+import { objectToFormData } from "@/lib/utils"
 
 const PUBLICATION_CATEGORIES = [
     { value: "article", label: "Articles", color: "bg-purple-100 text-purple-800" },
@@ -242,12 +243,9 @@ export default function PublicationsPage() {
     const isAllSelected = filteredPublications.length > 0 && selectedPublications.size === filteredPublications.length
     const isIndeterminate = selectedPublications.size > 0 && selectedPublications.size < filteredPublications.length
 
-    const handleUpdatePublication = async (formData) => {
-        if (!editingPublication) return
-        console.log("Editing publication:", editingPublication)
-        console.log("Form data:", formData)
+    const handleUpdatePublication = async (firestoreId, formData) => {
         startTransition(async () => {
-            const result = await updatePublicationAction(editingPublication.firestoreId, formData)
+            const result = await updatePublicationAction(firestoreId, formData)
             if (result.success) {
                 toast.success(result.message)
                 setIsAddDialogOpen(false)
@@ -344,7 +342,10 @@ export default function PublicationsPage() {
                                     </Button>
                                 </DialogTrigger>
                                 <DialogContent className="sm:max-w-[525px]">
-                                    <form action={editingPublication ? handleUpdatePublication : handleAddManualPublication}>
+                                    <form action={formData => editingPublication
+                                        ? handleUpdatePublication(editingPublication.firestoreId, formData)
+                                        : handleAddManualPublication(formData)
+                                    }>
                                         <DialogHeader>
                                             <DialogTitle>
                                                 {editingPublication ? "Edit publication" : "Add a publication"}
@@ -366,7 +367,7 @@ export default function PublicationsPage() {
                                             </div>
                                             <div className="space-y-2">
                                                 <Label htmlFor="category">Category *</Label>
-                                                <Select defaultValue={editingPublication?.type} name="category" required>
+                                                <Select defaultValue={editingPublication?.type} name="type" required>
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Select a category" />
                                                     </SelectTrigger>
@@ -529,12 +530,15 @@ export default function PublicationsPage() {
                                                         </TableCell>
                                                         <TableCell className="hidden md:table-cell">{pub.journal}</TableCell>
                                                         <TableCell className="hidden md:table-cell">
-                                                            <Select value={pub.type} onValueChange={(value) => {
+                                                            <Select 
+                                                            className="w-full"
+                                                            value={pub.type} 
+                                                            onValueChange={(value) => {
                                                                 const updatedPub = { ...pub, type: value }
-                                                                setEditingPublication(updatedPub)
-                                                                handleUpdatePublication(updatedPub)
+                                                                const formData = objectToFormData(updatedPub)
+                                                                handleUpdatePublication(updatedPub.firestoreId, formData)
                                                             }}>
-                                                                <SelectTrigger>
+                                                                <SelectTrigger className="w-full">
                                                                     <SelectValue placeholder={categoryInfo.label} />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
