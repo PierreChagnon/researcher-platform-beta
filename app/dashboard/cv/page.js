@@ -29,11 +29,9 @@ export default function CvPreview() {
         teaching: [],
         skills: [],
     })
-    const { publications, categorizedPublications } = usePublications()
-    const { presentations, categorizedPresentations } = usePresentations()
-    const { teaching, categorizedTeachings } = useTeaching()
-    console.log("categorizedteachings", categorizedTeachings)
-    console.log("teaching", teaching)
+    const { categorizedPublications } = usePublications()
+    const { categorizedPresentations } = usePresentations()
+    const { categorizedTeachings } = useTeaching()
 
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)

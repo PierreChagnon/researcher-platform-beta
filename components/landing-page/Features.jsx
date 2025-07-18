@@ -1,91 +1,58 @@
 import React from 'react'
-import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Zap, Database, Globe, Users, BarChart3, Shield } from 'lucide-react'
+import TitleBadge from './TitleBadge'
+import { Check } from 'lucide-react'
+import Image from 'next/image'
 
 export default function Features() {
     return (
-        <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center space-y-4 text-center mb-16">
-                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-                    Everything you need
-                </h2>
-                <p className="max-w-[800px] text-lg text-muted-foreground">
-                    A complete platform to create and manage your academic online presence
-                </p>
+        <div className="flex flex-col lg:flex-row-reverse items-center gap-12">
+            <div className='flex flex-col items-center gap-12 text-center lg:text-start lg:items-start lg:flex-1'>
+                <div className='flex flex-col items-center gap-4 text-center lg:text-start lg:items-start'>
+                    <TitleBadge>Powerfull Features</TitleBadge>
+                    <h2 className='text-primary text-4xl leading-tight font-medium'>Buil faster with powerful features</h2>
+                    <p className='text-muted-foreground '>Lokus combines a sleek, customizable profile, automatic publication updates, project showcases, and CV builder—all in one seamless package.</p>
+                </div>
+                <div className='flex flex-col gap-6'>
+                    <div className='flex items-center gap-2'>
+                        <div className='flex items-center justify-center bg-gradient-to-b from-[#FF2F2F]/50 via-[#EF7B16]/50 to-[#D511FD]/50 rounded-lg p-[2px]'>
+                            <div className='flex items-center justify-center bg-gradient-to-b from-black/80 to-black rounded-md p-1'>
+                                <Check className='text-primary-foreground h-4 w-4' />
+                            </div>
+                        </div>
+                        <p>Publications - Sync your ORCID publications in second.</p>
+                    </div>
+                    <div className='flex items-center gap-2'>
+                        <div className='flex items-center justify-center bg-gradient-to-b from-[#FF2F2F]/50 via-[#EF7B16]/50 to-[#D511FD]/50 rounded-lg p-[2px]'>
+                            <div className='flex items-center justify-center bg-gradient-to-b from-black/80 to-black rounded-md p-1'>
+                                <Check className='text-primary-foreground h-4 w-4' />
+                            </div>
+                        </div>
+                        <p>Teaching & Mentorship - List of courses taught.</p>
+                    </div>
+                    <div className='flex items-center gap-2'>
+                        <div className='flex items-center justify-center bg-gradient-to-b from-[#FF2F2F]/50 via-[#EF7B16]/50 to-[#D511FD]/50 rounded-lg p-[2px]'>
+                            <div className='flex items-center justify-center bg-gradient-to-b from-black/80 to-black rounded-md p-1'>
+                                <Check className='text-primary-foreground h-4 w-4' />
+                            </div>
+                        </div>
+                        <p>Contact & Socials - ORCID, ResearchGate, LinkedIn, GitHub...</p>
+                    </div>
+                    <div className='flex items-center gap-2'>
+                        <div className='flex items-center justify-center bg-gradient-to-b from-[#FF2F2F]/50 via-[#EF7B16]/50 to-[#D511FD]/50 rounded-lg p-[2px]'>
+                            <div className='flex items-center justify-center bg-gradient-to-b from-black/80 to-black rounded-md p-1'>
+                                <Check className='text-primary-foreground h-4 w-4' />
+                            </div>
+                        </div>
+                        <p>CV Builder - Automatic CV gererated with your settings</p>
+                    </div>
+                </div>
             </div>
-
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                <Card className="border-border">
-                    <CardHeader>
-                        <div className="flex h-12 w-12 items-center justify-center rounded-md border border-border">
-                            <Zap className="h-6 w-6" />
-                        </div>
-                        <CardTitle className="text-xl">Quick setup</CardTitle>
-                        <CardDescription className="text-muted-foreground">
-                            Create your site in less than 5 minutes. No technical skills required.
-                        </CardDescription>
-                    </CardHeader>
-                </Card>
-
-                <Card className="border-border">
-                    <CardHeader>
-                        <div className="flex h-12 w-12 items-center justify-center rounded-md border border-border">
-                            <Database className="h-6 w-6" />
-                        </div>
-                        <CardTitle className="text-xl">ORCID synchronization</CardTitle>
-                        <CardDescription className="text-muted-foreground">
-                            Automatically import your publications via your ORCID ID and OpenAlex.
-                        </CardDescription>
-                    </CardHeader>
-                </Card>
-
-                <Card className="border-border">
-                    <CardHeader>
-                        <div className="flex h-12 w-12 items-center justify-center rounded-md border border-border">
-                            <Globe className="h-6 w-6" />
-                        </div>
-                        <CardTitle className="text-xl">Professional design</CardTitle>
-                        <CardDescription className="text-muted-foreground">
-                            Modern and responsive templates, optimized for academic websites.
-                        </CardDescription>
-                    </CardHeader>
-                </Card>
-
-                <Card className="border-border">
-                    <CardHeader>
-                        <div className="flex h-12 w-12 items-center justify-center rounded-md border border-border">
-                            <Users className="h-6 w-6" />
-                        </div>
-                        <CardTitle className="text-xl">Collaboration</CardTitle>
-                        <CardDescription className="text-muted-foreground">
-                            Automatically showcase your collaborators and co-authors.
-                        </CardDescription>
-                    </CardHeader>
-                </Card>
-
-                <Card className="border-border">
-                    <CardHeader>
-                        <div className="flex h-12 w-12 items-center justify-center rounded-md border border-border">
-                            <BarChart3 className="h-6 w-6" />
-                        </div>
-                        <CardTitle className="text-xl">Built-in analytics</CardTitle>
-                        <CardDescription className="text-muted-foreground">
-                            Track visits, downloads, and the impact of your publications.
-                        </CardDescription>
-                    </CardHeader>
-                </Card>
-
-                <Card className="border-border">
-                    <CardHeader>
-                        <div className="flex h-12 w-12 items-center justify-center rounded-md border border-border">
-                            <Shield className="h-6 w-6" />
-                        </div>
-                        <CardTitle className="text-xl">Secure and reliable</CardTitle>
-                        <CardDescription className="text-muted-foreground">
-                            Secure hosting with automatic backup of your data.
-                        </CardDescription>
-                    </CardHeader>
-                </Card>
+            <div className="w-full h-full rounded-lg p-1 flex-1 flex justify-center">
+                <div className="pl-4 pt-4 rounded-lg w-full">
+                    <div className='relative h-96 w-full lg:h-96 lg:w-96 shadow-md'>
+                        <Image src="/site.png" alt="Researcher website example" fill className="h-full w-full rounded-lg object-cover" />
+                    </div>
+                </div>
             </div>
         </div>
     )

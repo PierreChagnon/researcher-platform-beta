@@ -1,0 +1,60 @@
+import React from 'react'
+import Image from 'next/image'
+import { Button } from '../ui/button'
+import TitleBadge from './TitleBadge'
+import { Kotta_One } from 'next/font/google'
+import Link from 'next/link'
+import { Mail } from 'lucide-react'
+import { Input } from '../ui/input'
+import { Label } from '../ui/label'
+import { Textarea } from '../ui/textarea'
+
+const kottaOne = Kotta_One({
+    subsets: ['latin'],
+    weight: '400',
+})
+
+export default function Contact() {
+    return (
+        <div className='flex flex-col md:flex-row gap-12'>
+            <div className='flex flex-col gap-8 items-center md:items-start md:flex-1'>
+                <div className='flex flex-col items-center md:items-start gap-4'>
+                    <TitleBadge >Contact</TitleBadge>
+                    <h2 className='text-primary text-4xl leading-tight font-medium'>We’d Love to Hear From You</h2>
+                </div>
+                <p className='text-muted-foreground'>Contact us for inquiries, support, or feedback. We're here to assist you every step of the way.</p>
+                <div className='flex flex-col md:flex-row justify-between items-center w-full p-4 bg-gray-200 rounded-lg md:gap-4'>
+                    <p className='flex-1 gap-1 flex'><Mail />hello@lokus.com</p>
+                    <Button size={'lg'} className="w-full md:w-fit"><Link href="mailto:hello@lokus.com">Email Us</Link></Button>
+                </div>
+            </div>
+            {/* Contact Form */}
+            <div className='bg-gradient-to-b from-[#FF2F2F]/50 via-[#EF7B16]/50 to-[#D511FD]/50 rounded-lg p-1 flex-1'>
+                <div className='flex flex-col items-center rounded-md bg-background p-6 gap-4'>
+                    <h5 className='text-primary w-full text-2xl font-medium mb-4'>Send us your query</h5>
+                    <form className='flex-rox md:flex-col w-full'>
+                        <div className='space-y-2'>
+                            <Label>Name</Label>
+                            <Input type="text" placeholder="Your Name" className="w-full mb-4" />
+                        </div>
+                        <div className='space-y-2'>
+                            <Label>Subject</Label>
+                            <Input type="text" placeholder="Enter your subject" className="w-full mb-4" />
+                        </div>
+                        <div className='space-y-2'>
+                            <Label>E-Mail</Label>
+                            <Input type="email" placeholder="Your Email" className="w-full mb-4" />
+                        </div>
+                        <div className='space-y-2'>
+                            <Label>Message</Label>
+                            <Textarea placeholder="Your message" className="w-full mb-4" rows={4} />
+                        </div>
+                        <Button type="submit" className='w-full bg-primary text-background hover:bg-primary/90 transition-colors'>
+                            Send Message
+                        </Button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    )
+}

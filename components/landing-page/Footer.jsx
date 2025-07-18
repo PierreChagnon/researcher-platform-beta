@@ -1,92 +1,102 @@
 import React from 'react'
 import Link from 'next/link'
-import { BookOpen } from 'lucide-react'
+import Image from 'next/image'
+import { Kotta_One } from 'next/font/google'
+import { CircleCheck } from 'lucide-react'
+
+const kottaOne = Kotta_One({
+    subsets: ['latin'],
+    weight: '400',
+})
 
 export default function Footer() {
     return (
-        <div className="container px-4 md:px-6">
-            <div className="grid gap-8 md:grid-cols-4">
+        <div className="">
+            <div className="flex flex-col gap-12">
                 <div className="space-y-4">
                     <div className="flex items-center gap-2">
-                        <div className="flex h-6 w-6 items-center justify-center rounded-md bg-foreground text-background">
-                            <BookOpen className="h-3 w-3" />
-                        </div>
-                        <span className="font-bold">ResearchSite</span>
+                        <Image src="/logo-lokus-darktheme.png" alt="Lokus Logo" width={32} height={32} className="h-8 w-8" />
+                        <p className={`font-bold text-2xl text-primary-foreground ${kottaOne.className}`}>Lokus</p>
                     </div>
                     <p className="text-sm text-muted-foreground">
                         The modern platform to create your researcher website in a few clicks.
                     </p>
                 </div>
 
-                <div className="space-y-4">
-                    <h4 className="text-sm font-semibold">Product</h4>
-                    <ul className="space-y-2 text-sm text-muted-foreground">
-                        <li>
-                            <Link href="#features" className="hover:text-foreground transition-colors">
-                                Features
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href="/demo" className="hover:text-foreground transition-colors">
-                                Demo
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href="/pricing" className="hover:text-foreground transition-colors">
-                                Pricing
-                            </Link>
-                        </li>
-                    </ul>
-                </div>
-
-                <div className="space-y-4">
-                    <h4 className="text-sm font-semibold">Support</h4>
-                    <ul className="space-y-2 text-sm text-muted-foreground">
-                        <li>
-                            <Link href="/help" className="hover:text-foreground transition-colors">
-                                Help
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href="/contact" className="hover:text-foreground transition-colors">
-                                Contact
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href="/docs" className="hover:text-foreground transition-colors">
-                                Documentation
-                            </Link>
-                        </li>
-                    </ul>
-                </div>
-
-                <div className="space-y-4">
-                    <h4 className="text-sm font-semibold">Legal</h4>
-                    <ul className="space-y-2 text-sm text-muted-foreground">
-                        <li>
-                            <Link href="/privacy" className="hover:text-foreground transition-colors">
-                                Privacy
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href="/terms" className="hover:text-foreground transition-colors">
-                                Terms
-                            </Link>
-                        </li>
-                    </ul>
+                <div className='flex w-full md:w-auto justify-between md:justify-start gap-8 md:gap-16'>
+                    <div className="space-y-4 text-primary-foreground">
+                        <h5 className="text-sm font-semibold">Home</h5>
+                        <ul className="space-y-2 text-sm text-muted-foreground">
+                            <li>
+                                <Link href="#content" className="hover:text-muted transition-colors">
+                                    Content Management
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="#features" className="hover:text-muted transition-colors">
+                                    Features
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="#pricing" className="hover:text-muted transition-colors">
+                                    Pricing
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="#about" className="hover:text-muted transition-colors">
+                                    About
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="#contact" className="hover:text-muted transition-colors">
+                                    Contact
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="#faq" className="hover:text-muted transition-colors">
+                                    FAQ
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+                    <div className="space-y-4 text-primary-foreground">
+                        <h5 className="text-sm font-semibold">Pages</h5>
+                        <ul className="space-y-2 text-sm text-muted-foreground">
+                            <li>
+                                <Link href="/" className="hover:text-muted transition-colors">
+                                    Home
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/login" className="hover:text-muted transition-colors">
+                                    Login
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/register" className="hover:text-muted transition-colors">
+                                    Register
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+                    <div className="space-y-4 text-primary-foreground">
+                        <h5 className="text-sm font-semibold">Legal</h5>
+                        <ul className="space-y-2 text-sm text-muted-foreground">
+                            <li>
+                                <Link href="/privacy" className="hover:text-muted transition-colors">
+                                    Privacy
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4 mt-12 pt-8 border-t border-border">
-                <p className="text-sm text-muted-foreground">{(new Date().getFullYear())} Beyond Games. All rights reserved.</p>
-                <div className="flex items-center gap-4">
-                    {/* <Button variant="ghost" size="icon" className="h-8 w-8">
-                <Twitter className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <Github className="h-4 w-4" />
-              </Button> */}
+            <div className="flex flex-col items-center justify-center gap-4 mt-12 pt-8 border-t border-border">
+                <div className='px-4 py-2 bg-accent-foreground border border-muted-foreground rounded-full text-center'>
+                    <p className='text-xs text-primary-foreground flex gap-1'><CircleCheck className='h-4 w-4 text-green-500' />All Systems Operational</p>
                 </div>
+                <p className="text-sm text-muted-foreground">{(new Date().getFullYear())} Beyond Games. All rights reserved.</p>
             </div>
         </div>
     )
