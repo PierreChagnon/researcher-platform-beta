@@ -30,23 +30,22 @@ export default function Home() {
         <Link href="/" className={`flex items-center gap-2 text-3xl font-bold ${kottaOne.className} lg:flex-1`}>
           <Image src={"/logo-lokus.png"} height={24} width={32} alt="logo Lokus" className="" />Lokus
         </Link>
-        <nav className="hidden md:flex items-center justify-center gap-6 md:flex-1">
-          <Link href="/" className="text-lg hover:text-primary transition-colors">Home</Link>
-          <Link href="#content" className="text-lg hover:text-primary transition-colors">Content Management</Link>
-          <Link href="#features" className="text-lg hover:text-primary transition-colors">Features</Link>
-          <Link href="#pricing" className="text-lg hover:text-primary transition-colors">Pricing</Link>
-          <Link href="#about" className="text-lg hover:text-primary transition-colors">About</Link>
-          <Link href="#contact" className="text-lg hover:text-primary transition-colors">Contact</Link>
-          <Link href="#faq" className="text-lg hover:text-primary transition-colors">FAQ</Link>
+        <nav className="hidden md:flex items-center justify-center gap-4 lg:gap-6 md:flex-1">
+          <Link href="/" className="text-sm lg:text-base hover:text-primary/50 transition-colors">Home</Link>
+          <Link href="#features" className="text-sm lg:text-base hover:text-primary/50 transition-colors">Features</Link>
+          <Link href="#pricing" className="text-sm lg:text-base hover:text-primary/50 transition-colors">Pricing</Link>
+          <Link href="#about" className="text-sm lg:text-base hover:text-primary/50 transition-colors">About</Link>
+          <Link href="#contact" className="text-sm lg:text-base hover:text-primary/50 transition-colors">Contact</Link>
+          <Link href="#faq" className="text-sm lg:text-base hover:text-primary/50 transition-colors">FAQ</Link>
         </nav>
         <div className="hidden md:flex items-center md:gap-2 lg:gap-6 lg:flex-1 justify-end">
           <Link href="/login" className="text-lg hover:text-primary transition-colors">
-            <Button variant="outline" className="h-10 px-6 text-lg bg-transparent border-primary lg:py-6">
+            <Button variant="outline" className="h-10 px-6 lg:text-lg bg-transparent border-primary lg:py-6">
               Login
             </Button>
           </Link>
           <Link href="/register" className="text-lg hover:text-primary transition-colors">
-            <Button variant="default" className="h-10 px-6 text-lg lg:py-6">
+            <Button variant="default" className="h-10 px-6 lg:text-lg lg:py-6">
               Get Started
             </Button>
           </Link>
@@ -61,7 +60,6 @@ export default function Home() {
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem className="text-lg p-3">Home</DropdownMenuItem>
-              <DropdownMenuItem className="text-lg p-3">Content Management</DropdownMenuItem>
               <DropdownMenuItem className="text-lg p-3">Features</DropdownMenuItem>
               <DropdownMenuItem className="text-lg p-3">Pricing</DropdownMenuItem>
               <DropdownMenuItem className="text-lg p-3">About</DropdownMenuItem>
