@@ -38,14 +38,14 @@ const TextCarousel = () => {
     };
 
     const getTextStyle = (position) => {
-        const baseClasses = "transition-all duration-300 ease-in-out";
+        const baseClasses = "transition-all duration-300 ease-in-out text-center lg:text-start";
 
         if (position === 0) {
-            return `${baseClasses} bg-gradient-to-r from-[#FF2F2F] via-[#EF7B16] to-[#D511FD] bg-clip-text text-transparent text-4xl font-bold text-center lg:text-start`;
+            return `${baseClasses} bg-gradient-to-r from-[#FF2F2F] via-[#EF7B16] to-[#D511FD] bg-clip-text text-transparent text-2xl lg:text-4xl font-bold`;
         } else if (Math.abs(position) === 1) {
-            return `${baseClasses} text-gray-600 opacity-70 text-3xl font-semibold`;
+            return `${baseClasses} text-gray-600 opacity-70 text-xl lg:text-3xl font-semibold`;
         } else {
-            return `${baseClasses} text-gray-400 opacity-40 text-3xl font-semibold`;
+            return `${baseClasses} text-gray-400 opacity-40 text-xl lg:text-3xl font-semibold`;
         }
     };
 
@@ -55,7 +55,7 @@ const TextCarousel = () => {
 
     return (
         <div className="flex flex-col lg:flex-row lg:items-center gap-2 justify-center mx-auto px-6">
-            <h2 className='text-primary text-center lg:text-end text-nowrap text-4xl leading-tight font-bold mb-12 lg:mb-0 lg:w-1/2'>Wave goodbye to</h2>
+            <h2 className='text-primary text-center lg:text-end text-nowrap text-4xl leading-tight font-bold mb-12 lg:mb-0 lg:w-1/2'>👋 Wave goodbye to</h2>
             <div className="relative w-full lg:w-1/2">
                 <div
                     className="relative h-80 overflow-hidden flex items-center justify-center lg:justify-start"

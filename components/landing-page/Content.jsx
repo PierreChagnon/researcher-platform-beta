@@ -10,18 +10,18 @@ export default function Content() {
         <div className="flex flex-col lg:flex-row items-center gap-12">
             <div className='flex flex-col items-center gap-4 text-center lg:text-start lg:items-start lg:flex-1'>
                 <TitleBadge>Content Management</TitleBadge>
-                <h2 className='text-primary text-4xl leading-tight font-medium mb-12'>Everything you need as a researcher</h2>
+                <h2 className='mb-12'>Everything you need as a researcher</h2>
                 {/* 4 features container */}
                 <div className='flex-col items-center justify-center space-y-12 text-start'>
                     <div className='flex flex-col md:flex-row items-center justify-center gap-12'>
                         <div className='flex flex-col gap-1 w-full'>
-                            <Workflow className='text-[#FF2F2F] h-6 w-6 mb-4' />
+                            <Workflow className='text-[#FF2F2F] h-7 w-7 mb-4' />
                             <h5 className='text-primary w-full text-lg font-bold'>Automatic Publication Sync</h5>
                             <p className='text-muted-foreground '>Automatically import your publications via your ORCID ID and OpenAlex.</p>
                         </div>
                         <Separator className='h-24 md:hidden' />
                         <div className='flex flex-col gap-1 w-full'>
-                            <LayoutTemplate className='text-[#8A43E1] h-6 w-6 mb-4' />
+                            <LayoutTemplate className='text-[#8A43E1] h-7 w-7 mb-4' />
                             <h5 className='text-primary w-full text-lg font-bold'>Polished, Consistent Design</h5>
                             <p className='text-muted-foreground '>One expertly crafted template with color themes. Always readable and responsive.</p>
                         </div>
@@ -29,13 +29,13 @@ export default function Content() {
                     <Separator className='h-24 md:hidden' />
                     <div className='flex flex-col md:flex-row items-center justify-center gap-12'>
                         <div className='flex flex-col gap-1 w-full'>
-                            <FileText className='text-[#27B32C] h-6 w-6 mb-4' />
+                            <FileText className='text-[#27B32C] h-7 w-7 mb-4' />
                             <h5 className='text-primary w-full text-lg font-bold'>CV Builder</h5>
                             <p className='text-muted-foreground '>An automatically generated CV using your provided settings.</p>
                         </div>
                         <Separator className='h-24 md:hidden' />
                         <div className='flex flex-col gap-1 w-full'>
-                            <Settings className='text-[#EF7B16] h-6 w-6 mb-4' />
+                            <Settings className='text-[#EF7B16] h-7 w-7 mb-4' />
                             <h5 className='text-primary w-full text-lg font-bold'>Instant Setup</h5>
                             <p className='text-muted-foreground '>Fill out a simple form—name, photo, ORCID—and we build your site.</p>
                         </div>

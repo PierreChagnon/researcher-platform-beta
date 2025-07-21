@@ -13,7 +13,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="fr" suppressHydrationWarning>
+    <html className="scroll-smooth" lang="fr" suppressHydrationWarning>
       <body className={inter.className}>
       <Toaster  position="top-center" />
         {/* <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange> */}

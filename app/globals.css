@@ -122,4 +122,8 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  h2 {
+    @apply text-primary text-4xl leading-tight font-medium;
+  }
 }

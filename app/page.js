@@ -1,3 +1,6 @@
+"use client"
+
+import React, { useState, useEffect } from 'react';
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import {
@@ -23,10 +26,26 @@ const kottaOne = Kotta_One({
 })
 
 export default function Home() {
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY
+      setIsScrolled(scrollTop > 50) // Change la navbar après 50px de scroll
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+
   return (
     <div className="relative flex flex-col min-h-screen bg-accent text-foreground md:items-center">
       <HeroBackground />
-      <header className="w-full flex justify-between items-center px-6 py-4 z-10 md:gap-4">
+      <header className={`w-full flex justify-between items-center px-6 py-4 z-50 md:gap-4 sticky top-0 transition-all duration-300 ${isScrolled
+        ? 'bg-white/95 backdrop-blur-sm shadow-sm border-b border-gray-200 md:top-4 md:w-11/12 md:rounded-lg'
+        : 'bg-transparent'
+        }`}>
         <Link href="/" className={`flex items-center gap-2 text-3xl font-bold ${kottaOne.className} lg:flex-1`}>
           <Image src={"/logo-lokus.png"} height={24} width={32} alt="logo Lokus" className="" />Lokus
         </Link>
@@ -58,24 +77,24 @@ export default function Home() {
                 <Menu className="!h-6 !w-6" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem className="text-lg p-3">Home</DropdownMenuItem>
-              <DropdownMenuItem className="text-lg p-3">Features</DropdownMenuItem>
-              <DropdownMenuItem className="text-lg p-3">Pricing</DropdownMenuItem>
-              <DropdownMenuItem className="text-lg p-3">About</DropdownMenuItem>
-              <DropdownMenuItem className="text-lg p-3">Contact</DropdownMenuItem>
-              <DropdownMenuItem className="text-lg p-3">FAQ</DropdownMenuItem>
+            <DropdownMenuContent className="w-50 bg-white shadow-lg rounded-lg">
+              <DropdownMenuItem className="text-lg p-3"><Link href="/">Home</Link></DropdownMenuItem>
+              <DropdownMenuItem className="text-lg p-3"><Link href="#features">Features</Link></DropdownMenuItem>
+              <DropdownMenuItem className="text-lg p-3"><Link href="#princing">Pricing</Link></DropdownMenuItem>
+              <DropdownMenuItem className="text-lg p-3"><Link href="#about">About</Link></DropdownMenuItem>
+              <DropdownMenuItem className="text-lg p-3"><Link href="#contact">Contact</Link></DropdownMenuItem>
+              <DropdownMenuItem className="text-lg p-3"><Link href="#faq">FAQ</Link></DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
                 <Link href="/login">
-                  <Button variant="outline" className="w-full justify-center text-lg">
+                  <Button variant="outline" className="w-full justify-center py-6">
                     Login
                   </Button>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/register">
-                  <Button variant="default" className="w-full justify-center text-lg">
+                  <Button variant="default" className="w-full justify-center py-6">
                     Get Started
                   </Button>
                 </Link>
@@ -84,34 +103,55 @@ export default function Home() {
           </DropdownMenu>
         </div>
       </header>
-      <main className="flex-1 flex flex-col items-center z-50">
-        <div className="container py-16">
-          <Hero />
-        </div>
-        <div className="container py-16">
-          <Content />
-        </div>
-        <div className="container py-16">
-          <Features />
-        </div>
-        <div className="container py-16 bg-accent border-t border-b border-gray-200 ">
-          <TextCarousel />
-        </div>
-        <div className="container py-16">
-          <Pricing />
-        </div>
-        <div className="container py-16">
-          <About />
-        </div>
-        <div className="container py-16">
-          <Contact />
-        </div>
-        <div className="container py-16">
-          <FAQ />
-        </div>
-        <div className="container py-16 bg-black">
-          <Footer />
-        </div>
+      <main className="flex-1 flex flex-col items-center z-40">
+        <section id='hero' className="py-18 md:py-24 lg:py-36 px-4 w-full">
+          <div className="container w-full">
+            <Hero />
+          </div>
+        </section>
+        <section id='content' className="py-18 md:py-24 lg:py-36 px-4 w-full">
+          <div className="container w-full">
+            <Content />
+          </div>
+        </section>
+        <section id='features' className="py-18 md:py-24 lg:py-36 px-4 w-full">
+          <div className="container w-full">
+            <Features />
+          </div>
+        </section>
+        <section id='carousel' className="relative py-18 md:py-24 lg:py-36 px-4 bg-stone-200/50 border-t border-b border-stone-300 w-full">
+          {/* Absolute positioned circle */}
+          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white border border-stone-300 rounded-full" />
+          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-white border border-stone-300 rounded-full" />
+          <div className="container w-full">
+            <TextCarousel />
+          </div>
+        </section>
+        <section id='pricing' className="py-18 md:py-24 lg:py-36 px-4 w-full">
+          <div className="container w-full">
+            <Pricing />
+          </div>
+        </section>
+        <section id='about' className="py-18 md:py-24 lg:py-36 px-4 w-full">
+          <div className="container w-full">
+            <About />
+          </div>
+        </section>
+        <section id='contact' className="py-18 md:py-24 lg:py-36 px-4 w-full">
+          <div className="container w-full">
+            <Contact />
+          </div>
+        </section>
+        <section id='faq' className="py-18 md:py-24 lg:py-36 px-4 w-full">
+          <div className="container w-full">
+            <FAQ />
+          </div>
+        </section>
+        <footer id='footer' className="py-18 md:py-24 lg:py-36 px-4 bg-black w-full">
+          <div className="container w-full">
+            <Footer />
+          </div>
+        </footer>
       </main>
     </div>
   )
