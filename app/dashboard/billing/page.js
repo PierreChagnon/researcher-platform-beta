@@ -106,6 +106,18 @@ export default function BillingPage() {
         }).format(date)
     }
 
+    const calculateNextBillingDate = (timestamp, plan) => {
+        // Ajouter un mois pour le plan mensuel, un an pour le plan annuel
+        const nextBillingDate = new Date(timestamp)
+        if (plan === "monthly") {
+            nextBillingDate.setMonth(nextBillingDate.getMonth() + 1)
+        } else if (plan === "yearly") {
+            nextBillingDate.setFullYear(nextBillingDate.getFullYear() + 1)
+        }
+
+        return nextBillingDate
+    }
+
     const formatAmount = (amount, currency = "eur") => {
         if (!amount) return "N/A"
 
@@ -188,34 +200,16 @@ export default function BillingPage() {
 
                     <div className="flex items-center justify-between">
                         <span className="font-medium">Plan</span>
-                        <span>{getPlanName(subscription.priceId)}</span>
+                        <span>{subscription.plan.charAt(0).toUpperCase() + subscription.plan.slice(1)}</span>
                     </div>
 
-                    {subscription.amount && (
-                        <div className="flex items-center justify-between">
-                            <span className="font-medium">Amount</span>
-                            <span className="font-mono">
-                                {formatAmount(subscription.amount, subscription.currency)}/{subscription.interval || "month"}
-                            </span>
-                        </div>
-                    )}
-
-                    {subscription.currentPeriodEnd && (
+                    {subscription.pendingSince && (
                         <div className="flex items-center justify-between">
                             <span className="font-medium">Next billing date</span>
                             <div className="flex items-center gap-2">
                                 <Calendar className="h-4 w-4 text-muted-foreground" />
-                                <span>{formatDate(subscription.currentPeriodEnd)}</span>
+                                <span>{formatDate(calculateNextBillingDate(subscription.pendingSince, subscription.plan))}</span>
                             </div>
-                        </div>
-                    )}
-
-                    {subscription.cancelAtPeriodEnd && (
-                        <div className="flex items-center justify-between">
-                            <span className="font-medium">Cancellation</span>
-                            <Badge variant="outline" className="text-orange-600">
-                                Cancels on {formatDate(subscription.currentPeriodEnd)}
-                            </Badge>
                         </div>
                     )}
                 </CardContent>
@@ -233,6 +227,7 @@ export default function BillingPage() {
                             onClick={handleManageSubscription}
                             disabled={portalLoading || !subscription.customerId}
                             className="w-full sm:w-auto"
+                            variant="outline"
                         >
                             {portalLoading ? (
                                 <>
