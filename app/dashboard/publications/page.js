@@ -65,40 +65,24 @@ import {
     deleteMultiplePublicationsAction,
     uploadPublicationPDF,
     updatePublicationAction,
+    deletePublicationPDF,
 } from "@/lib/actions/publication-actions"
 import { toast } from "sonner"
 import { PublicationSyncModal } from "@/components/PublicationSyncModal"
 import { objectToFormData } from "@/lib/utils"
 
 const PUBLICATION_CATEGORIES = [
-    { value: "article", label: "Articles", color: "bg-purple-100 text-purple-800" },
-    { value: "preprint", label: "Preprints", color: "bg-pink-100 text-pink-800" },
-    { value: "book-chapter", label: "Book Chapters", color: "bg-blue-100 text-blue-800" },
-    { value: "book", label: "Books & Monographs", color: "bg-yellow-100 text-yellow-800" },
-    { value: "book-section", label: "Book Sections/Parts", color: "bg-lime-100 text-lime-800" },
-    { value: "review", label: "Review Articles", color: "bg-indigo-100 text-indigo-800" },
-    { value: "dissertation", label: "Dissertations & Theses", color: "bg-green-100 text-green-800" },
-    { value: "report", label: "Reports", color: "bg-sky-100 text-sky-800" },
-    { value: "dataset", label: "Datasets", color: "bg-orange-100 text-orange-800" },
-    { value: "editorial", label: "Editorials", color: "bg-rose-100 text-rose-800" },
-    { value: "letter", label: "Letters", color: "bg-teal-100 text-teal-800" },
-    { value: "erratum", label: "Errata & Corrections", color: "bg-red-100 text-red-800" },
-    { value: "paratext", label: "Paratexts", color: "bg-fuchsia-100 text-fuchsia-800" },
-    { value: "libguides", label: "Library Guides", color: "bg-cyan-100 text-cyan-800" },
-    { value: "reference-entry", label: "Reference Entries", color: "bg-emerald-100 text-emerald-800" },
-    { value: "peer-review", label: "Peer Reviews", color: "bg-gray-100 text-gray-800" },
-    { value: "supplementary-materials", label: "Supplementary Materials", color: "bg-yellow-100 text-yellow-800" },
-    { value: "standard", label: "Standards", color: "bg-blue-100 text-blue-800" },
-    { value: "grant", label: "Grants", color: "bg-green-100 text-green-800" },
-    { value: "retraction", label: "Retractions", color: "bg-red-100 text-red-800" },
-    { value: "proceedings", label: "Conference Proceedings", color: "bg-indigo-100 text-indigo-800" },
-    { value: "journal", label: "Journals (as entities)", color: "bg-indigo-200 text-indigo-900" },
-    { value: "book-set", label: "Book Sets", color: "bg-yellow-200 text-yellow-900" },
-    { value: "component", label: "Components", color: "bg-gray-100 text-gray-800" },
-    { value: "posted-content", label: "Posted Content", color: "bg-pink-50 text-pink-800" },
-    { value: "other", label: "Other", color: "bg-gray-200 text-gray-800" }
-];
-
+    { value: "articles", label: "Articles", color: "bg-purple-100 text-purple-800" },                      // Articles, Reviews, Reports
+    { value: "preprints", label: "Preprints", color: "bg-pink-100 text-pink-800" },                        // Preprints
+    { value: "book-chapters", label: "Book Chapters", color: "bg-blue-100 text-blue-800" },                // Book chapters, Book sections/parts
+    { value: "books", label: "Books & Monographs", color: "bg-yellow-100 text-yellow-800" },               // Books & Monographs
+    { value: "dissertations-and-theses", label: "Dissertations & Theses", color: "bg-green-100 text-green-800" }, // Dissertations & Theses
+    { value: "datasets", label: "Datasets", color: "bg-orange-100 text-orange-800" },                      // Datasets
+    { value: "errata-and-corrections", label: "Errata & Corrections", color: "bg-red-100 text-red-800" },  // Errata & Corrections
+    { value: "conference-proceedings", label: "Conference Proceedings", color: "bg-indigo-100 text-indigo-800" }, // Conference Proceedings
+    { value: "letters-and-commentaries", label: "Letters & Commentaries", color: "bg-teal-100 text-teal-800" },  // Letters & Commentaries
+    { value: "other", label: "Other", color: "bg-gray-200 text-gray-800" },                                // Tout le reste !
+]
 
 export default function PublicationsPage() {
     const [searchTerm, setSearchTerm] = useState("")
@@ -425,6 +409,10 @@ export default function PublicationsPage() {
                                                 <Label htmlFor="abstract">Abstract</Label>
                                                 <Textarea id="abstract" name="abstract" rows={3} defaultValue={editingPublication?.abstract} />
                                             </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="supplementaryMaterials">Supplementary Materials</Label>
+                                                <Input id="supplementaryMaterials" name="supplementaryMaterials" placeholder="Link to supplementary materials" type="url" defaultValue={editingPublication?.supplementaryMaterials} />
+                                            </div>
                                         </div>
                                         <DialogFooter>
                                             <Button type="button" variant="outline" onClick={closeAddDialog}>
@@ -511,6 +499,7 @@ export default function PublicationsPage() {
                                         ) : (
                                             filteredPublications.map((pub) => {
                                                 const categoryInfo = getCategoryInfo(pub.type)
+                                                // console.log("Category Info:", categoryInfo)
                                                 return (
                                                     <TableRow key={pub.firestoreId}>
                                                         <TableCell>
@@ -530,21 +519,27 @@ export default function PublicationsPage() {
                                                         </TableCell>
                                                         <TableCell className="hidden md:table-cell">{pub.journal}</TableCell>
                                                         <TableCell className="hidden md:table-cell">
-                                                            <Select 
-                                                            className="w-full"
-                                                            value={pub.type} 
-                                                            onValueChange={(value) => {
-                                                                const updatedPub = { ...pub, type: value }
-                                                                const formData = objectToFormData(updatedPub)
-                                                                handleUpdatePublication(updatedPub.firestoreId, formData)
-                                                            }}>
-                                                                <SelectTrigger className="w-full">
-                                                                    <SelectValue placeholder={categoryInfo.label} />
+                                                            <Select
+                                                                className="w-full"
+                                                                value={pub.type}
+                                                                onValueChange={(value) => {
+                                                                    const updatedPub = { ...pub, type: value }
+                                                                    const formData = objectToFormData(updatedPub)
+                                                                    handleUpdatePublication(updatedPub.firestoreId, formData)
+                                                                }}>
+                                                                <SelectTrigger className="w-full items-center flex relative">
+                                                                    <SelectValue asChild placeholder={categoryInfo.label}>
+                                                                        <div className="w-full">
+                                                                            <Badge className={`${categoryInfo.color} w-full`}>
+                                                                                {categoryInfo.label}
+                                                                            </Badge>
+                                                                        </div>
+                                                                    </SelectValue>
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {PUBLICATION_CATEGORIES.map((category) => (
-                                                                        <SelectItem key={category.value} value={category.value} className="flex justify-center items-center">
-                                                                            <Badge className={category.color}>{category.label}</Badge>
+                                                                        <SelectItem key={category.value} value={category.value} className={`w-full mb-2 flex justify-center ${category.color}`}>
+                                                                            <Badge className={`${category.color} w-full`}>{category.label}</Badge>
                                                                         </SelectItem>
                                                                     ))}
                                                                 </SelectContent>
@@ -580,15 +575,16 @@ export default function PublicationsPage() {
                                                                     <input
                                                                         type="file"
                                                                         accept=".pdf"
-                                                                        onChange={(e) => {
+                                                                        onChange={async (e) => {
+                                                                            console.log("pub:", pub)
                                                                             const file = e.target.files?.[0]
-                                                                            if (file) handlePdfUpload(pub.id, file)
+                                                                            if (file) await handlePdfUpload(pub.firestoreId, file)
                                                                         }}
                                                                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                                                        disabled={uploadingPdf === pub.id}
+                                                                        disabled={uploadingPdf === pub.firestoreId}
                                                                     />
-                                                                    <Button variant="outline" size="sm" disabled={uploadingPdf === pub.id}>
-                                                                        {uploadingPdf === pub.id ? (
+                                                                    <Button variant="outline" size="sm" disabled={uploadingPdf === pub.firestoreId}>
+                                                                        {uploadingPdf === pub.firestoreId ? (
                                                                             <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
                                                                         ) : (
                                                                             <Upload className="h-3 w-3 mr-1" />
@@ -642,17 +638,24 @@ export default function PublicationsPage() {
                                                                             </a>
                                                                         </DropdownMenuItem>
                                                                     )}
-                                                                    <DropdownMenuItem className="flex items-center gap-2">
-                                                                        <Download className="h-4 w-4" />
-                                                                        <span>Download</span>
+                                                                    <DropdownMenuItem
+                                                                        disabled={!pub.pdfUrl}
+                                                                        className="flex items-center gap-2"
+                                                                        onClick={async () => {
+                                                                            await deletePublicationPDF(pub.firestoreId)
+                                                                            refreshPublications()
+                                                                        }}
+                                                                    >
+                                                                        <Trash className="h-4 w-4" />
+                                                                        <span>Delete PDF</span>
                                                                     </DropdownMenuItem>
                                                                     <DropdownMenuSeparator />
                                                                     <DropdownMenuItem
                                                                         className="flex items-center gap-2 text-destructive focus:text-destructive"
                                                                         onClick={() => openDeleteDialog(pub)}
                                                                     >
-                                                                        <Trash className="h-4 w-4" />
-                                                                        <span>Delete</span>
+                                                                        <Trash className="h-4 w-4 text-destructive" />
+                                                                        <span>Delete publication</span>
                                                                     </DropdownMenuItem>
                                                                 </DropdownMenuContent>
                                                             </DropdownMenu>

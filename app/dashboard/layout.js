@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
 import {
     BookOpen,
@@ -117,7 +118,7 @@ export default function DashboardLayout({ children }) {
                             </SheetTrigger>
                             <SheetContent side="left" className="w-[240px] sm:w-[300px]">
                                 <div className="flex items-center gap-2 font-bold text-xl mb-8">
-                                    <BookOpen className="h-6 w-6" />
+                                    <Image src={"/logo-lokus.png"} height={24} width={32} alt="logo Lokus" className="" />
                                     <span className={`${kottaOne.className}`}>Lokus</span>
                                 </div>
                                 <nav className="flex flex-col gap-2">
@@ -126,7 +127,7 @@ export default function DashboardLayout({ children }) {
                             </SheetContent>
                         </Sheet>
                         <Link href="/dashboard" className="flex items-center gap-2 font-bold text-xl">
-                            <BookOpen className="h-6 w-6" />
+                            <Image src={"/logo-lokus.png"} height={24} width={32} alt="logo Lokus" className="" />
                             <span className={`hidden md:inline ${kottaOne.className}`}>Lokus</span>
                         </Link>
                     </div>

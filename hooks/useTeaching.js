@@ -51,14 +51,15 @@ export function useTeaching() {
 
     // Filtered teachings by category
     const categorizedTeachings = TEACHING_CATEGORIES.map((category) => {
-        const filtered = teachings.filter((teach) => teach.category === category.value)
+        const filtered = teachings
+            .filter((teach) => teach.category === category.value)
+            .sort((a, b) => b.year - a.year) // Tri décroissant par année
         return {
             ...category,
             teachings: filtered,
             count: filtered.length,
         }
-    }
-    ).filter((cat) => cat.count > 0)
+    }).filter((cat) => cat.count > 0)
 
     useEffect(() => {
         fetchTeachingData()

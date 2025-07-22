@@ -13,7 +13,7 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
 
 // Centralisation des features
 const PLAN_FEATURES = {
-    common: ["Custom domain support", "OpenAlex integration", "ORCID Sync", "Analytics dashboard"],
+    monthly: ["Custom domain support", "OpenAlex integration", "ORCID Sync", "Analytics dashboard"],
     yearly: ["Same as monthly",],
 }
 
@@ -86,7 +86,7 @@ export default function CheckoutPage() {
 
     // Fonction pour obtenir les features d'un plan
     const getPlanFeatures = (planType) => {
-        let features = [...PLAN_FEATURES.common]
+        let features = [...PLAN_FEATURES.monthly]
         if (planType === "yearly") {
             features = [...PLAN_FEATURES.yearly]
         }

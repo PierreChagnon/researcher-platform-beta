@@ -52,7 +52,9 @@ export function usePresentations() {
 
     // Filtered presentations by category
     const categorizedPresentations = PRESENTATION_CATEGORIES.map((category) => {
-        const filtered = presentations.filter((pres) => pres.category === category.value)
+        const filtered = presentations
+            .filter((pres) => pres.category === category.value)
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
         return {
             ...category,
             presentations: filtered,
@@ -67,7 +69,7 @@ export function usePresentations() {
     const refreshPresentations = () => {
         fetchPresentations()
     }
-
+    console.log("Presentations:", categorizedPresentations)
     return {
         presentations,
         categorizedPresentations,

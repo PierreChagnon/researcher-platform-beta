@@ -9,12 +9,13 @@ import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Plus, Trash2, Download, Mail, Phone, MapPin, Globe } from "lucide-react"
 import { updateCvData, getCvData } from "@/lib/actions/cv-actions"
-import { doc, getDoc, collection, query, where, getDocs, orderBy } from "firebase/firestore"
+import { doc, getDoc } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { toast } from "sonner"
 import { usePublications } from "@/hooks/usePublications"
 import { usePresentations } from "@/hooks/usePresentations"
 import { useTeaching } from "@/hooks/useTeaching"
+import { handleDownloadDocx } from "@/lib/utils"
 
 export default function CvPreview() {
     const { user } = useAuth()
@@ -174,6 +175,18 @@ export default function CvPreview() {
                             <Download className="h-4 w-4 mr-2" />
                             Download PDF
                         </Button>
+                        <Button onClick={() =>
+                            handleDownloadDocx({
+                                profileData,
+                                cvData,
+                                categorizedPublications,
+                                categorizedPresentations,
+                                categorizedTeachings,
+                            })
+                        } variant="outline">
+                            <Download className="h-4 w-4 mr-2" />
+                            Download DOCX
+                        </Button>
                     </div>
                 </div>
 
@@ -231,6 +244,7 @@ export default function CvPreview() {
                                                         <div className="flex gap-2">
                                                             <Input
                                                                 placeholder="Start Year"
+                                                                type={"number"}
                                                                 value={position.startYear}
                                                                 onChange={(e) => updateItem("positions", index, "startYear", e.target.value)}
                                                             />
@@ -298,6 +312,7 @@ export default function CvPreview() {
                                                         <Input
                                                             placeholder="Year"
                                                             value={edu.year}
+                                                            type="number"
                                                             onChange={(e) => updateItem("education", index, "year", e.target.value)}
                                                         />
                                                     </div>
@@ -358,6 +373,7 @@ export default function CvPreview() {
                                                         <Input
                                                             placeholder="Year"
                                                             value={fund.year}
+                                                            type={"number"}
                                                             onChange={(e) => updateItem("funding", index, "year", e.target.value)}
                                                         />
                                                     </div>
@@ -468,21 +484,23 @@ export default function CvPreview() {
                                         <div className="mb-6">
                                             <h2 className="text-lg font-bold border-b border-gray-400 mb-3">Academic Positions</h2>
                                             <div className="space-y-2">
-                                                {cvData.positions.map((position, index) => (
-                                                    <div key={index} className="text-sm">
-                                                        <div className="flex justify-between">
-                                                            <span className="font-medium">
-                                                                {position.startYear}
-                                                                {position.endYear && ` - ${position.endYear}`} – {position.title}
-                                                            </span>
+                                                {cvData.positions.sort((a, b) => b.startYear - a.startYear).map((position, index) => {
+                                                    return (
+                                                        <div key={index} className="text-sm">
+                                                            <div className="flex justify-between">
+                                                                <span className="font-medium">
+                                                                    {position.startYear}
+                                                                    {position.endYear && ` - ${position.endYear}`} – {position.title}
+                                                                </span>
+                                                            </div>
+                                                            <div className="text-gray-700">
+                                                                {position.institution}
+                                                                {position.location && `, ${position.location}`}
+                                                            </div>
+                                                            {position.description && <div className="text-gray-600 mt-1">{position.description}</div>}
                                                         </div>
-                                                        <div className="text-gray-700">
-                                                            {position.institution}
-                                                            {position.location && `, ${position.location}`}
-                                                        </div>
-                                                        {position.description && <div className="text-gray-600 mt-1">{position.description}</div>}
-                                                    </div>
-                                                ))}
+                                                    )
+                                                })}
                                             </div>
                                         </div>
                                     )}
@@ -492,7 +510,7 @@ export default function CvPreview() {
                                         <div className="mb-6">
                                             <h2 className="text-lg font-bold border-b border-gray-400 mb-3">Education</h2>
                                             <div className="space-y-2">
-                                                {cvData.education.map((edu, index) => (
+                                                {cvData.education.sort((a, b) => b.year - a.year).map((edu, index) => (
                                                     <div key={index} className="text-sm">
                                                         <div className="font-medium">
                                                             {edu.degree}, {edu.institution}
@@ -510,7 +528,7 @@ export default function CvPreview() {
                                         <div className="mb-6">
                                             <h2 className="text-lg font-bold border-b border-gray-400 mb-3">Research Funding & Awards</h2>
                                             <div className="space-y-2">
-                                                {cvData.funding.map((fund, index) => (
+                                                {cvData.funding.sort((a, b) => b.year - a.year).map((fund, index) => (
                                                     <div key={index} className="text-sm">
                                                         <div className="flex justify-between">
                                                             <span className="font-medium">{fund.year}</span>
@@ -569,11 +587,10 @@ export default function CvPreview() {
                                                                     {pres.title} ({pres.date})
                                                                 </div>
                                                                 <div className="text-gray-700 italic">
-                                                                    {pres.venue && `${pres.venue}, `}
                                                                     {pres.location && `${pres.location}, `}
                                                                     {pres.type && `Type: ${pres.type}`}
                                                                 </div>
-                                                                {pres.abstract && <div className="text-gray-600 mt-1">{pres.abstract}</div>}
+                                                                {pres.coAuthors && <div className="text-gray-600 mt-1">co-Authors: {pres.coAuthors}</div>}
                                                             </div>
                                                         ))}
                                                     </div>
@@ -595,18 +612,33 @@ export default function CvPreview() {
                                                         {category.teachings.map((teach, index) => (
                                                             <div key={index} className="text-sm">
                                                                 <div className="font-medium">
-                                                                    {teach.course} ({teach.year})
+                                                                    {teach.title} ({teach.semester} {teach.year})
                                                                 </div>
                                                                 <div className="text-gray-700 italic">
-                                                                    {teach.institution && `${teach.institution}, `}
-                                                                    {teach.location && `${teach.location}`}
+                                                                    {teach.university && `${teach.university}, `}
                                                                 </div>
-                                                                {teach.description && <div className="text-gray-600 mt-1">{teach.description}</div>}
+                                                                {teach.coTeachers && <div className="text-gray-600 mt-1">co-teachers: {teach.coTeachers}</div>}
                                                             </div>
                                                         ))}
                                                     </div>
                                                 </div>
                                             ))}
+                                        </div>
+                                    )}
+
+                                    {/* Reviewing */}
+                                    {cvData.reviewing.length > 0 && (
+                                        <div className="mb-6">
+                                            <h2 className="text-lg font-bold border-b border-gray-400 mb-3">Reviewing</h2>
+                                            <div className="space-y-2">
+                                                {cvData.reviewing.map((review, index) => (
+                                                    <div key={index} className="text-sm">
+                                                        <div className="font-medium">
+                                                            {review.journal}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
                                     )}
                                 </div>
@@ -667,7 +699,7 @@ export default function CvPreview() {
           
           /* Optimiser la mise en page pour l'impression */
           @page {
-            margin: 4px;
+            margin: 24px;
             size: A4;
              /* Supprimer les en-têtes et pieds de page par défaut */
             @top-left { content: ""; }

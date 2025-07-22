@@ -291,7 +291,7 @@ export default function ResearcherSite({
                                         </div>
 
                                         {/* Accordéon pour l'abstract */}
-                                        {publication.abstract && (
+                                        {publication.abstract && publication.abstract !== "null" && (
                                             <div className="mb-4">
                                                 <button
                                                     onClick={() => toggleAbstract(publication.id)}
@@ -322,6 +322,34 @@ export default function ResearcherSite({
                                                         {keyword}
                                                     </span>
                                                 ))}
+                                            </div>
+                                        )}
+
+                                        {publication.pdfUrl && (
+                                            <div className="mt-4">
+                                                <a
+                                                    href={publication.pdfUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-all duration-200"
+                                                >
+                                                    <ExternalLink className="h-5 w-5" />
+                                                    View PDF
+                                                </a>
+                                            </div>
+                                        )}
+
+                                        {publication.supplementaryMaterials && (
+                                            <div className="mt-4">
+                                                <a
+                                                    href={publication.supplementaryMaterials}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-all duration-200"
+                                                >
+                                                    <ExternalLink className="h-5 w-5" />
+                                                    Supplementary Materials
+                                                </a>
                                             </div>
                                         )}
                                     </div>
