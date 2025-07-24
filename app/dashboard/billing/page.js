@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { CreditCard, Calendar, DollarSign, ExternalLink, Loader2, Trash, Ban } from "lucide-react"
+import { CreditCard, Calendar, DollarSign, ExternalLink, Loader2, Trash, Ban, Check } from "lucide-react"
 import { toast } from "sonner"
 import { STRIPE_PRICES } from "@/lib/stripe"
 import { useSubscription } from "@/hooks/useSubscription"
@@ -24,10 +24,14 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
+///////////////////////
+//ATTENTION MODE TEST:
+const prodTestMode = true
+///////////////////////
+
 export default function BillingPage() {
     const { user, userData, loading: authLoading } = useAuth()
     const router = useRouter()
-    const [loading, setLoading] = useState(true)
     const [portalLoading, setPortalLoading] = useState(false)
     const { subscription, loading: subscriptionLoading, error: subscriptionError, refresh, isActive: subscriptionIsActive } = useSubscription()
     const [isPending, startTransition] = useTransition()
@@ -70,6 +74,7 @@ export default function BillingPage() {
             const res = await cancelSubscriptionAction(user.uid)
             if (res.success) {
                 toast.success("Subscription canceled successfully")
+                refresh() // Rafraîchir l'état de l'abonnement
             } else {
                 toast.error(res.error || "Failed to cancel subscription")
             }
@@ -150,26 +155,31 @@ export default function BillingPage() {
     }
 
     // Pas d'abonnement trouvé
-    if (!subscription || subscription.status !== "pending" || !subscriptionIsActive) {
-        console.log(subscription, subscriptionIsActive)
+    if (!subscription || subscription.status !== "pending" || !subscriptionIsActive || prodTestMode) {
+
         return (
             <div className="space-y-6">
-                <div>
-                    <h1 className="text-3xl font-bold">Billing</h1>
-                    <p className="text-muted-foreground">Manage your subscription and billing information</p>
+            <div>
+                <h1 className="text-3xl font-bold">Billing</h1>
+                <p className="text-muted-foreground">Manage your subscription and billing information</p>
+            </div>
+            <Card>
+                <CardContent className="pt-6">
+                <div className="text-center">
+                    <CreditCard className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">No Active Subscription</h3>
+                    <p className="text-muted-foreground mb-4">
+                    You currently do not have an active subscription. Subscribe now to unlock all features.
+                    </p>
+                    <Button disabled={prodTestMode} onClick={() => router.push("/checkout")}>Subscribe Now</Button>
+                    {prodTestMode && (
+                    <p className="text-sm text-green-600 mt-2">
+                        Payments are in test mode. Sites are still being created and available online during this period. <Check className="inline h-4 w-4 text-green-600" />
+                    </p>
+                    )}
                 </div>
-                <Card>
-                    <CardContent className="pt-6">
-                        <div className="text-center">
-                            <CreditCard className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                            <h3 className="text-lg font-semibold mb-2">No Active Subscription</h3>
-                            <p className="text-muted-foreground mb-4">
-                                You don&apos;t have an active subscription. Subscribe to access all features.
-                            </p>
-                            <Button onClick={() => router.push("/checkout")}>Subscribe Now</Button>
-                        </div>
-                    </CardContent>
-                </Card>
+                </CardContent>
+            </Card>
             </div>
         )
     }

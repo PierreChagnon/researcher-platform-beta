@@ -55,7 +55,7 @@ const TextCarousel = () => {
 
     return (
         <div className="flex flex-col lg:flex-row lg:items-center gap-2 justify-center mx-auto px-6">
-            <h2 className='text-primary text-center lg:text-end text-nowrap text-4xl leading-tight font-bold mb-12 lg:mb-0 lg:w-1/2'>👋 Wave goodbye to</h2>
+            <h2 className='text-black text-center lg:text-end text-nowrap text-4xl leading-tight font-bold mb-12 lg:mb-0 lg:w-1/2'>👋 Wave goodbye to</h2>
             <div className="relative w-full lg:w-1/2">
                 <div
                     className="relative h-80 overflow-hidden flex items-center justify-center lg:justify-start"

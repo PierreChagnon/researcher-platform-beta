@@ -178,7 +178,7 @@ export default function SettingsPage() {
             <Tabs defaultValue="general" className="space-y-4">
                 <TabsList>
                     <TabsTrigger value="general">General</TabsTrigger>
-                    <TabsTrigger value="appearance">Appearance</TabsTrigger>
+                    <TabsTrigger value="appearance" disabled>Appearance</TabsTrigger>
                     <TabsTrigger value="analytics" disabled>Analytics</TabsTrigger>
                 </TabsList>
 

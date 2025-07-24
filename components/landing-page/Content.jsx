@@ -16,13 +16,13 @@ export default function Content() {
                     <div className='flex flex-col md:flex-row items-center justify-center gap-12'>
                         <div className='flex flex-col gap-1 w-full'>
                             <Workflow className='text-[#FF2F2F] h-7 w-7 mb-4' />
-                            <h5 className='text-primary w-full text-lg font-bold'>Automatic Publication Sync</h5>
+                            <h5 className='text-black w-full text-lg font-bold'>Automatic Publication Sync</h5>
                             <p className='text-muted-foreground '>Automatically import your publications via your ORCID ID and OpenAlex.</p>
                         </div>
                         <Separator className='h-24 md:hidden' />
                         <div className='flex flex-col gap-1 w-full'>
                             <LayoutTemplate className='text-[#8A43E1] h-7 w-7 mb-4' />
-                            <h5 className='text-primary w-full text-lg font-bold'>Polished, Consistent Design</h5>
+                            <h5 className='text-black w-full text-lg font-bold'>Polished, Consistent Design</h5>
                             <p className='text-muted-foreground '>One expertly crafted template with color themes. Always readable and responsive.</p>
                         </div>
                     </div>
@@ -30,13 +30,13 @@ export default function Content() {
                     <div className='flex flex-col md:flex-row items-center justify-center gap-12'>
                         <div className='flex flex-col gap-1 w-full'>
                             <FileText className='text-[#27B32C] h-7 w-7 mb-4' />
-                            <h5 className='text-primary w-full text-lg font-bold'>CV Builder</h5>
+                            <h5 className='text-black w-full text-lg font-bold'>CV Builder</h5>
                             <p className='text-muted-foreground '>An automatically generated CV using your provided settings.</p>
                         </div>
                         <Separator className='h-24 md:hidden' />
                         <div className='flex flex-col gap-1 w-full'>
                             <Settings className='text-[#EF7B16] h-7 w-7 mb-4' />
-                            <h5 className='text-primary w-full text-lg font-bold'>Instant Setup</h5>
+                            <h5 className='text-black w-full text-lg font-bold'>Instant Setup</h5>
                             <p className='text-muted-foreground '>Fill out a simple form—name, photo, ORCID—and we build your site.</p>
                         </div>
                     </div>

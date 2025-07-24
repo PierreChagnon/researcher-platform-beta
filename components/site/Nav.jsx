@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Menu, X, ChevronDown } from "lucide-react"
+import { Menu, X } from "lucide-react"
 
 export default function Nav({ researcher, hasPublications, hasPresentations, hasTeaching, hasContact }) {
     const [active, setActive] = useState("")
@@ -38,8 +38,8 @@ export default function Nav({ researcher, hasPublications, hasPresentations, has
         const handleScroll = () => {
             setScrolled(window.scrollY > 50)
         }
-        window.addEventListener('scroll', handleScroll)
-        return () => window.removeEventListener('scroll', handleScroll)
+        window.addEventListener("scroll", handleScroll)
+        return () => window.removeEventListener("scroll", handleScroll)
     }, [])
 
     // Définir la première section comme active par défaut
@@ -67,7 +67,7 @@ export default function Nav({ researcher, hasPublications, hasPresentations, has
         )
 
         // Observer le header aussi
-        const headerElement = document.getElementById('header')
+        const headerElement = document.getElementById("header")
         if (headerElement) observer.observe(headerElement)
 
         availableSections.forEach(({ id }) => {
@@ -100,97 +100,107 @@ export default function Nav({ researcher, hasPublications, hasPresentations, has
     }
 
     return (
-        <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-                ? 'bg-white/90 backdrop-blur-md shadow-lg border-b border-gray-200/50'
-                : 'bg-white/70 backdrop-blur-sm'
-            }`}>
-            <nav className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-                {/* Logo/Nom du chercheur */}
-                <button
-                    onClick={scrollToTop}
-                    className="group flex items-center gap-3 text-xl font-bold text-gray-900 hover:text-blue-600 transition-all duration-200"
-                >
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <span className="text-white font-bold text-sm">
-                            {(researcher?.name || "Dr. Marie Laurent").split(' ').map(n => n[0]).join('').slice(0, 2)}
-                        </span>
-                    </div>
-                    <span className="hidden sm:block">
-                        {researcher?.name || "Dr. Marie Laurent"}
-                    </span>
-                </button>
+        <>
+            {/* Navigation latérale desktop */}
+            <nav className="hidden lg:block fixed left-8 top-1/2 -translate-y-1/2 z-50">
+                <div className="relative">
+                    {/* Ligne de connexion */}
+                    <div className="absolute left-4 top-0 bottom-0 w-px bg-slate-200"></div>
 
-                {/* Navigation desktop */}
-                <div className="hidden lg:flex items-center">
-                    <div className="flex items-center space-x-1 bg-white/80 backdrop-blur-sm rounded-full px-2 py-2 shadow-lg border border-gray-200/50">
-                        {availableSections.map((section) => (
-                            <button
-                                key={section.id}
-                                onClick={() => scrollToSection(section.id)}
-                                className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-200 relative ${active === section.id
-                                        ? "bg-blue-600 text-white shadow-md"
-                                        : "text-gray-600 hover:text-blue-600 hover:bg-gray-50"
-                                    }`}
-                            >
-                                {section.label}
-                            </button>
-                        ))}
-                    </div>
-                </div>
+                    <div className="space-y-8">
+                        {/* Logo/Nom du chercheur */}
+                        <button
+                            onClick={scrollToTop}
+                            className="group flex items-center gap-4 text-slate-800 hover:text-slate-900 transition-all duration-300"
+                        >
+                            <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <span className="text-white font-bold text-xs">
+                                    {(researcher?.name || "Dr. Marie Laurent")
+                                        .split(" ")
+                                        .map((n) => n[0])
+                                        .join("")
+                                        .slice(0, 2)}
+                                </span>
+                            </div>
+                            <span className="font-semibold text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                                {researcher?.name || "Dr. Marie Laurent"}
+                            </span>
+                        </button>
 
-                {/* Bouton hamburger pour mobile */}
-                <div className="lg:hidden">
-                    <button
-                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        className="p-2 text-gray-600 hover:text-gray-900 transition-colors bg-white/80 backdrop-blur-sm rounded-full shadow-lg border border-gray-200/50"
-                        aria-label="Toggle menu"
-                    >
-                        {isMobileMenuOpen ? (
-                            <X className="h-6 w-6" />
-                        ) : (
-                            <Menu className="h-6 w-6" />
-                        )}
-                    </button>
-                </div>
-            </nav>
-
-            {/* Menu mobile */}
-            {isMobileMenuOpen && (
-                <div className="lg:hidden bg-white/95 backdrop-blur-md border-t border-gray-200/50 shadow-xl">
-                    <div className="max-w-6xl mx-auto px-4 py-6">
-                        <div className="space-y-2">
+                        {/* Navigation items */}
+                        <div className="space-y-6">
                             {availableSections.map((section) => (
                                 <button
                                     key={section.id}
                                     onClick={() => scrollToSection(section.id)}
-                                    className={`block w-full text-left px-6 py-3 rounded-xl transition-all duration-200 ${active === section.id
-                                            ? "bg-blue-600 text-white shadow-lg"
-                                            : "text-gray-600 hover:bg-gray-50 hover:text-blue-600"
+                                    className={`group flex items-center gap-4 transition-all duration-300 ${active === section.id ? "text-slate-900" : "text-slate-400 hover:text-slate-700"
                                         }`}
                                 >
-                                    <div className="flex items-center justify-between">
-                                        <span className="font-medium">{section.label}</span>
-                                        {active === section.id && (
-                                            <div className="w-2 h-2 bg-white rounded-full"></div>
-                                        )}
+                                    <div
+                                        className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${active === section.id ? "bg-slate-100" : "group-hover:bg-slate-50"
+                                            }`}
+                                    >
+                                        <div
+                                            className={`w-2 h-2 rounded-full transition-all duration-300 ${active === section.id ? "bg-slate-900 scale-125" : "bg-slate-300 group-hover:bg-slate-400"
+                                                }`}
+                                        ></div>
                                     </div>
+                                    <span
+                                        className={`font-medium text-sm opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap ${active === section.id ? "opacity-100" : ""
+                                            }`}
+                                    >
+                                        {section.label}
+                                    </span>
                                 </button>
                             ))}
                         </div>
-
-                        {/* Divider et bouton retour au top */}
-                        <div className="mt-6 pt-6 border-t border-gray-200">
-                            <button
-                                onClick={scrollToTop}
-                                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg"
-                            >
-                                <span>Back to Top</span>
-                                <ChevronDown className="h-4 w-4 rotate-180" />
-                            </button>
-                        </div>
                     </div>
                 </div>
-            )}
-        </header>
+            </nav>
+
+            {/* Navigation mobile */}
+            <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200">
+                <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+                    <button onClick={scrollToTop} className="flex items-center gap-3 text-xl font-semibold text-slate-800">
+                        <div className="w-10 h-10 bg-slate-900 rounded-lg flex items-center justify-center">
+                            <span className="text-white font-bold text-sm">
+                                {(researcher?.name || "Dr. Marie Laurent")
+                                    .split(" ")
+                                    .map((n) => n[0])
+                                    .join("")
+                                    .slice(0, 2)}
+                            </span>
+                        </div>
+                        <span>{researcher?.name || "Dr. Marie Laurent"}</span>
+                    </button>
+
+                    <button
+                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                        className="p-2 text-slate-600 hover:text-slate-800 transition-colors"
+                    >
+                        {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                    </button>
+                </nav>
+
+                {isMobileMenuOpen && (
+                    <div className="bg-white border-t border-slate-200">
+                        <div className="max-w-7xl mx-auto px-6 py-6 space-y-2">
+                            {availableSections.map((section) => (
+                                <button
+                                    key={section.id}
+                                    onClick={() => scrollToSection(section.id)}
+                                    className={`block w-full text-left px-4 py-3 rounded-lg transition-all duration-200 ${active === section.id
+                                        ? "bg-slate-900 text-white"
+                                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-800"
+                                        }`}
+                                >
+                                    {section.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </header>
+        </>
     )
 }

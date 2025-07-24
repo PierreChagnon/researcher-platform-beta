@@ -12,7 +12,7 @@ const kottaOne = Kotta_One({
 export default function About() {
     return (
         <div className='flex flex-col lg:flex-row gap-12 shadow-md rounded-lg bg-background p-10'>
-            <div className='flex flex-col gap-8 items-center lg:items-start lg:flex-1'>
+            <div className='flex flex-col gap-8 items-center lg:items-start lg:flex-1 lg:justify-between'>
                 <div className='flex flex-col items-center lg:items-start gap-4'>
                     <TitleBadge variant="dark">About Us</TitleBadge>
                     <h2 className='text-center md:text-start'>The Team Behind <span className={`${kottaOne.className}`}>Lokus</span></h2>

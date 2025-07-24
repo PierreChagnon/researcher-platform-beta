@@ -31,7 +31,7 @@ export default function Contact() {
             {/* Contact Form */}
             <div className='bg-gradient-to-b from-[#FF2F2F]/50 via-[#EF7B16]/50 to-[#D511FD]/50 rounded-lg p-[2px] flex-1'>
                 <div className='flex flex-col items-center rounded-md bg-background p-6 gap-4'>
-                    <h5 className='text-primary w-full text-2xl font-medium mb-4'>Send us your query</h5>
+                    <h5 className='text-black w-full text-2xl font-medium mb-4'>Send us your query</h5>
                     <form className='flex-rox md:flex-col w-full'>
                         <div className='space-y-3'>
                             <Label>Name</Label>
@@ -49,7 +49,7 @@ export default function Contact() {
                             <Label>Message</Label>
                             <Textarea placeholder="Your message" className="w-full min-h-24 mb-6" />
                         </div>
-                        <Button type="submit" className='w-full bg-primary text-background hover:bg-primary/90 transition-colors'>
+                        <Button type="submit" className='w-full bg-black text-background hover:bg-black/90 transition-colors py-6'>
                             Send Message
                         </Button>
                     </form>

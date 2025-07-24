@@ -11,7 +11,7 @@ const kottaOne = Kotta_One({
 
 export default function Footer() {
     return (
-        <div className="">
+        <div className="lg:px-16">
             <div className="flex flex-col gap-12">
                 <div className="space-y-4">
                     <div className="flex items-center gap-2">
@@ -96,7 +96,7 @@ export default function Footer() {
                 <div className='px-4 py-2 bg-accent-foreground border border-muted-foreground rounded-full text-center'>
                     <p className='text-xs text-primary-foreground flex gap-1'><CircleCheck className='h-4 w-4 text-green-500' />All Systems Operational</p>
                 </div>
-                <p className="text-sm text-muted-foreground">{(new Date().getFullYear())} Beyond Games. All rights reserved.</p>
+                <Link href="https://beyond.games.fr" className="text-sm text-muted-foreground group">{(new Date().getFullYear())} <span className='group-hover:underline'>Beyond Games</span>. All rights reserved.</Link>
             </div>
         </div>
     )

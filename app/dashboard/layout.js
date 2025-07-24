@@ -30,7 +30,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetHeader, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet"
 import { useAuth } from "@/contexts/AuthContext"
 import { signOut } from "@/lib/auth"
 import { toast } from "sonner"
@@ -47,9 +47,10 @@ const navigation = [
     { name: "Teaching", href: "/dashboard/teaching", icon: GraduationCap },
     { name: "Contact", href: "/dashboard/contact", icon: Phone },
     { type: "separator" },
-    { name: "CV", href: "/dashboard/cv", icon: FileUser },
-    { name: "Settings", href: "/dashboard/settings", icon: Settings },
+    { name: "CV Builder", href: "/dashboard/cv", icon: FileUser },
+    { type: "separator" },
     { name: "Billing", href: "/dashboard/billing", icon: CreditCard },
+    { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ]
 
 const kottaOne = Kotta_One({
@@ -117,10 +118,12 @@ export default function DashboardLayout({ children }) {
                                 </Button>
                             </SheetTrigger>
                             <SheetContent side="left" className="w-[240px] sm:w-[300px]">
-                                <div className="flex items-center gap-2 font-bold text-xl mb-8">
-                                    <Image src={"/logo-lokus.png"} height={24} width={32} alt="logo Lokus" className="" />
-                                    <span className={`${kottaOne.className}`}>Lokus</span>
-                                </div>
+                                <SheetHeader>
+                                    <SheetTitle className="flex items-center gap-2">
+                                        <Image src={"/logo-lokus.png"} height={32} width={40} alt="logo Lokus" className="" />
+                                        <span className={`${kottaOne.className}`}>Lokus</span>
+                                    </SheetTitle>
+                                </SheetHeader>
                                 <nav className="flex flex-col gap-2">
                                     {navigation.map((item, index) => renderNavigationItem(item, index, true))}
                                 </nav>

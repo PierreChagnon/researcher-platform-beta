@@ -42,7 +42,7 @@ export default function Home() {
   return (
     <div className="relative flex flex-col min-h-screen bg-accent text-foreground md:items-center">
       <HeroBackground />
-      <header className={`w-full flex justify-between items-center px-6 py-4 z-50 md:gap-4 sticky top-0 transition-all duration-300 ${isScrolled
+      <header className={`w-full flex justify-between items-center px-6 py-4 z-50 md:gap-4 sticky top-0 transition-all duration-300 lg:px-24 ${isScrolled
         ? 'bg-white/95 backdrop-blur-sm shadow-sm border-b border-gray-200 md:top-4 md:w-11/12 md:rounded-lg'
         : 'bg-transparent'
         }`}>
@@ -50,20 +50,20 @@ export default function Home() {
           <Image src={"/logo-lokus.png"} height={24} width={32} alt="logo Lokus" className="" />Lokus
         </Link>
         <nav className="hidden md:flex items-center justify-center gap-4 lg:gap-6 md:flex-1">
-          <Link href="/" className="text-sm lg:text-base hover:text-primary/50 transition-colors">Home</Link>
-          <Link href="#features" className="text-sm lg:text-base hover:text-primary/50 transition-colors">Features</Link>
-          <Link href="#pricing" className="text-sm lg:text-base hover:text-primary/50 transition-colors">Pricing</Link>
-          <Link href="#about" className="text-sm lg:text-base hover:text-primary/50 transition-colors">About</Link>
-          <Link href="#contact" className="text-sm lg:text-base hover:text-primary/50 transition-colors">Contact</Link>
-          <Link href="#faq" className="text-sm lg:text-base hover:text-primary/50 transition-colors">FAQ</Link>
+          <Link href="/" className="text-sm lg:text-base hover:text-black/50 transition-colors">Home</Link>
+          <Link href="#features" className="text-sm lg:text-base hover:text-black/50 transition-colors">Features</Link>
+          <Link href="#pricing" className="text-sm lg:text-base hover:text-black/50 transition-colors">Pricing</Link>
+          <Link href="#about" className="text-sm lg:text-base hover:text-black/50 transition-colors">About</Link>
+          <Link href="#contact" className="text-sm lg:text-base hover:text-black/50 transition-colors">Contact</Link>
+          <Link href="#faq" className="text-sm lg:text-base hover:text-black/50 transition-colors">FAQ</Link>
         </nav>
         <div className="hidden md:flex items-center md:gap-2 lg:gap-6 lg:flex-1 justify-end">
-          <Link href="/login" className="text-lg hover:text-primary transition-colors">
-            <Button variant="outline" className="h-10 px-6 lg:text-lg bg-transparent border-primary lg:py-6">
+          <Link href="/login" className="text-lg hover:text-black transition-colors">
+            <Button variant="outline" className="h-10 px-6 lg:text-lg bg-transparent border-black lg:py-6">
               Login
             </Button>
           </Link>
-          <Link href="/register" className="text-lg hover:text-primary transition-colors">
+          <Link href="/register" className="text-lg hover:text-black transition-colors">
             <Button variant="default" className="h-10 px-6 lg:text-lg lg:py-6">
               Get Started
             </Button>

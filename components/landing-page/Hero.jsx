@@ -11,7 +11,7 @@ export default function Hero() {
             {/* text container */}
             <div className='flex flex-col items-center gap-4 text-center'>
                 <p className='border-gray-200 w-fit border text-sm lg:text-base rounded-full bg-muted/50 py-1 px-3 text-muted-foreground'>Beta</p>
-                <h1 className='text-primary text-4xl lg:text-6xl leading-tight font-bold'>Your researcher website in a few clicks</h1>
+                <h1 className='text-black text-4xl lg:text-6xl leading-tight font-bold'>Your researcher website in a few clicks</h1>
                 <p className='text-muted-foreground text-base lg:text-xl'>Easily create your professional website with automatic retrieval of your scientific publications. Simple, fast, and elegant.</p>
             </div>
             {/* CTA */}

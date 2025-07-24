@@ -83,8 +83,10 @@ export default function TeachingPage() {
     const handleUpdateTeaching = async (formData) => {
         if (!editingTeaching) return
 
+        console.log("Updating teaching:", editingTeaching, formData)
+
         startTransition(async () => {
-            const result = await updateTeachingAction(editingTeaching.firestoreId, formData)
+            const result = await updateTeachingAction(editingTeaching.id, formData)
             if (result.success) {
                 toast.success(result.message)
                 setIsTeachingDialogOpen(false)
