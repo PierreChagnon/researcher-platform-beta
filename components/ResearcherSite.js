@@ -114,9 +114,9 @@ export default function ResearcherSite({
                                         <div className="absolute -inset-1 bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                                         <Image
                                             src={
-                                                data.photo || "/placeholder.svg"
+                                                data.profilePictureUrl || "/placeholder.svg"
                                             }
-                                            alt={data.name}
+                                            alt="Profile Picture"
                                             fill
                                             className="relative rounded-3xl object-cover shadow-2xl"
                                             priority

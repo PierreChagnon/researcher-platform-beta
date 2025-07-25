@@ -9,9 +9,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ExternalLink, Upload, FileText, X } from "lucide-react"
 import { useAuth } from "@/contexts/AuthContext"
-import { updateUserProfileWithRevalidation } from "@/lib/actions/profile-actions"
+import { updateProfilePicture, updateUserProfileWithRevalidation } from "@/lib/actions/profile-actions"
 import { toast } from "sonner"
 import { uploadCvAction, removeCvAction } from "@/lib/actions/cv-actions"
+import Image from "next/image"
 
 const defaultValues = {
     name: "",
@@ -172,10 +173,6 @@ export default function ProfilePage() {
     }
 
     const handleRemoveCv = async () => {
-        if (!confirm("Êtes-vous sûr de vouloir supprimer votre CV ?")) {
-            return
-        }
-
         try {
             const result = await removeCvAction()
 
@@ -193,6 +190,30 @@ export default function ProfilePage() {
                 description: error.message || "Erreur lors de la suppression du CV.",
             })
         }
+    }
+
+    const handlePictureChange = async (e) => {
+        e.preventDefault()
+        const file = e.target.files[0]
+        console.log("Selected profile picture:", file)
+
+        try {
+            const res = await updateProfilePicture(file)
+
+            if (res.success) {
+                await refreshUserData()
+                toast.success("Profile picture updated successfully")
+            } else {
+                throw new Error(res.error)
+            }
+        } catch (error) {
+            console.error("Error updating profile picture:", error)
+            toast.error("Error", {
+                description: error.message || "An error occurred while updating your profile picture.",
+            })
+        }
+
+
     }
 
     useEffect(() => {
@@ -235,6 +256,33 @@ export default function ProfilePage() {
                                 <CardDescription>This information will be displayed on your website.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="profile-picture">Profile Picture</Label>
+                                    {userData?.profilePictureUrl && (
+                                        <div className="mb-4">
+                                            <Image
+                                                width={128}
+                                                height={128}
+                                                src={userData.profilePictureUrl}
+                                                alt="Profile Picture"
+                                                className="object-cover w-32 h-40 shadow-md rounded-md"
+                                            />
+                                        </div>
+                                    )}
+                                    <Input
+                                        id="profile-picture"
+                                        type="file"
+                                        accept="image/*"
+                                        className="w-fit"
+                                        onChange={handlePictureChange}
+                                    />
+                                    <p className="text-sm text-muted-foreground">
+                                        Upload a profile picture (optional). It will be displayed on your public site.
+                                    </p>
+                                    {errors.profilePicture && (
+                                        <p className="text-sm text-red-500">{errors.profilePicture}</p>
+                                    )}
+                                </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="name">Full Name</Label>
                                     <Input

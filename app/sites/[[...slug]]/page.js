@@ -290,6 +290,37 @@ export default async function DynamicSitePage() {
                 getResearcherPresentations(researcher.id),
                 getResearcherTeaching(researcher.id),
             ])
+            // Filter by categories
+            const categorizedPublications = PUBLICATION_CATEGORIES.map((category) => {
+                const filtered = publications
+                    .filter((pub) => pub.type === category.value)
+                    .sort((a, b) => (b.year || 0) - (a.year || 0))
+                return {
+                    ...category,
+                    publications: filtered,
+                    count: filtered.length,
+                }
+            }).filter((cat) => cat.count > 0)
+            const categorizedPresentations = PRESENTATION_CATEGORIES.map((category) => {
+                const filtered = presentations
+                    .filter((pres) => pres.category === category.value)
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                return {
+                    ...category,
+                    presentations: filtered,
+                    count: filtered.length,
+                }
+            }).filter((cat) => cat.count > 0)
+            const categorizedTeaching = TEACHING_CATEGORIES.map((category) => {
+                const filtered = teaching
+                    .filter((teach) => teach.category === category.value)
+                    .sort((a, b) => b.year - a.year)
+                return {
+                    ...category,
+                    teaching: filtered,
+                    count: filtered.length,
+                }
+            }).filter((cat) => cat.count > 0)
             return (
                 <ResearcherSite
                     researcher={researcher}
@@ -297,6 +328,9 @@ export default async function DynamicSitePage() {
                     presentations={presentations}
                     teaching={teaching}
                     isPremium={isPremium}
+                    categorizedPublications={categorizedPublications}
+                    categorizedPresentations={categorizedPresentations}
+                    categorizedTeaching={categorizedTeaching}
                 />
             )
         } else {
