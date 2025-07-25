@@ -7,6 +7,32 @@ import NotFoundPage from "@/components/NotFoundPage"
 
 const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN || "researcher-platform-beta.vercel.app"
 
+const PUBLICATION_CATEGORIES = [
+    { value: "articles", label: "Articles", color: "bg-purple-100 text-purple-800" },                      // Articles, Reviews, Reports
+    { value: "preprints", label: "Preprints", color: "bg-pink-100 text-pink-800" },                        // Preprints
+    { value: "book-chapters", label: "Book Chapters", color: "bg-blue-100 text-blue-800" },                // Book chapters, Book sections/parts
+    { value: "books", label: "Books & Monographs", color: "bg-yellow-100 text-yellow-800" },               // Books & Monographs
+    { value: "dissertations-and-theses", label: "Dissertations & Theses", color: "bg-green-100 text-green-800" }, // Dissertations & Theses
+    { value: "datasets", label: "Datasets", color: "bg-orange-100 text-orange-800" },                      // Datasets
+    { value: "errata-and-corrections", label: "Errata & Corrections", color: "bg-red-100 text-red-800" },  // Errata & Corrections
+    { value: "conference-proceedings", label: "Conference Proceedings", color: "bg-indigo-100 text-indigo-800" }, // Conference Proceedings
+    { value: "letters-and-commentaries", label: "Letters & Commentaries", color: "bg-teal-100 text-teal-800" },  // Letters & Commentaries
+    { value: "other", label: "Other", color: "bg-gray-200 text-gray-800" },                                // Tout le reste !
+]
+const TEACHING_CATEGORIES = [
+    { value: "lecturer", label: "Lecturer", color: "bg-purple-100 text-purple-800" },
+    { value: "teaching-assistant", label: "Teaching Assistant", color: "bg-red-100 text-red-800" },
+    { value: "guest-lecture", label: "Guest Lecture", color: "bg-blue-100 text-blue-800" },
+]
+const PRESENTATION_CATEGORIES = [
+    { value: "invited-speaker", label: "Invited Speaker", color: "bg-purple-100 text-purple-800" },
+    { value: "keynote", label: "Conference Keynote Speaker", color: "bg-red-100 text-red-800" },
+    { value: "long-talk", label: "Conference Long Talk", color: "bg-blue-100 text-blue-800" },
+    { value: "short-talk", label: "Conference Short Talk", color: "bg-green-100 text-green-800" },
+    { value: "flash-talk", label: "Conference Flash Talk", color: "bg-yellow-100 text-yellow-800" },
+    { value: "poster", label: "Poster", color: "bg-gray-100 text-gray-800" },
+]
+
 // ISR Configuration
 export const revalidate = false // No automatic revalidation
 
@@ -174,7 +200,7 @@ export default async function DynamicSitePage() {
     const isPremium = headersList.get("x-is-premium") === "true"
     const hostname = headersList.get("x-hostname")
 
-    console.log("🔄 ISR: Generating page for", researcherId)
+    // console.log("🔄 ISR: Generating page for", researcherId)
 
     // Case 1: Subdomain detected (johndoe.researcher-platform-beta.vercel.app)
     if (researcherId) {
@@ -188,13 +214,45 @@ export default async function DynamicSitePage() {
                 getResearcherTeaching(researcher.id),
             ])
 
-            console.log("✅ ISR: Site generated for", researcherId, "with", {
-                publications: publications.length,
-                presentations: presentations.length,
-                teaching: teaching.length,
-            })
+            // Filter by categories
+            const categorizedPublications = PUBLICATION_CATEGORIES.map((category) => {
+                const filtered = publications
+                    .filter((pub) => pub.type === category.value)
+                    .sort((a, b) => (b.year || 0) - (a.year || 0))
+                return {
+                    ...category,
+                    publications: filtered,
+                    count: filtered.length,
+                }
+            }).filter((cat) => cat.count > 0)
+            const categorizedPresentations = PRESENTATION_CATEGORIES.map((category) => {
+                const filtered = presentations
+                    .filter((pres) => pres.category === category.value)
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                return {
+                    ...category,
+                    presentations: filtered,
+                    count: filtered.length,
+                }
+            }).filter((cat) => cat.count > 0)
+            const categorizedTeaching = TEACHING_CATEGORIES.map((category) => {
+                const filtered = teaching
+                    .filter((teach) => teach.category === category.value)
+                    .sort((a, b) => b.year - a.year)
+                return {
+                    ...category,
+                    teaching: filtered,
+                    count: filtered.length,
+                }
+            }).filter((cat) => cat.count > 0)
 
-            console.log("researcher", researcher)
+            // console.log("✅ ISR: Site generated for", researcherId, "with", {
+            //     publications: publications.length,
+            //     presentations: presentations.length,
+            //     teaching: teaching.length,
+            // })
+
+            // console.log("researcher", researcher)
 
             // Researcher found → Display their site with all their data
             return (
@@ -204,6 +262,9 @@ export default async function DynamicSitePage() {
                     presentations={presentations}
                     teaching={teaching}
                     isPremium={isPremium}
+                    categorizedPublications={categorizedPublications}
+                    categorizedPresentations={categorizedPresentations}
+                    categorizedTeaching={categorizedTeaching}
                 />
             )
         } else {

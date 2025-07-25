@@ -23,6 +23,9 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { Kotta_One } from "next/font/google"
+
+const kottaOne = Kotta_One({ subsets: ["latin"], weight: "400" })
 
 ///////////////////////
 //ATTENTION MODE TEST:
@@ -35,8 +38,6 @@ export default function BillingPage() {
     const [portalLoading, setPortalLoading] = useState(false)
     const { subscription, loading: subscriptionLoading, error: subscriptionError, refresh, isActive: subscriptionIsActive } = useSubscription()
     const [isPending, startTransition] = useTransition()
-
-    console.log("use subscription:", subscription)
 
     // Rediriger si pas connecté
     useEffect(() => {
@@ -159,27 +160,27 @@ export default function BillingPage() {
 
         return (
             <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold">Billing</h1>
-                <p className="text-muted-foreground">Manage your subscription and billing information</p>
-            </div>
-            <Card>
-                <CardContent className="pt-6">
-                <div className="text-center">
-                    <CreditCard className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">No Active Subscription</h3>
-                    <p className="text-muted-foreground mb-4">
-                    You currently do not have an active subscription. Subscribe now to unlock all features.
-                    </p>
-                    <Button disabled={prodTestMode} onClick={() => router.push("/checkout")}>Subscribe Now</Button>
-                    {prodTestMode && (
-                    <p className="text-sm text-green-600 mt-2">
-                        Payments are in test mode. Sites are still being created and available online during this period. <Check className="inline h-4 w-4 text-green-600" />
-                    </p>
-                    )}
+                <div>
+                    <h1 className="text-3xl font-bold">Billing</h1>
+                    <p className="text-muted-foreground">Manage your subscription and billing information</p>
                 </div>
-                </CardContent>
-            </Card>
+                <Card>
+                    <CardContent className="pt-6">
+                        <div className="text-center">
+                            <CreditCard className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                            <h3 className="text-lg font-semibold mb-2">No Active Subscription</h3>
+                            <p className="text-muted-foreground mb-4">
+                                You currently do not have an active subscription. Subscribe now to unlock all features.
+                            </p>
+                            <Button disabled={prodTestMode} onClick={() => router.push("/checkout")}>Subscribe Now</Button>
+                            {prodTestMode && (
+                                <p className="text-sm text-green-600 mt-2">
+                                    <span className={kottaOne.className}>Lokus</span> is in test mode. Sites are still being created and available online during this period. <Check className="inline h-4 w-4 text-green-600" />
+                                </p>
+                            )}
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
         )
     }

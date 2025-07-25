@@ -7,28 +7,30 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ExternalLink } from "lucide-react"
+import { ExternalLink, Upload, FileText, X } from "lucide-react"
 import { useAuth } from "@/contexts/AuthContext"
 import { updateUserProfileWithRevalidation } from "@/lib/actions/profile-actions"
 import { toast } from "sonner"
+import { uploadCvAction, removeCvAction } from "@/lib/actions/cv-actions"
 
 const defaultValues = {
-    name: "John Doe",
-    title: "Professor of Computer Science",
-    institution: "University of Paris",
-    email: "john.doe@univ-paris.fr",
-    bio: "Researcher in artificial intelligence and machine learning with over 10 years of experience in the field.",
+    name: "",
+    title: "",
+    institution: "",
+    email: "",
+    bio: "",
     orcid: "0000-0000-0000-0000",
     hIndex: "",
-    twitter: "johndoe",
-    bluesky: "johndoe.bsky.social",
-    researchgate: "John-Doe",
-    osf: "johndoe",
-    googlescholar: "XXXXXXXXX",
+    twitter: "",
+    bluesky: "",
+    researchgate: "",
+    osf: "",
+    googlescholar: "",
 }
 
 export default function ProfilePage() {
     const [isLoading, setIsLoading] = useState(false)
+    const [isUploadingCv, setIsUploadingCv] = useState(false)
     const [formData, setFormData] = useState(defaultValues)
     const [errors, setErrors] = useState({})
     const { user, userData, refreshUserData } = useAuth()
@@ -71,39 +73,6 @@ export default function ProfilePage() {
     }
 
     const handleInputChange = (field, value) => {
-        // if (field === "bluesky") {
-        //     // Automatically add the domain if not present
-        //     if (value && !value.includes(".bsky.social")) {
-        //         value += ".bsky.social"
-        //     }
-        //     // build the full URL with https://bsky.app/profile/ at the beginning if not already present
-        //     if (!value.startsWith("https://bsky.app/profile/")) {
-        //         value = `https://bsky.app/profile/${value}`
-        //     }
-        // } else if (field === "researchgate") {
-        //     // Automatically add the domain if not present
-        //     if (value && !value.startsWith("researchgate.net/profile/")) {
-        //         value = `researchgate.net/profile/${value}`
-        //     }
-        // } else if (field === "osf") {
-        //     // Automatically add the domain if not present
-        //     if (value && !value.startsWith("osf.io/")) {
-        //         value = `osf.io/${value}`
-        //     }
-        // } else if (field === "googlescholar") {
-        //     // Automatically add the domain if not present
-        //     if (value && !value.startsWith("scholar.google.com/citations?user="
-
-        //     )) {
-        //         value = `scholar.google.com/citations?user=${value}`
-        //     }
-        // } else if (field === "twitter") {
-        //     // Automatically add the @ if not present
-        //     if (value && !value.startsWith("@")) {
-        //         value = `@${value}`
-        //     }
-        // }
-
         setFormData((prev) => ({
             ...prev,
             [field]: value,
@@ -159,6 +128,70 @@ export default function ProfilePage() {
             })
         } finally {
             setIsLoading(false)
+        }
+    }
+
+    const handleCvUpload = async (e) => {
+        console.log("handleCvUpload called")
+        e.preventDefault()
+
+        const fileInput = document.getElementById("cv-file")
+        const file = fileInput?.files[0]
+        console.log("Selected file:", file)
+
+        if (!file) {
+            toast.error("Erreur", {
+                description: "Veuillez sélectionner un fichier.",
+            })
+            return
+        }
+
+        setIsUploadingCv(true)
+
+        try {
+            const result = await uploadCvAction(file)
+
+            if (result.success) {
+                await refreshUserData()
+                toast.success("CV uploadé", {
+                    description: result.message,
+                })
+                // Reset file input
+                fileInput.value = ""
+            } else {
+                throw new Error(result.error)
+            }
+        } catch (error) {
+            console.error("Erreur upload CV:", error)
+            toast.error("Erreur", {
+                description: error.message || "Erreur lors de l'upload du CV.",
+            })
+        } finally {
+            setIsUploadingCv(false)
+        }
+    }
+
+    const handleRemoveCv = async () => {
+        if (!confirm("Êtes-vous sûr de vouloir supprimer votre CV ?")) {
+            return
+        }
+
+        try {
+            const result = await removeCvAction()
+
+            if (result.success) {
+                await refreshUserData()
+                toast.success("CV supprimé", {
+                    description: result.message,
+                })
+            } else {
+                throw new Error(result.error)
+            }
+        } catch (error) {
+            console.error("Erreur suppression CV:", error)
+            toast.error("Erreur", {
+                description: error.message || "Erreur lors de la suppression du CV.",
+            })
         }
     }
 
@@ -306,7 +339,7 @@ export default function ProfilePage() {
                                             placeholder="25"
                                             value={formData.hIndex}
                                             onChange={(e) => handleInputChange("hIndex", e.target.value)}
-                                            className={errors.hIndex ? "border-red-500" : ""}
+                                            className={errors.hIndex ? "border-red-500 w-fit" : " w-fit"}
                                         />
                                         <Button
                                             type="button"
@@ -322,6 +355,49 @@ export default function ProfilePage() {
                                         Your current h-index. Click the button to check it on Google Scholar.
                                     </p>
                                     {errors.hIndex && <p className="text-sm text-red-500">{errors.hIndex}</p>}
+                                </div>
+                                <div className="space-y-2 w-fit">
+                                    <Label htmlFor="cv-file">CV / Resume</Label>
+
+                                    {/* Affichage du CV actuel s'il existe */}
+                                    {userData?.cvUrl && (
+                                        <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-md">
+                                            <FileText className="h-4 w-4 text-green-600" />
+                                            <span className="text-sm text-green-700 flex-1">
+                                                CV uploaded: {userData.cvUrl && "cv.pdf"}
+                                            </span>
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => window.open(userData.cvUrl, "_blank")}
+                                                className="flex items-center gap-1"
+                                            >
+                                                <ExternalLink className="h-3 w-3" />
+                                                View
+                                            </Button>
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={handleRemoveCv}
+                                                className="flex items-center gap-1 text-red-600 hover:text-red-700 bg-transparent"
+                                            >
+                                                <X className="h-3 w-3" />
+                                                Remove
+                                            </Button>
+                                        </div>
+                                    )}
+
+                                    {/* Upload de nouveau CV */}
+                                    <div className="flex gap-2">
+                                        <Input onChange={handleCvUpload} id="cv-file" type="file" accept=".pdf,.doc,.docx" className="w-fit" />
+                                    </div>
+
+                                    <p className="text-sm text-muted-foreground">
+                                        Upload your CV in PDF or Word format (max 5MB). This will be available for download on your public
+                                        site.
+                                    </p>
                                 </div>
                             </CardContent>
                             <CardFooter>

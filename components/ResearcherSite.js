@@ -18,6 +18,7 @@ import {
     Eye,
 } from "lucide-react"
 import Nav from "@/components/site/Nav"
+import Link from "next/link"
 
 export default function ResearcherSite({
     researcher,
@@ -25,6 +26,9 @@ export default function ResearcherSite({
     presentations = [],
     teaching = [],
     customDomain = null,
+    categorizedPublications = [],
+    categorizedPresentations = [],
+    categorizedTeaching = [],
 }) {
     // État pour gérer l'ouverture/fermeture des abstracts
     const [expandedAbstracts, setExpandedAbstracts] = useState(new Set())
@@ -195,10 +199,12 @@ export default function ResearcherSite({
                                             </a>
                                         )}
 
-                                        <button className="group inline-flex items-center gap-3 px-8 py-4 border border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-slate-50 transition-all duration-300 font-light tracking-wide">
-                                            <FileText className="h-5 w-5 group-hover:scale-110 transition-transform" />
-                                            Download CV
-                                        </button>
+                                        {data.cvUrl && (
+                                            <button onClick={() => window.open(data.cvUrl, "_blank")} className="group inline-flex items-center gap-3 px-8 py-4 border border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-slate-50 transition-all duration-300 font-light tracking-wide hover:cursor-pointer">
+                                                <FileText className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                                                Download CV
+                                            </button>
+                                        )}
                                     </div>
 
                                     {/* Social links redesignés */}
@@ -258,10 +264,10 @@ export default function ResearcherSite({
                     <section id="publications" className="py-24 px-6 bg-slate-50/30">
                         <div className="max-w-6xl mx-auto">
                             <div className="space-y-12">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-8">
+                                <div className="flex items-center">
+                                    <div className="flex flex-1 items-center gap-8">
                                         <h2 className="text-4xl font-extralight text-slate-900 tracking-wide">Publications</h2>
-                                        <div className="flex-1 h-px bg-gradient-to-r from-slate-300 to-transparent"></div>
+                                        <div className="flex-1 w-full h-px bg-gradient-to-r from-slate-300 to-transparent"></div>
                                     </div>
                                     <div className="text-sm text-slate-500 font-light">
                                         • {pubsToShow.length} publications •{" "}
@@ -269,110 +275,116 @@ export default function ResearcherSite({
                                 </div>
 
                                 <div className="space-y-8">
-                                    {pubsToShow.map((publication, index) => (
-                                        <div
-                                            key={publication.id}
-                                            className="group relative"
-                                            onMouseEnter={() => setHoveredItem(`pub-${publication.id}`)}
-                                            onMouseLeave={() => setHoveredItem(null)}
-                                        >
-                                            {/* Ligne de connexion */}
-                                            <div className="absolute left-0 top-0 bottom-0 w-px bg-slate-200 group-hover:bg-slate-400 transition-colors duration-300"></div>
-
-                                            {/* Contenu principal */}
-                                            <div className="pl-8 py-6">
-                                                <div className="space-y-4">
-                                                    <h3 className="text-xl font-medium text-slate-900 leading-tight group-hover:text-slate-700 transition-colors duration-300 max-w-4xl">
-                                                        {publication.url ? (
-                                                            <a
-                                                                href={publication.url}
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                className="hover:underline"
-                                                            >
-                                                                {publication.title}
-                                                            </a>
-                                                        ) : (
-                                                            publication.title
-                                                        )}
-                                                    </h3>
-
-                                                    <p className="text-slate-600 font-light">{publication.authors}</p>
-
-                                                    <div className="flex items-center gap-6 text-sm text-slate-500">
-                                                        <span className="font-medium">{publication.venue}</span>
-                                                        <span>{publication.year}</span>
-                                                        {publication.citations && <span>{publication.citations} citations</span>}
-                                                    </div>
-
-                                                    {/* Abstract expandable */}
-                                                    {expandedAbstracts.has(publication.id) && publication.abstract && (
-                                                        <div className="pt-4 max-w-4xl">
-                                                            <p className="text-slate-700 leading-relaxed font-light text-sm">
-                                                                {publication.abstract}
-                                                            </p>
-                                                            {publication.keywords && publication.keywords.length > 0 && (
-                                                                <div className="flex flex-wrap gap-2 mt-4">
-                                                                    {publication.keywords.map((keyword, keywordIndex) => (
-                                                                        <span
-                                                                            key={keywordIndex}
-                                                                            className="px-3 py-1 bg-white text-slate-600 text-xs font-light border border-slate-200"
-                                                                        >
-                                                                            {keyword}
-                                                                        </span>
-                                                                    ))}
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-
-                                            {/* Actions flottantes */}
-                                            {hoveredItem === `pub-${publication.id}` && (
-                                                <div className="absolute right-0 top-6 bg-white border border-slate-200 rounded-lg shadow-lg p-2 flex items-center gap-1 animate-in slide-in-from-right-2 duration-200">
-                                                    {publication.abstract && (
-                                                        <button
-                                                            onClick={() => toggleAbstract(publication.id)}
-                                                            className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200"
-                                                            title="Show/Hide Abstract"
-                                                        >
-                                                            <FileText className="h-4 w-4" />
-                                                        </button>
-                                                    )}
-
-                                                    {publication.pdfUrl && (
-                                                        <a
-                                                            href={publication.pdfUrl}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200"
-                                                            title="Download PDF"
-                                                        >
-                                                            <Download className="h-4 w-4" />
-                                                        </a>
-                                                    )}
-
-                                                    {publication.url && (
-                                                        <a
-                                                            href={publication.url}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200"
-                                                            title="View Online"
-                                                        >
-                                                            <ExternalLink className="h-4 w-4" />
-                                                        </a>
-                                                    )}
-
-                                                    <button
-                                                        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200"
-                                                        title="Discuss with AI"
+                                    {categorizedPublications.map((category) => (
+                                        <div key={category.value} className="space-y-6">
+                                            <h3 className="text-2xl font-light text-slate-900 border border-slate-900 w-fit p-4">{category.label}</h3>
+                                            <div className="space-y-4">
+                                                {category.publications.map((publication, index) => (
+                                                    <div
+                                                        key={publication.id}
+                                                        className="group relative"
+                                                        onMouseEnter={() => setHoveredItem(`pub-${publication.id}`)}
+                                                        onMouseLeave={() => setHoveredItem(null)}
                                                     >
-                                                        <MessageCircle className="h-4 w-4" />
-                                                    </button>
-                                                </div>
-                                            )}
+                                                        {/* Ligne de connexion */}
+                                                        <div className="absolute left-0 top-0 bottom-0 w-px bg-slate-200 group-hover:bg-slate-400 transition-colors duration-300"></div>
+
+                                                        {/* Contenu principal */}
+                                                        <div className="pl-8 py-6">
+                                                            <div className="space-y-4">
+                                                                <h3 className="text-xl font-medium text-slate-900 leading-tight group-hover:text-slate-700 transition-colors duration-300 max-w-4xl">
+                                                                    {publication.url ? (
+                                                                        <a
+                                                                            href={publication.url}
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer"
+                                                                            className="hover:underline"
+                                                                        >
+                                                                            {publication.title}
+                                                                        </a>
+                                                                    ) : (
+                                                                        publication.title
+                                                                    )}
+                                                                </h3>
+
+                                                                <p className="text-slate-600 font-light">{publication.authors}</p>
+
+                                                                <div className="flex items-center gap-6 text-sm text-slate-500">
+                                                                    <span className="font-medium">{publication.venue}</span>
+                                                                    <span>{publication.year}</span>
+                                                                </div>
+
+                                                                {/* Abstract expandable */}
+                                                                {expandedAbstracts.has(publication.id) && publication.abstract && (
+                                                                    <div className="pt-4 max-w-4xl">
+                                                                        <p className="text-slate-700 leading-relaxed font-light text-sm">
+                                                                            {publication.abstract}
+                                                                        </p>
+                                                                        {publication.keywords && publication.keywords.length > 0 && (
+                                                                            <div className="flex flex-wrap gap-2 mt-4">
+                                                                                {publication.keywords.map((keyword, keywordIndex) => (
+                                                                                    <span
+                                                                                        key={keywordIndex}
+                                                                                        className="px-3 py-1 bg-white text-slate-600 text-xs font-light border border-slate-200"
+                                                                                    >
+                                                                                        {keyword}
+                                                                                    </span>
+                                                                                ))}
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Actions flottantes */}
+                                                        {hoveredItem === `pub-${publication.id}` && (
+                                                            <div className="absolute right-0 top-6 bg-white border border-slate-200 rounded-lg shadow-lg p-2 flex items-center gap-1 animate-in slide-in-from-right-2 duration-200">
+                                                                {publication.abstract && (
+                                                                    <button
+                                                                        onClick={() => toggleAbstract(publication.id)}
+                                                                        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200"
+                                                                        title="Show/Hide Abstract"
+                                                                    >
+                                                                        <FileText className="h-4 w-4" />
+                                                                    </button>
+                                                                )}
+
+                                                                {publication.pdfUrl && (
+                                                                    <a
+                                                                        href={publication.pdfUrl}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200"
+                                                                        title="Download PDF"
+                                                                    >
+                                                                        <Download className="h-4 w-4" />
+                                                                    </a>
+                                                                )}
+
+                                                                {publication.url && (
+                                                                    <a
+                                                                        href={publication.url}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200"
+                                                                        title="View Online"
+                                                                    >
+                                                                        <ExternalLink className="h-4 w-4" />
+                                                                    </a>
+                                                                )}
+
+                                                                <button
+                                                                    className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200"
+                                                                    title="Discuss with AI"
+                                                                >
+                                                                    <MessageCircle className="h-4 w-4" />
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -392,77 +404,87 @@ export default function ResearcherSite({
                                 </div>
 
                                 <div className="space-y-8">
-                                    {presToShow.map((presentation) => (
-                                        <div
-                                            key={presentation.id}
-                                            className="group relative"
-                                            onMouseEnter={() => setHoveredItem(`pres-${presentation.id}`)}
-                                            onMouseLeave={() => setHoveredItem(null)}
-                                        >
-                                            <div className="absolute left-0 top-0 bottom-0 w-px bg-slate-200 group-hover:bg-slate-400 transition-colors duration-300"></div>
+                                    {categorizedPresentations.map((category) => (
+                                        <div key={category.value} className="space-y-6">
+                                            <h3 className="text-2xl font-light text-slate-900 border border-slate-900 w-fit p-4">
+                                                {category.label}
+                                            </h3>
+                                            <div className="space-y-4">
 
-                                            <div className="pl-8 py-6">
-                                                <div className="space-y-4">
-                                                    <div className="flex items-start gap-4">
-                                                        <h3 className="text-xl font-medium text-slate-900 leading-tight flex-1">
-                                                            {presentation.title}
-                                                        </h3>
-                                                        {presentation.type && (
-                                                            <span
-                                                                className={`px-3 py-1 text-xs font-light tracking-wide ${presentation.type === "Keynote"
-                                                                    ? "bg-slate-100 text-slate-800"
-                                                                    : presentation.type === "Invited Talk"
-                                                                        ? "bg-slate-100 text-slate-800"
-                                                                        : "bg-slate-100 text-slate-800"
-                                                                    }`}
-                                                            >
-                                                                {presentation.type}
-                                                            </span>
+                                                {category.presentations.map((presentation) => (
+                                                    <div
+                                                        key={presentation.id}
+                                                        className="group relative"
+                                                        onMouseEnter={() => setHoveredItem(`pres-${presentation.id}`)}
+                                                        onMouseLeave={() => setHoveredItem(null)}
+                                                    >
+                                                        <div className="absolute left-0 top-0 bottom-0 w-px bg-slate-200 group-hover:bg-slate-400 transition-colors duration-300"></div>
+
+                                                        <div className="pl-8 py-6">
+                                                            <div className="space-y-4">
+                                                                <div className="flex items-start gap-4">
+                                                                    <h3 className="text-xl font-medium text-slate-900 leading-tight flex-1">
+                                                                        {presentation.title}
+                                                                    </h3>
+                                                                    {presentation.type && (
+                                                                        <span
+                                                                            className={`px-3 py-1 text-xs font-light tracking-wide ${presentation.type === "Keynote"
+                                                                                ? "bg-slate-100 text-slate-800"
+                                                                                : presentation.type === "Invited Talk"
+                                                                                    ? "bg-slate-100 text-slate-800"
+                                                                                    : "bg-slate-100 text-slate-800"
+                                                                                }`}
+                                                                        >
+                                                                            {presentation.type}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+
+                                                                <p className="text-slate-700 font-medium">{presentation.event}</p>
+
+                                                                <div className="flex items-center gap-6 text-sm text-slate-500">
+                                                                    {presentation.location && (
+                                                                        <span className="flex items-center gap-2">
+                                                                            <MapPin className="h-3 w-3" />
+                                                                            {presentation.location}
+                                                                        </span>
+                                                                    )}
+                                                                    {presentation.year && (
+                                                                        <span className="flex items-center gap-2">
+                                                                            <Calendar className="h-3 w-3" />
+                                                                            {presentation.year}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+
+                                                                {presentation.description && (
+                                                                    <p className="text-slate-600 leading-relaxed font-light text-sm max-w-4xl">
+                                                                        {presentation.description}
+                                                                    </p>
+                                                                )}
+                                                            </div>
+                                                        </div>
+
+                                                        {hoveredItem === `pres-${presentation.id}` && (
+                                                            <div className="absolute right-0 top-6 bg-white border border-slate-200 rounded-lg shadow-lg p-2 flex items-center gap-1 animate-in slide-in-from-right-2 duration-200">
+                                                                <button
+                                                                    className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200"
+                                                                    title="View Details"
+                                                                >
+                                                                    <Eye className="h-4 w-4" />
+                                                                </button>
+
+                                                                <button
+                                                                    className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200"
+                                                                    title="Download Slides"
+                                                                >
+                                                                    <Download className="h-4 w-4" />
+                                                                </button>
+                                                            </div>
                                                         )}
                                                     </div>
-
-                                                    <p className="text-slate-700 font-medium">{presentation.event}</p>
-
-                                                    <div className="flex items-center gap-6 text-sm text-slate-500">
-                                                        {presentation.location && (
-                                                            <span className="flex items-center gap-2">
-                                                                <MapPin className="h-3 w-3" />
-                                                                {presentation.location}
-                                                            </span>
-                                                        )}
-                                                        {presentation.year && (
-                                                            <span className="flex items-center gap-2">
-                                                                <Calendar className="h-3 w-3" />
-                                                                {presentation.year}
-                                                            </span>
-                                                        )}
-                                                    </div>
-
-                                                    {presentation.description && (
-                                                        <p className="text-slate-600 leading-relaxed font-light text-sm max-w-4xl">
-                                                            {presentation.description}
-                                                        </p>
-                                                    )}
-                                                </div>
+                                                ))}
                                             </div>
-
-                                            {hoveredItem === `pres-${presentation.id}` && (
-                                                <div className="absolute right-0 top-6 bg-white border border-slate-200 rounded-lg shadow-lg p-2 flex items-center gap-1 animate-in slide-in-from-right-2 duration-200">
-                                                    <button
-                                                        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200"
-                                                        title="View Details"
-                                                    >
-                                                        <Eye className="h-4 w-4" />
-                                                    </button>
-
-                                                    <button
-                                                        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200"
-                                                        title="Download Slides"
-                                                    >
-                                                        <Download className="h-4 w-4" />
-                                                    </button>
-                                                </div>
-                                            )}
                                         </div>
                                     ))}
                                 </div>
@@ -482,60 +504,69 @@ export default function ResearcherSite({
                                 </div>
 
                                 <div className="space-y-8">
-                                    {teachToShow.map((course) => (
-                                        <div
-                                            key={course.id}
-                                            className="group relative"
-                                            onMouseEnter={() => setHoveredItem(`teach-${course.id}`)}
-                                            onMouseLeave={() => setHoveredItem(null)}
-                                        >
-                                            <div className="absolute left-0 top-0 bottom-0 w-px bg-slate-200 group-hover:bg-slate-400 transition-colors duration-300"></div>
+                                    {categorizedTeaching.map((category) => (
+                                        <div key={category.value} className="space-y-6">
+                                            <h3 className="text-2xl font-light text-slate-900 border border-slate-900 w-fit p-4">
+                                                {category.label}
+                                            </h3>
+                                            <div className="space-y-4">
+                                                {category.teaching.map((course) => (
+                                                    <div
+                                                        key={course.id}
+                                                        className="group relative"
+                                                        onMouseEnter={() => setHoveredItem(`teach-${course.id}`)}
+                                                        onMouseLeave={() => setHoveredItem(null)}
+                                                    >
+                                                        <div className="absolute left-0 top-0 bottom-0 w-px bg-slate-200 group-hover:bg-slate-400 transition-colors duration-300"></div>
 
-                                            <div className="pl-8 py-6">
-                                                <div className="space-y-4">
-                                                    <h3 className="text-xl font-medium text-slate-900 leading-tight">{course.title}</h3>
+                                                        <div className="pl-8 py-6">
+                                                            <div className="space-y-4">
+                                                                <h3 className="text-xl font-medium text-slate-900 leading-tight">{course.title}</h3>
 
-                                                    <p className="text-slate-700 font-medium">{course.institution}</p>
+                                                                <p className="text-slate-700 font-medium">{course.institution}</p>
 
-                                                    <div className="flex items-center gap-6 text-sm text-slate-500">
-                                                        {course.level && (
-                                                            <span className="bg-slate-100 px-3 py-1 text-xs font-light tracking-wide">
-                                                                {course.level}
-                                                            </span>
-                                                        )}
-                                                        {course.year && (
-                                                            <span className="flex items-center gap-2">
-                                                                <Calendar className="h-3 w-3" />
-                                                                {course.year}
-                                                            </span>
+                                                                <div className="flex items-center gap-6 text-sm text-slate-500">
+                                                                    {course.level && (
+                                                                        <span className="bg-slate-100 px-3 py-1 text-xs font-light tracking-wide">
+                                                                            {course.level}
+                                                                        </span>
+                                                                    )}
+                                                                    {course.year && (
+                                                                        <span className="flex items-center gap-2">
+                                                                            <Calendar className="h-3 w-3" />
+                                                                            {course.year}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+
+                                                                {course.description && (
+                                                                    <p className="text-slate-600 leading-relaxed font-light text-sm max-w-4xl">
+                                                                        {course.description}
+                                                                    </p>
+                                                                )}
+                                                            </div>
+                                                        </div>
+
+                                                        {hoveredItem === `teach-${course.id}` && (
+                                                            <div className="absolute right-0 top-6 bg-white border border-slate-200 rounded-lg shadow-lg p-2 flex items-center gap-1 animate-in slide-in-from-right-2 duration-200">
+                                                                <button
+                                                                    className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200"
+                                                                    title="Course Materials"
+                                                                >
+                                                                    <Book className="h-4 w-4" />
+                                                                </button>
+
+                                                                <button
+                                                                    className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200"
+                                                                    title="Syllabus"
+                                                                >
+                                                                    <FileText className="h-4 w-4" />
+                                                                </button>
+                                                            </div>
                                                         )}
                                                     </div>
-
-                                                    {course.description && (
-                                                        <p className="text-slate-600 leading-relaxed font-light text-sm max-w-4xl">
-                                                            {course.description}
-                                                        </p>
-                                                    )}
-                                                </div>
+                                                ))}
                                             </div>
-
-                                            {hoveredItem === `teach-${course.id}` && (
-                                                <div className="absolute right-0 top-6 bg-white border border-slate-200 rounded-lg shadow-lg p-2 flex items-center gap-1 animate-in slide-in-from-right-2 duration-200">
-                                                    <button
-                                                        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200"
-                                                        title="Course Materials"
-                                                    >
-                                                        <Book className="h-4 w-4" />
-                                                    </button>
-
-                                                    <button
-                                                        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200"
-                                                        title="Syllabus"
-                                                    >
-                                                        <FileText className="h-4 w-4" />
-                                                    </button>
-                                                </div>
-                                            )}
                                         </div>
                                     ))}
                                 </div>
@@ -659,9 +690,9 @@ export default function ResearcherSite({
                             </div>
                             <span className="font-light text-xl tracking-wide">{data.name}</span>
                         </div>
-                        <p className="text-slate-400 font-light text-sm">
-                            © {new Date().getFullYear()} {data.name}. All rights reserved.
-                        </p>
+                        <Link target="blank" href={process.env.NEXT_PUBLIC_APP_URL} className="text-slate-400 font-light text-sm">
+                            © {new Date().getFullYear()} Lokus.
+                        </Link>
                         {customDomain && (
                             <p className="text-xs text-slate-500 mt-2 font-light">Academic website powered by ResearcherPlatform</p>
                         )}

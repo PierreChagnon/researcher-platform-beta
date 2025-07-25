@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react"
 
 export function useSubscription() {
-    console.log("useSubscription hook initialized")
     const [subscription, setSubscription] = useState(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
@@ -29,7 +28,6 @@ export function useSubscription() {
             }
 
             setSubscription(data.subscription)
-            console.log("Subscription fetched successfully:", data)
         } catch (err) {
             console.error("Error fetching subscription:", err)
             setError(err.message)
@@ -61,13 +59,6 @@ export function useSubscription() {
 
         return () => clearInterval(interval)
     }, [fetchSubscription, loading])
-
-    console.log("useSubscription hook state:", {
-        subscription,
-        loading,
-        error,
-        isActive: subscription?.subscriptionStatus === "active",
-    })
 
     return {
         subscription,
