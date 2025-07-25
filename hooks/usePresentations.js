@@ -69,7 +69,6 @@ export function usePresentations() {
     const refreshPresentations = () => {
         fetchPresentations()
     }
-    console.log("Presentations:", categorizedPresentations)
     return {
         presentations,
         categorizedPresentations,
