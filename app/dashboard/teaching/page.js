@@ -178,8 +178,11 @@ export default function TeachingPage() {
                                                 <SelectValue placeholder="Select" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="spring">Spring</SelectItem>
-                                                <SelectItem value="summer">Summer</SelectItem>
+                                                <SelectItem value="Spring">Spring</SelectItem>
+                                                <SelectItem value="Summer">Summer</SelectItem>
+                                                <SelectItem value="Fall">Fall</SelectItem>
+                                                <SelectItem value="Winter">Winter</SelectItem>
+                                                <SelectItem value="All Year">All Year</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -201,7 +204,6 @@ export default function TeachingPage() {
                                     <Input
                                         id="title"
                                         name="title"
-                                        placeholder="Introduction to Artificial Intelligence"
                                         defaultValue={editingTeaching?.title}
                                         required
                                     />
@@ -226,7 +228,6 @@ export default function TeachingPage() {
                                     <Input
                                         id="university"
                                         name="university"
-                                        placeholder="University of Paris"
                                         defaultValue={editingTeaching?.university}
                                         required
                                     />

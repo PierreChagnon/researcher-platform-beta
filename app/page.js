@@ -42,14 +42,14 @@ export default function Home() {
   return (
     <div className="relative flex flex-col min-h-screen bg-accent text-foreground md:items-center">
       <HeroBackground />
-      <header className={`w-full flex justify-between items-center px-6 py-4 z-50 md:gap-4 sticky top-0 transition-all duration-300 lg:px-24 ${isScrolled
-        ? 'bg-white/95 backdrop-blur-sm shadow-sm border-b border-gray-200 md:top-4 md:w-11/12 md:rounded-lg'
+      <header className={`w-full 2xl:w-4/5 flex justify-between items-center px-6 py-4 z-50 md:gap-4 sticky top-0 duration-300 lg:px-12 ${isScrolled
+        ? 'bg-white shadow-sm border-b border-gray-200 md:top-4 md:w-11/12 2xl:w-3/4 md:rounded-lg'
         : 'bg-transparent'
         }`}>
         <Link href="/" className={`flex items-center gap-2 text-3xl font-bold ${kottaOne.className} lg:flex-1`}>
           <Image src={"/logo-lokus.png"} height={24} width={32} alt="logo Lokus" className="" />Lokus
         </Link>
-        <nav className="hidden md:flex items-center justify-center gap-4 lg:gap-6 md:flex-1">
+        <nav className="hidden lg:flex items-center justify-center gap-4 lg:gap-6 lg:flex-1">
           <Link href="/" className="text-sm lg:text-base hover:text-black/50 transition-colors">Home</Link>
           <Link href="#features" className="text-sm lg:text-base hover:text-black/50 transition-colors">Features</Link>
           <Link href="#pricing" className="text-sm lg:text-base hover:text-black/50 transition-colors">Pricing</Link>
@@ -57,7 +57,7 @@ export default function Home() {
           <Link href="#contact" className="text-sm lg:text-base hover:text-black/50 transition-colors">Contact</Link>
           <Link href="#faq" className="text-sm lg:text-base hover:text-black/50 transition-colors">FAQ</Link>
         </nav>
-        <div className="hidden md:flex items-center md:gap-2 lg:gap-6 lg:flex-1 justify-end">
+        <div className="hidden lg:flex items-center gap-2 lg:gap-6 lg:flex-1 justify-end">
           <Link href="/login" className="text-lg hover:text-black transition-colors">
             <Button variant="outline" className="h-10 px-6 lg:text-lg bg-transparent border-black lg:py-6">
               Login
@@ -70,7 +70,7 @@ export default function Home() {
           </Link>
         </div>
         {/* Mobile Nav */}
-        <div className="md:hidden flex items-center justify-center">
+        <div className="lg:hidden flex items-center justify-center">
           <DropdownMenu className="z-50 ">
             <DropdownMenuTrigger asChild>
               <Button className="h-12 w-12">
@@ -104,51 +104,51 @@ export default function Home() {
         </div>
       </header>
       <main className="flex-1 flex flex-col items-center z-40">
-        <section id='hero' className="py-18 md:py-24 lg:py-36 px-4 w-full">
-          <div className="container w-full">
+        <section id='hero' className="py-18 md:py-24 lg:py-36 w-full flex justify-center">
+          <div className="container w-full md:max-w-11/12 lg:max-w-4/5">
             <Hero />
           </div>
         </section>
-        <section id='content' className="py-18 md:py-24 lg:py-36 px-4 w-full">
-          <div className="container w-full">
+        <section id='content' className="py-18 md:py-24 lg:py-36 w-full flex justify-center">
+          <div className="container w-full md:max-w-11/12 lg:max-w-4/5">
             <Content />
           </div>
         </section>
-        <section id='features' className="py-18 md:py-24 lg:py-36 px-4 w-full">
-          <div className="container w-full">
+        <section id='features' className="py-18 md:py-24 lg:py-36 w-full flex justify-center">
+          <div className="container w-full md:max-w-11/12 lg:max-w-4/5">
             <Features />
           </div>
         </section>
-        <section id='carousel' className="relative py-18 md:py-24 lg:py-36 px-4 bg-stone-200/50 border-t border-b border-stone-300 w-full">
+        <section id='carousel' className="relative py-18 md:py-24 bg-stone-200/50 border-t border-b border-stone-300 w-full flex justify-center">
           {/* Absolute positioned circle */}
           <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white border border-stone-300 rounded-full" />
           <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-white border border-stone-300 rounded-full" />
-          <div className="container w-full">
+          <div className="container w-full md:max-w-11/12 lg:max-w-4/5">
             <TextCarousel />
           </div>
         </section>
-        <section id='pricing' className="py-18 md:py-24 lg:py-36 px-4 w-full">
-          <div className="container w-full">
+        <section id='pricing' className="py-18 md:py-24 lg:py-36 w-full flex justify-center">
+          <div className="container w-full md:max-w-11/12 lg:max-w-4/5">
             <Pricing />
           </div>
         </section>
-        <section id='about' className="py-18 md:py-24 lg:py-36 px-4 w-full">
-          <div className="container w-full">
+        <section id='about' className="py-18 md:py-24 lg:py-36 w-full flex justify-center">
+          <div className="container w-full md:max-w-11/12 lg:max-w-4/5">
             <About />
           </div>
         </section>
-        <section id='contact' className="py-18 md:py-24 lg:py-36 px-4 w-full">
-          <div className="container w-full">
+        <section id='contact' className="py-18 md:py-24 lg:py-36 w-full flex justify-center">
+          <div className="container w-full md:max-w-11/12 lg:max-w-4/5">
             <Contact />
           </div>
         </section>
-        <section id='faq' className="py-18 md:py-24 lg:py-36 px-4 w-full">
-          <div className="container w-full">
+        <section id='faq' className="py-18 md:py-24 lg:py-36 w-full flex justify-center">
+          <div className="container w-full md:max-w-11/12 lg:max-w-4/5">
             <FAQ />
           </div>
         </section>
-        <footer id='footer' className="py-18 md:py-24 lg:py-36 px-4 bg-black w-full">
-          <div className="container w-full">
+        <footer id='footer' className="py-18 md:py-24 lg:py-36 bg-black w-full flex justify-center">
+          <div className="container w-full md:max-w-11/12 lg:max-w-4/5">
             <Footer />
           </div>
         </footer>

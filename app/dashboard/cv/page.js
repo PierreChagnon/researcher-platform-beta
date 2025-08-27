@@ -166,7 +166,10 @@ export default function CvPreview() {
         <>
             <div className="p-6">
                 <div className="flex justify-between items-center mb-6 no-print">
-                    <h1 className="text-2xl font-bold">CV Builder</h1>
+                    <div className="flex flex-col gap-2">
+                        <h1 className="text-2xl font-bold">CV Builder</h1>
+                        <p className="text-sm text-muted-foreground max-w-lg">This section collects additional information not shown on your public profile. It allows you to automatically generate a complete, up-to-date CV that evolves as you add new references, teaching, or positions to your site.</p>
+                    </div>
                     <div className="flex gap-2">
                         <Button onClick={handleSave} disabled={saving}>
                             {saving ? "Saving..." : "Save Changes"}
@@ -408,7 +411,7 @@ export default function CvPreview() {
                                             </Button>
                                         </div>
                                         <CardDescription>
-                                            List journals you have reviewed for.
+                                            Add the journals you have reviewed for.
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent className="p-6">
@@ -560,7 +563,7 @@ export default function CvPreview() {
                                                                     {pub.authors} ({pub.year}). <strong>{pub.title}</strong>.
                                                                 </div>
                                                                 <div className="text-gray-700 italic">
-                                                                    {pub.journal && `${pub.journal}, `}
+                                                                    {pub.journal && `${pub.journal}, `}{pub?.impactFactor && <span className="not-italic">(IF: {pub.impactFactor})</span>}
                                                                 </div>
                                                                 {pub.doi && <div className="text-gray-600 text-xs">DOI: {pub.doi}</div>}
                                                             </div>

@@ -92,7 +92,6 @@ export default function ContactPage() {
                                     <Input
                                         id="email"
                                         type="email"
-                                        placeholder="john.doe@university.edu"
                                         value={formData.email}
                                         onChange={(e) => handleInputChange("email", e.target.value)}
                                         className="pl-10"
@@ -109,7 +108,6 @@ export default function ContactPage() {
                                     <Input
                                         id="phone"
                                         type="tel"
-                                        placeholder="+1 (555) 123-4567"
                                         value={formData.phone}
                                         onChange={(e) => handleInputChange("phone", e.target.value)}
                                         className="pl-10"
@@ -124,7 +122,6 @@ export default function ContactPage() {
                                     <MapPin className="absolute left-3 top-3 text-gray-400 h-4 w-4" />
                                     <Input
                                         id="address"
-                                        placeholder="123 University Street, 12345 City, Country"
                                         value={formData.address}
                                         onChange={(e) => handleInputChange("address", e.target.value)}
                                         className="pl-10"

@@ -178,8 +178,18 @@ export default function SettingsPage() {
             <Tabs defaultValue="general" className="space-y-4">
                 <TabsList>
                     <TabsTrigger value="general">General</TabsTrigger>
-                    <TabsTrigger value="appearance" disabled>Appearance</TabsTrigger>
-                    <TabsTrigger value="analytics" disabled>Analytics</TabsTrigger>
+                    <TabsTrigger value="appearance" className="relative" disabled>
+                        Appearance
+                        <Badge variant="default" className="absolute -top-4 -right-6 text-xs">
+                            Soon!
+                        </Badge>
+                    </TabsTrigger>
+                    <TabsTrigger value="analytics" className="relative" disabled>
+                        Analytics
+                        <Badge variant="default" className="absolute -top-4 -right-6 text-xs">
+                            Soon!
+                        </Badge>
+                    </TabsTrigger>
                 </TabsList>
 
                 {/* GENERAL TAB */}

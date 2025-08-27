@@ -19,12 +19,14 @@ export function middleware(request) {
 
     // 1. LOGIQUE D'AUTHENTIFICATION (prioritaire)
     if (isProtectedRoute && !authToken) {
+        console.log("❌ User not authenticated, redirecting to login...")
         const loginUrl = new URL("/login", request.url)
         loginUrl.searchParams.set("redirect", pathname)
         return NextResponse.redirect(loginUrl)
     }
 
     if (isAuthRoute && authToken) {
+        console.log("✅ User authenticated, redirecting to dashboard...")
         return NextResponse.redirect(new URL("/dashboard", request.url))
     }
 

@@ -70,6 +70,7 @@ import {
 import { toast } from "sonner"
 import { PublicationSyncModal } from "@/components/PublicationSyncModal"
 import { objectToFormData } from "@/lib/utils"
+import Link from "next/link"
 
 const PUBLICATION_CATEGORIES = [
     { value: "articles", label: "Articles", color: "bg-purple-100 text-purple-800" },                      // Articles, Reviews, Reports
@@ -271,14 +272,19 @@ export default function PublicationsPage() {
 
             {!userData?.orcid && (
                 <Card className="border-orange-200 bg-orange-50">
-                    <CardContent className="flex items-center gap-3 pt-6">
-                        <AlertCircle className="h-5 w-5 text-orange-600" />
-                        <div>
-                            <p className="font-medium text-orange-800">ORCID not configured</p>
+                    <CardHeader>
+                        <CardTitle>ORCID not configured</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex flex-col">
+                        <div className="flex items-center gap-3 pt-6">
+                            <AlertCircle className="h-5 w-5 text-orange-600" />
                             <p className="text-sm text-orange-700">
                                 Add your ORCID identifier in your profile to automatically synchronize your publications.
                             </p>
                         </div>
+                        <Button variant="default" asChild className="mt-4 w-fit space-x-2">
+                            <Link href="/dashboard/profile?tab=academic&focus=orcid">Configure ORCID</Link>
+                        </Button>
                     </CardContent>
                 </Card>
             )}
@@ -349,20 +355,33 @@ export default function PublicationsPage() {
                                                 <Label htmlFor="journal">Journal *</Label>
                                                 <Input id="journal" name="journal" defaultValue={editingPublication?.journal} required />
                                             </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="category">Category *</Label>
-                                                <Select defaultValue={editingPublication?.type} name="type" required>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select a category" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {PUBLICATION_CATEGORIES.map((category) => (
-                                                            <SelectItem key={category.value} value={category.value}>
-                                                                {category.label}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="category">Category *</Label>
+                                                    <Select defaultValue={editingPublication?.type} name="type" required>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select a category" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {PUBLICATION_CATEGORIES.map((category) => (
+                                                                <SelectItem key={category.value} value={category.value}>
+                                                                    {category.label}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="impactFactor">Impact Factor (IF)</Label>
+                                                    <Input
+                                                        type="number"
+                                                        min="0"
+                                                        step="0.01"
+                                                        id="impactFactor"
+                                                        name="impactFactor"
+                                                        defaultValue={editingPublication?.impactFactor}
+                                                    />
+                                                </div>
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-2">
@@ -372,7 +391,7 @@ export default function PublicationsPage() {
                                                         name="year"
                                                         type="number"
                                                         min="1900"
-                                                        max="2030"
+                                                        max={new Date().getFullYear()}
                                                         defaultValue={editingPublication?.year}
                                                         required
                                                     />
@@ -413,6 +432,39 @@ export default function PublicationsPage() {
                                                 <Label htmlFor="supplementaryMaterials">Supplementary Materials</Label>
                                                 <Input id="supplementaryMaterials" name="supplementaryMaterials" placeholder="Link to supplementary materials" type="url" defaultValue={editingPublication?.supplementaryMaterials} />
                                             </div>
+                                            {editingPublication &&
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="pdf">PDF Upload</Label>
+                                                    {editingPublication?.pdfUrl ? (
+                                                        <Button variant="outline" size="sm" asChild>
+                                                            <a href={editingPublication?.pdfUrl} target="_blank" rel="noopener noreferrer">
+                                                                <File className="h-3 w-3 mr-1" />
+                                                                PDF
+                                                            </a>
+                                                        </Button>
+                                                    ) : (
+                                                        <div className="relative">
+                                                            <input
+                                                                type="file"
+                                                                accept=".pdf"
+                                                                onChange={async (e) => {
+                                                                    const file = e.target.files?.[0]
+                                                                    if (file) await handlePdfUpload(editingPublication?.firestoreId, file)
+                                                                }}
+                                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                                                disabled={uploadingPdf === editingPublication?.firestoreId}
+                                                            />
+                                                            <Button variant="outline" size="sm" disabled={uploadingPdf === editingPublication?.firestoreId}>
+                                                                {uploadingPdf === editingPublication?.firestoreId ? (
+                                                                    <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+                                                                ) : (
+                                                                    <Upload className="h-3 w-3 mr-1" />
+                                                                )}
+                                                                Upload PDF
+                                                            </Button>
+                                                        </div>
+                                                    )}
+                                                </div>}
                                         </div>
                                         <DialogFooter>
                                             <Button type="button" variant="outline" onClick={closeAddDialog}>
@@ -479,11 +531,11 @@ export default function PublicationsPage() {
                                                 />
                                             </TableHead>
                                             <TableHead>Title</TableHead>
-                                            <TableHead className="hidden md:table-cell">Journal</TableHead>
-                                            <TableHead className="hidden md:table-cell">Category</TableHead>
-                                            <TableHead className="hidden md:table-cell">Year</TableHead>
-                                            <TableHead className="hidden md:table-cell">Source</TableHead>
-                                            <TableHead className="hidden md:table-cell">PDF</TableHead>
+                                            <TableHead className="hidden lg:table-cell">Journal</TableHead>
+                                            <TableHead className="hidden 2xl:table-cell">Category</TableHead>
+                                            <TableHead className="hidden lg:table-cell">Year</TableHead>
+                                            <TableHead className="hidden 2xl:table-cell">Source</TableHead>
+                                            <TableHead className="hidden xl:table-cell">PDF</TableHead>
                                             <TableHead className="w-[50px]"></TableHead>
                                         </TableRow>
                                     </TableHeader>
@@ -509,16 +561,16 @@ export default function PublicationsPage() {
                                                                 aria-label={`Select ${pub.title}`}
                                                             />
                                                         </TableCell>
-                                                        <TableCell className="font-medium">
+                                                        <TableCell className="font-medium max-w-xs truncate">
                                                             <div>
                                                                 <div className="font-medium">{pub.title}</div>
-                                                                <div className="text-sm text-muted-foreground md:hidden">
+                                                                <div className="text-sm text-muted-foreground lg:hidden">
                                                                     {pub.journal} • {pub.year}
                                                                 </div>
                                                             </div>
                                                         </TableCell>
-                                                        <TableCell className="hidden md:table-cell">{pub.journal}</TableCell>
-                                                        <TableCell className="hidden md:table-cell">
+                                                        <TableCell className="hidden lg:table-cell max-w-xs truncate">{pub.journal}</TableCell>
+                                                        <TableCell className="hidden 2xl:table-cell">
                                                             <Select
                                                                 className="w-full"
                                                                 value={pub.type}
@@ -538,8 +590,8 @@ export default function PublicationsPage() {
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {PUBLICATION_CATEGORIES.map((category) => (
-                                                                        <SelectItem key={category.value} value={category.value} className={`w-full mb-2 flex justify-center ${category.color}`}>
-                                                                            <Badge className={`${category.color} w-full`}>{category.label}</Badge>
+                                                                        <SelectItem key={category.value} value={category.value} className={`w-full mb-2 flex ${category.color} bg-white`}>
+                                                                            <Badge className={`${category.color}`}>{category.label}</Badge>
                                                                         </SelectItem>
                                                                     ))}
                                                                 </SelectContent>
@@ -547,7 +599,7 @@ export default function PublicationsPage() {
                                                             {/* <Badge className={categoryInfo.color}>{categoryInfo.label}</Badge> */}
                                                         </TableCell>
                                                         <TableCell className="hidden md:table-cell">{pub.year}</TableCell>
-                                                        <TableCell className="hidden md:table-cell">
+                                                        <TableCell className="hidden 2xl:table-cell">
                                                             <Badge variant={pub.source === "openalex" ? "default" : "secondary"}>
                                                                 {pub.source === "openalex" ? (
                                                                     <div className="flex items-center gap-1">
@@ -562,7 +614,7 @@ export default function PublicationsPage() {
                                                                 )}
                                                             </Badge>
                                                         </TableCell>
-                                                        <TableCell className="hidden md:table-cell">
+                                                        <TableCell className="hidden xl:table-cell">
                                                             {pub.pdfUrl ? (
                                                                 <Button variant="outline" size="sm" asChild>
                                                                     <a href={pub.pdfUrl} target="_blank" rel="noopener noreferrer">
@@ -612,50 +664,59 @@ export default function PublicationsPage() {
                                                                         <Edit className="h-4 w-4" />
                                                                         <span>Edit</span>
                                                                     </DropdownMenuItem>
-                                                                    {pub.url && (
-                                                                        <DropdownMenuItem asChild>
-                                                                            <a
-                                                                                href={pub.url}
-                                                                                target="_blank"
-                                                                                rel="noopener noreferrer"
-                                                                                className="flex items-center gap-2"
-                                                                            >
-                                                                                <ExternalLink className="h-4 w-4" />
-                                                                                <span>Open link</span>
-                                                                            </a>
-                                                                        </DropdownMenuItem>
-                                                                    )}
-                                                                    {pub.osfUrl && (
-                                                                        <DropdownMenuItem asChild>
-                                                                            <a
-                                                                                href={pub.osfUrl}
-                                                                                target="_blank"
-                                                                                rel="noopener noreferrer"
-                                                                                className="flex items-center gap-2"
-                                                                            >
-                                                                                <ExternalLink className="h-4 w-4" />
-                                                                                <span>View on OSF</span>
-                                                                            </a>
-                                                                        </DropdownMenuItem>
-                                                                    )}
+                                                                    <DropdownMenuItem disabled={!pub?.url} asChild>
+                                                                        <a
+                                                                            href={pub.url}
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer"
+                                                                            className="flex items-center gap-2"
+                                                                        >
+                                                                            <ExternalLink className="h-4 w-4" />
+                                                                            <span>Open link</span>
+                                                                        </a>
+                                                                    </DropdownMenuItem>
+                                                                    <DropdownMenuItem disabled={!pub?.osfUrl} asChild>
+                                                                        <a
+                                                                            href={pub?.osfUrl}
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer"
+                                                                            className="flex items-center gap-2"
+                                                                        >
+                                                                            <ExternalLink className="h-4 w-4" />
+                                                                            <span>View on OSF</span>
+                                                                        </a>
+                                                                    </DropdownMenuItem>
+                                                                    <DropdownMenuItem disabled={!pub.pdfUrl} asChild>
+                                                                        <a
+                                                                            href={pub.pdfUrl}
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer"
+                                                                            className="flex items-center gap-2"
+                                                                        >
+                                                                            <Eye className="h-4 w-4" />
+                                                                            <span>View PDF</span>
+                                                                        </a>
+                                                                    </DropdownMenuItem>
                                                                     <DropdownMenuItem
                                                                         disabled={!pub.pdfUrl}
-                                                                        className="flex items-center gap-2"
+                                                                        className="flex items-center gap-2 text-destructive focus:text-destructive"
                                                                         onClick={async () => {
                                                                             await deletePublicationPDF(pub.firestoreId)
                                                                             refreshPublications()
                                                                         }}
                                                                     >
-                                                                        <Trash className="h-4 w-4" />
+                                                                        <Trash className="h-4 w-4 text-destructive" />
                                                                         <span>Delete PDF</span>
                                                                     </DropdownMenuItem>
                                                                     <DropdownMenuSeparator />
                                                                     <DropdownMenuItem
-                                                                        className="flex items-center gap-2 text-destructive focus:text-destructive"
-                                                                        onClick={() => openDeleteDialog(pub)}
+                                                                        // className="flex items-center gap-2 text-destructive focus:text-destructive"
+                                                                        asChild
                                                                     >
-                                                                        <Trash className="h-4 w-4 text-destructive" />
-                                                                        <span>Delete publication</span>
+                                                                        <Button variant="destructive" className="group" onClick={() => openDeleteDialog(pub)}>
+                                                                            <Trash className="h-4 w-4 group-hover:text-primary text-white transition-colors duration-200" />
+                                                                            <span>Delete publication</span>
+                                                                        </Button>
                                                                     </DropdownMenuItem>
                                                                 </DropdownMenuContent>
                                                             </DropdownMenu>

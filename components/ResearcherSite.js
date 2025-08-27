@@ -19,6 +19,10 @@ import {
 } from "lucide-react"
 import Nav from "@/components/site/Nav"
 import Link from "next/link"
+import logoOsf from "@/public/logo-osf.png"
+import logoBluesky from "@/public/logo-bluesky.png"
+import placeHolderPicture from "@/public/placeholder.png"
+import logoRG from "@/public/logo-researchgate.png"
 
 export default function ResearcherSite({
     researcher,
@@ -30,6 +34,7 @@ export default function ResearcherSite({
     categorizedPresentations = [],
     categorizedTeaching = [],
 }) {
+    console.log(categorizedPresentations)
     // État pour gérer l'ouverture/fermeture des abstracts
     const [expandedAbstracts, setExpandedAbstracts] = useState(new Set())
     const [hoveredItem, setHoveredItem] = useState(null)
@@ -48,6 +53,7 @@ export default function ResearcherSite({
     }
 
     const data = researcher
+    console.log("profilePictureUrl", data?.profilePictureUrl)
     const pubsToShow = publications.length > 0 && publications
     const presToShow = presentations.length > 0 && presentations
     const teachToShow = teaching.length > 0 && teaching
@@ -72,7 +78,11 @@ export default function ResearcherSite({
             case "googlescholar":
                 return <GraduationCap className="h-5 w-5" />
             case "researchgate":
-                return <Book className="h-5 w-5" />
+                return <Image unoptimized height={20} width={20} src={logoRG} alt="ResearchGate" className="h-5 w-5" />
+            case "bluesky":
+                return <Image unoptimized height={20} width={20} src={logoBluesky} alt="Bluesky" className="h-5 w-5" />
+            case "osf":
+                return <Image unoptimized height={20} width={20} src={logoOsf} alt="OSF" className="h-5 w-5" />
             default:
                 return <ExternalLink className="h-5 w-5" />
         }
@@ -90,22 +100,11 @@ export default function ResearcherSite({
             />
 
             {/* Main Content avec padding pour la navigation latérale */}
-            <div className="lg:pl-32">
+            <main className="">
                 {/* Hero Section */}
-                <section id="header" className="relative pt-24 lg:pt-20 pb-32 px-6">
-                    {/* Effet de grille subtile en arrière-plan */}
-                    <div className="absolute inset-0 opacity-[0.02]">
-                        <div
-                            className="absolute inset-0"
-                            style={{
-                                backgroundImage: `radial-gradient(circle at 1px 1px, rgb(15 23 42) 1px, transparent 0)`,
-                                backgroundSize: "40px 40px",
-                            }}
-                        ></div>
-                    </div>
-
+                <section id="header" className="relative pt-24 lg:py-24 px-6">
                     <div className="relative max-w-6xl mx-auto">
-                        <div className="grid lg:grid-cols-5 gap-16 items-start">
+                        <div className="grid lg:grid-cols-5 gap-16 items-center">
                             {/* Left side - Photo */}
                             <div className="lg:col-span-2 flex justify-center lg:justify-start">
                                 <div className="relative group">
@@ -114,7 +113,7 @@ export default function ResearcherSite({
                                         <div className="absolute -inset-1 bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                                         <Image
                                             src={
-                                                data.profilePictureUrl || "/placeholder.svg"
+                                                data?.profilePictureUrl || placeHolderPicture
                                             }
                                             alt="Profile Picture"
                                             fill
@@ -128,16 +127,16 @@ export default function ResearcherSite({
 
                             {/* Right side - Info */}
                             <div className="lg:col-span-3 space-y-12">
-                                <div className="space-y-8">
+                                <div className="space-y-8 flex items-center lg:items-baseline text-center flex-col ">
                                     {/* Nom avec effet typographique */}
                                     <div className="relative">
-                                        <h1 className="text-6xl lg:text-7xl font-light text-slate-900 leading-[0.9] tracking-tight">
+                                        <h1 className="text-5xl lg:text-7xl font-light text-slate-900 leading-[0.9] tracking-tight flex gap-2">
                                             {data.name.split(" ").map((word, index) => (
                                                 <span
                                                     key={index}
                                                     className="inline-block"
                                                     style={{
-                                                        transform: `translateY(${index * -2}px)`,
+                                                        // transform: `translateY(${index * -2}px)`,
                                                         opacity: 1 - index * 0.1,
                                                     }}
                                                 >
@@ -151,19 +150,11 @@ export default function ResearcherSite({
                                         <p className="text-2xl text-slate-600 font-light leading-relaxed max-w-2xl">{data.title}</p>
 
                                         <div className="space-y-4">
-                                            {data.affiliation && (
+                                            {data.institution && (
                                                 <div className="flex items-center gap-4 text-lg text-slate-700">
                                                     <div className="w-1 h-8 bg-slate-300"></div>
                                                     <Building className="h-5 w-5 text-slate-400" />
-                                                    <span>{data.affiliation}</span>
-                                                </div>
-                                            )}
-
-                                            {data.location && (
-                                                <div className="flex items-center gap-4 text-lg text-slate-700">
-                                                    <div className="w-1 h-8 bg-slate-300"></div>
-                                                    <MapPin className="h-5 w-5 text-slate-400" />
-                                                    <span>{data.location}</span>
+                                                    <span>{data.institution}</span>
                                                 </div>
                                             )}
                                         </div>
@@ -171,7 +162,7 @@ export default function ResearcherSite({
 
                                     {/* Stats avec design minimaliste */}
                                     {data && (
-                                        <div className="grid grid-cols-3 gap-12 pt-8">
+                                        <div className="flex gap-12 pt-8 justify-center items-center text-center">
                                             {data.hIndex && (
                                                 <div className="text-left">
                                                     <div className="text-4xl font-extralight text-slate-900 mb-1">{data.hIndex}</div>
@@ -188,11 +179,11 @@ export default function ResearcherSite({
                                     )}
 
                                     {/* Actions avec design épuré */}
-                                    <div className="flex flex-wrap gap-6 pt-8">
+                                    <div className="flex flex-wrap justify-center gap-6 pt-8">
                                         {data.email && (
                                             <a
                                                 href={`mailto:${data.email}`}
-                                                className="group inline-flex items-center gap-3 px-8 py-4 bg-slate-900 text-white hover:bg-slate-800 transition-all duration-300 font-light tracking-wide"
+                                                className="group inline-flex items-center gap-3 w-full md:w-fit justify-center lg:justify-baseline px-8 py-4 bg-slate-900 text-white hover:bg-slate-800 transition-all duration-300 font-light tracking-wide"
                                             >
                                                 <Mail className="h-5 w-5 group-hover:scale-110 transition-transform" />
                                                 Contact
@@ -200,7 +191,7 @@ export default function ResearcherSite({
                                         )}
 
                                         {data.cvUrl && (
-                                            <button onClick={() => window.open(data.cvUrl, "_blank")} className="group inline-flex items-center gap-3 px-8 py-4 border border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-slate-50 transition-all duration-300 font-light tracking-wide hover:cursor-pointer">
+                                            <button onClick={() => window.open(data.cvUrl, "_blank")} className="group inline-flex items-center gap-3 w-full md:w-fit justify-center lg:justify-baseline px-8 py-4 border border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-slate-50 transition-all duration-300 font-light tracking-wide hover:cursor-pointer">
                                                 <FileText className="h-5 w-5 group-hover:scale-110 transition-transform" />
                                                 Download CV
                                             </button>
@@ -209,7 +200,7 @@ export default function ResearcherSite({
 
                                     {/* Social links redesignés */}
                                     {data.social && (
-                                        <div className="flex flex-wrap gap-4 pt-4">
+                                        <div className="flex flex-wrap gap-2 pt-4">
                                             {Object.keys(data.social).map((profile, index) => {
                                                 if (data.social[profile] === "") return null
                                                 return (
@@ -218,11 +209,15 @@ export default function ResearcherSite({
                                                         href={data.social[profile]}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="group inline-flex items-center gap-3 px-4 py-2 text-slate-600 hover:text-slate-900 transition-all duration-300 border-b border-transparent hover:border-slate-300"
+                                                        className="group shrink-0 inline-flex items-center gap-3 px-2 py-2 text-slate-600 hover:text-slate-900 transition-all duration-300 border-b border-transparent hover:border-slate-300"
                                                     >
                                                         {getSocialIcon(profile)}
                                                         <span className="text-sm font-light tracking-wide">
-                                                            {profile.charAt(0).toUpperCase() + profile.slice(1)}
+                                                            {profile === "researchgate"
+                                                                ? "ResearchGate"
+                                                                : profile === "googlescholar"
+                                                                    ? "Google Scholar"
+                                                                    : profile.charAt(0).toUpperCase() + profile.slice(1)}
                                                         </span>
                                                     </a>
                                                 )
@@ -241,7 +236,7 @@ export default function ResearcherSite({
                         <div className="max-w-6xl mx-auto">
                             <div className="space-y-12">
                                 <div className="flex items-center gap-8">
-                                    <h2 className="text-4xl font-extralight text-slate-900 tracking-wide">About</h2>
+                                    <h2 className="text-5xl py-1 font-extralight text-slate-900 tracking-wide">About</h2>
                                     <div className="flex-1 h-px bg-gradient-to-r from-slate-300 to-transparent"></div>
                                 </div>
 
@@ -266,7 +261,7 @@ export default function ResearcherSite({
                             <div className="space-y-12">
                                 <div className="flex items-center">
                                     <div className="flex flex-1 items-center gap-8">
-                                        <h2 className="text-4xl font-extralight text-slate-900 tracking-wide">Publications</h2>
+                                        <h2 className="text-5xl py-1 font-extralight text-slate-900 tracking-wide">Publications</h2>
                                         <div className="flex-1 w-full h-px bg-gradient-to-r from-slate-300 to-transparent"></div>
                                     </div>
                                     <div className="text-sm text-slate-500 font-light">
@@ -278,7 +273,7 @@ export default function ResearcherSite({
                                     {categorizedPublications.map((category) => (
                                         <div key={category.value} className="space-y-6">
                                             <h3 className="text-2xl font-light text-slate-900 border border-slate-900 w-fit p-4">{category.label}</h3>
-                                            <div className="space-y-4">
+                                            <div className="space-y-2">
                                                 {category.publications.map((publication, index) => (
                                                     <div
                                                         key={publication.id}
@@ -310,8 +305,11 @@ export default function ResearcherSite({
                                                                 <p className="text-slate-600 font-light">{publication.authors}</p>
 
                                                                 <div className="flex items-center gap-6 text-sm text-slate-500">
-                                                                    <span className="font-medium">{publication.venue}</span>
+                                                                    <span className="font-medium">{publication.journal}</span>
                                                                     <span>{publication.year}</span>
+                                                                    {publication.impactFactor && (
+                                                                        <span className="px-1 py-1 rounded-full bg-muted">IF: {publication.impactFactor}</span>
+                                                                    )}
                                                                 </div>
 
                                                                 {/* Abstract expandable */}
@@ -343,7 +341,7 @@ export default function ResearcherSite({
                                                                 {publication.abstract && (
                                                                     <button
                                                                         onClick={() => toggleAbstract(publication.id)}
-                                                                        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200"
+                                                                        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200 hover:cursor-pointer"
                                                                         title="Show/Hide Abstract"
                                                                     >
                                                                         <FileText className="h-4 w-4" />
@@ -355,7 +353,7 @@ export default function ResearcherSite({
                                                                         href={publication.pdfUrl}
                                                                         target="_blank"
                                                                         rel="noopener noreferrer"
-                                                                        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200"
+                                                                        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200 hover:cursor-pointer"
                                                                         title="Download PDF"
                                                                     >
                                                                         <Download className="h-4 w-4" />
@@ -367,19 +365,19 @@ export default function ResearcherSite({
                                                                         href={publication.url}
                                                                         target="_blank"
                                                                         rel="noopener noreferrer"
-                                                                        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200"
+                                                                        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200 hover:cursor-pointer"
                                                                         title="View Online"
                                                                     >
                                                                         <ExternalLink className="h-4 w-4" />
                                                                     </a>
                                                                 )}
 
-                                                                <button
+                                                                {/* <button
                                                                     className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200"
                                                                     title="Discuss with AI"
                                                                 >
                                                                     <MessageCircle className="h-4 w-4" />
-                                                                </button>
+                                                                </button> */}
                                                             </div>
                                                         )}
                                                     </div>
@@ -399,7 +397,7 @@ export default function ResearcherSite({
                         <div className="max-w-6xl mx-auto">
                             <div className="space-y-12">
                                 <div className="flex items-center gap-8">
-                                    <h2 className="text-4xl font-extralight text-slate-900 tracking-wide">Presentations</h2>
+                                    <h2 className="text-5xl py-1 font-extralight text-slate-900 tracking-wide">Presentations</h2>
                                     <div className="flex-1 h-px bg-gradient-to-r from-slate-300 to-transparent"></div>
                                 </div>
 
@@ -409,14 +407,12 @@ export default function ResearcherSite({
                                             <h3 className="text-2xl font-light text-slate-900 border border-slate-900 w-fit p-4">
                                                 {category.label}
                                             </h3>
-                                            <div className="space-y-4">
+                                            <div className="space-y-2">
 
                                                 {category.presentations.map((presentation) => (
                                                     <div
                                                         key={presentation.id}
                                                         className="group relative"
-                                                        onMouseEnter={() => setHoveredItem(`pres-${presentation.id}`)}
-                                                        onMouseLeave={() => setHoveredItem(null)}
                                                     >
                                                         <div className="absolute left-0 top-0 bottom-0 w-px bg-slate-200 group-hover:bg-slate-400 transition-colors duration-300"></div>
 
@@ -426,21 +422,9 @@ export default function ResearcherSite({
                                                                     <h3 className="text-xl font-medium text-slate-900 leading-tight flex-1">
                                                                         {presentation.title}
                                                                     </h3>
-                                                                    {presentation.type && (
-                                                                        <span
-                                                                            className={`px-3 py-1 text-xs font-light tracking-wide ${presentation.type === "Keynote"
-                                                                                ? "bg-slate-100 text-slate-800"
-                                                                                : presentation.type === "Invited Talk"
-                                                                                    ? "bg-slate-100 text-slate-800"
-                                                                                    : "bg-slate-100 text-slate-800"
-                                                                                }`}
-                                                                        >
-                                                                            {presentation.type}
-                                                                        </span>
-                                                                    )}
                                                                 </div>
 
-                                                                <p className="text-slate-700 font-medium">{presentation.event}</p>
+                                                                <p className="text-slate-700 font-medium">{presentation.conferenceName}</p>
 
                                                                 <div className="flex items-center gap-6 text-sm text-slate-500">
                                                                     {presentation.location && (
@@ -449,39 +433,15 @@ export default function ResearcherSite({
                                                                             {presentation.location}
                                                                         </span>
                                                                     )}
-                                                                    {presentation.year && (
+                                                                    {presentation.date && (
                                                                         <span className="flex items-center gap-2">
                                                                             <Calendar className="h-3 w-3" />
-                                                                            {presentation.year}
+                                                                            {presentation.date}
                                                                         </span>
                                                                     )}
                                                                 </div>
-
-                                                                {presentation.description && (
-                                                                    <p className="text-slate-600 leading-relaxed font-light text-sm max-w-4xl">
-                                                                        {presentation.description}
-                                                                    </p>
-                                                                )}
                                                             </div>
                                                         </div>
-
-                                                        {hoveredItem === `pres-${presentation.id}` && (
-                                                            <div className="absolute right-0 top-6 bg-white border border-slate-200 rounded-lg shadow-lg p-2 flex items-center gap-1 animate-in slide-in-from-right-2 duration-200">
-                                                                <button
-                                                                    className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200"
-                                                                    title="View Details"
-                                                                >
-                                                                    <Eye className="h-4 w-4" />
-                                                                </button>
-
-                                                                <button
-                                                                    className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200"
-                                                                    title="Download Slides"
-                                                                >
-                                                                    <Download className="h-4 w-4" />
-                                                                </button>
-                                                            </div>
-                                                        )}
                                                     </div>
                                                 ))}
                                             </div>
@@ -499,7 +459,7 @@ export default function ResearcherSite({
                         <div className="max-w-6xl mx-auto">
                             <div className="space-y-12">
                                 <div className="flex items-center gap-8">
-                                    <h2 className="text-4xl font-extralight text-slate-900 tracking-wide">Teaching</h2>
+                                    <h2 className="text-5xl py-1 font-extralight text-slate-900 tracking-wide">Teaching</h2>
                                     <div className="flex-1 h-px bg-gradient-to-r from-slate-300 to-transparent"></div>
                                 </div>
 
@@ -514,8 +474,6 @@ export default function ResearcherSite({
                                                     <div
                                                         key={course.id}
                                                         className="group relative"
-                                                        onMouseEnter={() => setHoveredItem(`teach-${course.id}`)}
-                                                        onMouseLeave={() => setHoveredItem(null)}
                                                     >
                                                         <div className="absolute left-0 top-0 bottom-0 w-px bg-slate-200 group-hover:bg-slate-400 transition-colors duration-300"></div>
 
@@ -546,24 +504,6 @@ export default function ResearcherSite({
                                                                 )}
                                                             </div>
                                                         </div>
-
-                                                        {hoveredItem === `teach-${course.id}` && (
-                                                            <div className="absolute right-0 top-6 bg-white border border-slate-200 rounded-lg shadow-lg p-2 flex items-center gap-1 animate-in slide-in-from-right-2 duration-200">
-                                                                <button
-                                                                    className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200"
-                                                                    title="Course Materials"
-                                                                >
-                                                                    <Book className="h-4 w-4" />
-                                                                </button>
-
-                                                                <button
-                                                                    className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200"
-                                                                    title="Syllabus"
-                                                                >
-                                                                    <FileText className="h-4 w-4" />
-                                                                </button>
-                                                            </div>
-                                                        )}
                                                     </div>
                                                 ))}
                                             </div>
@@ -581,7 +521,7 @@ export default function ResearcherSite({
                         <div className="max-w-6xl mx-auto">
                             <div className="space-y-12">
                                 <div className="flex items-center gap-8">
-                                    <h2 className="text-4xl font-extralight text-white tracking-wide">Contact</h2>
+                                    <h2 className="text-5xl py-1 font-extralight text-white tracking-wide">Contact</h2>
                                     <div className="flex-1 h-px bg-gradient-to-r from-slate-600 to-transparent"></div>
                                 </div>
 
@@ -680,25 +620,24 @@ export default function ResearcherSite({
                         </div>
                     </section>
                 )}
-
-                {/* Footer */}
-                <footer className="py-16 px-6 bg-slate-800 text-white">
-                    <div className="max-w-6xl mx-auto text-center">
-                        <div className="flex items-center justify-center gap-4 mb-6">
-                            <div className="w-8 h-8 bg-slate-700 rounded-lg flex items-center justify-center">
-                                <GraduationCap className="h-5 w-5" />
-                            </div>
-                            <span className="font-light text-xl tracking-wide">{data.name}</span>
+            </main>
+            {/* Footer */}
+            <footer className="py-16 px-6 bg-slate-800 text-white">
+                <div className="max-w-6xl mx-auto text-center">
+                    <div className="flex items-center justify-center gap-4 mb-6">
+                        <div className="w-8 h-8 bg-slate-700 rounded-lg flex items-center justify-center">
+                            <GraduationCap className="h-5 w-5" />
                         </div>
-                        <Link target="blank" href={process.env.NEXT_PUBLIC_APP_URL} className="text-slate-400 font-light text-sm">
-                            © {new Date().getFullYear()} Lokus.
-                        </Link>
-                        {customDomain && (
-                            <p className="text-xs text-slate-500 mt-2 font-light">Academic website powered by ResearcherPlatform</p>
-                        )}
+                        <span className="font-light text-xl tracking-wide">{data.name}</span>
                     </div>
-                </footer>
-            </div>
+                    <Link target="blank" href={process.env.NEXT_PUBLIC_APP_URL} className="text-slate-400 font-light text-sm">
+                        © {new Date().getFullYear()} Lokus.
+                    </Link>
+                    {customDomain && (
+                        <p className="text-xs text-slate-500 mt-2 font-light">Academic website powered by ResearcherPlatform</p>
+                    )}
+                </div>
+            </footer>
         </div>
     )
 }

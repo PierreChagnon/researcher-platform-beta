@@ -23,7 +23,6 @@ export default function DashboardPage() {
     useEffect(() => {
         if (!loading) {
             if (!user) {
-                console.log("❌ No user found, redirecting to login...")
                 router.push("/login")
                 return
             }

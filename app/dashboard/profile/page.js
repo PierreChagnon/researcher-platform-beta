@@ -1,40 +1,47 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ExternalLink, Upload, FileText, X } from "lucide-react"
+import { ExternalLink, Upload, FileText, X, Trash } from "lucide-react"
 import { useAuth } from "@/contexts/AuthContext"
 import { updateProfilePicture, updateUserProfileWithRevalidation } from "@/lib/actions/profile-actions"
 import { toast } from "sonner"
 import { uploadCvAction, removeCvAction } from "@/lib/actions/cv-actions"
 import Image from "next/image"
-
-const defaultValues = {
-    name: "",
-    title: "",
-    institution: "",
-    email: "",
-    bio: "",
-    orcid: "0000-0000-0000-0000",
-    hIndex: "",
-    twitter: "",
-    bluesky: "",
-    researchgate: "",
-    osf: "",
-    googlescholar: "",
-}
+import { useSearchParams } from "next/navigation"
+import Link from "next/link"
+import { deleteProfilePicture } from "@/lib/actions/profile-actions"
 
 export default function ProfilePage() {
+    const { user, userData, refreshUserData } = useAuth()
+    const defaultValues = {
+        name: userData?.name || "",
+        title: userData?.title || "",
+        institution: userData?.institution || "",
+        email: userData?.email || "",
+        bio: userData?.bio || "",
+        orcid: userData?.orcid || "0000-0000-0000-0000",
+        hIndex: userData?.hIndex || "",
+        twitter: userData?.social?.twitter || "",
+        bluesky: userData?.social?.bluesky || "",
+        researchgate: userData?.social?.researchgate || "",
+        osf: userData?.social?.osf || "",
+        googlescholar: userData?.social?.googlescholar || "",
+    }
     const [isLoading, setIsLoading] = useState(false)
-    const [isUploadingCv, setIsUploadingCv] = useState(false)
     const [formData, setFormData] = useState(defaultValues)
     const [errors, setErrors] = useState({})
-    const { user, userData, refreshUserData } = useAuth()
+
+    const orcidInputRef = useRef(null)
+
+    const searchParams = useSearchParams()
+    const searchParamsTab = searchParams.get("tab")
+    const searchParamsFocus = searchParams.get("focus")
 
     const validateForm = () => {
         const newErrors = {}
@@ -43,22 +50,22 @@ export default function ProfilePage() {
             newErrors.name = "Name must be at least 2 characters long."
         }
 
-        if (formData.title.length < 2) {
-            newErrors.title = "Title must be at least 2 characters long."
-        }
+        // if (formData.title.length < 2) {
+        //     newErrors.title = "Title must be at least 2 characters long."
+        // }
 
-        if (formData.institution.length < 2) {
-            newErrors.institution = "Institution must be at least 2 characters long."
-        }
+        // if (formData.institution.length < 2) {
+        //     newErrors.institution = "Institution must be at least 2 characters long."
+        // }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         if (!emailRegex.test(formData.email)) {
             newErrors.email = "Please enter a valid email address."
         }
 
-        if (formData.bio.length < 10) {
-            newErrors.bio = "Biography must be at least 10 characters long."
-        }
+        // if (formData.bio.length < 10) {
+        //     newErrors.bio = "Biography must be at least 10 characters long."
+        // }
 
         const orcidRegex = /^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/
         if (!orcidRegex.test(formData.orcid)) {
@@ -112,6 +119,7 @@ export default function ProfilePage() {
         setIsLoading(true)
 
         try {
+            console.log("Submitting form data:", formData)
             const result = await updateUserProfileWithRevalidation(formData)
 
             if (result.success) {
@@ -133,12 +141,10 @@ export default function ProfilePage() {
     }
 
     const handleCvUpload = async (e) => {
-        console.log("handleCvUpload called")
         e.preventDefault()
 
         const fileInput = document.getElementById("cv-file")
         const file = fileInput?.files[0]
-        console.log("Selected file:", file)
 
         if (!file) {
             toast.error("Erreur", {
@@ -146,8 +152,6 @@ export default function ProfilePage() {
             })
             return
         }
-
-        setIsUploadingCv(true)
 
         try {
             const result = await uploadCvAction(file)
@@ -167,8 +171,6 @@ export default function ProfilePage() {
             toast.error("Erreur", {
                 description: error.message || "Erreur lors de l'upload du CV.",
             })
-        } finally {
-            setIsUploadingCv(false)
         }
     }
 
@@ -195,7 +197,6 @@ export default function ProfilePage() {
     const handlePictureChange = async (e) => {
         e.preventDefault()
         const file = e.target.files[0]
-        console.log("Selected profile picture:", file)
 
         try {
             const res = await updateProfilePicture(file)
@@ -216,10 +217,28 @@ export default function ProfilePage() {
 
     }
 
+    const handleDeletePicture = async () => {
+        try {
+            const result = await deleteProfilePicture()
+
+            if (result.success) {
+                await refreshUserData()
+                toast.success("Profile picture deleted successfully")
+            } else {
+                throw new Error(result.error)
+            }
+        } catch (error) {
+            console.error("Error deleting profile picture:", error)
+            toast.error("Error", {
+                description: error.message || "An error occurred while deleting your profile picture.",
+            })
+        }
+    }
+
     useEffect(() => {
         if (userData) {
             setFormData({
-                name: userData.name || "",
+                name: userData?.name || "",
                 title: userData.title || "",
                 institution: userData.institution || "",
                 email: userData.email || "",
@@ -231,9 +250,16 @@ export default function ProfilePage() {
                 researchgate: userData.social?.researchgate || "",
                 osf: userData.social?.osf || "",
                 googlescholar: userData.social?.googlescholar || "",
+                profilePictureUrl: userData?.profilePictureUrl || "",
             })
         }
     }, [userData])
+
+    useEffect(() => {
+        if (searchParamsFocus && orcidInputRef.current) {
+            orcidInputRef.current.focus()
+        }
+    }, [searchParamsFocus])
 
     return (
         <div className="space-y-6">
@@ -242,7 +268,7 @@ export default function ProfilePage() {
                 <p className="text-muted-foreground">Manage your personal and professional information.</p>
             </div>
 
-            <Tabs defaultValue="personal" className="space-y-4">
+            <Tabs defaultValue={searchParamsTab || "personal"} className="space-y-4">
                 <TabsList>
                     <TabsTrigger value="personal">Personal Information</TabsTrigger>
                     <TabsTrigger value="academic">Academic Information</TabsTrigger>
@@ -258,17 +284,25 @@ export default function ProfilePage() {
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="profile-picture">Profile Picture</Label>
-                                    {userData?.profilePictureUrl && (
+                                    {formData?.profilePictureUrl && (
                                         <div className="mb-4">
                                             <Image
+                                                unoptimized
                                                 width={128}
                                                 height={128}
-                                                src={userData.profilePictureUrl}
+                                                src={formData.profilePictureUrl}
                                                 alt="Profile Picture"
                                                 className="object-cover w-32 h-40 shadow-md rounded-md"
                                             />
                                         </div>
                                     )}
+                                    {/* delete profile picture button */}
+                                    {formData?.profilePictureUrl &&
+                                        <Button type="button" size="sm" variant="destructive" onClick={handleDeletePicture}>
+                                            <Trash className="h-4 w-4 mr-2" />
+                                            Delete Profile Picture
+                                        </Button>
+                                    }
                                     <Input
                                         id="profile-picture"
                                         type="file"
@@ -287,7 +321,6 @@ export default function ProfilePage() {
                                     <Label htmlFor="name">Full Name</Label>
                                     <Input
                                         id="name"
-                                        placeholder="John Doe"
                                         value={formData.name}
                                         onChange={(e) => handleInputChange("name", e.target.value)}
                                         className={errors.name ? "border-red-500" : ""}
@@ -302,7 +335,6 @@ export default function ProfilePage() {
                                     <Input
                                         id="email"
                                         type="email"
-                                        placeholder="john.doe@example.com"
                                         value={formData.email}
                                         onChange={(e) => handleInputChange("email", e.target.value)}
                                         className={errors.email ? "border-red-500" : ""}
@@ -344,7 +376,6 @@ export default function ProfilePage() {
                                     <Label htmlFor="title">Title</Label>
                                     <Input
                                         id="title"
-                                        placeholder="Professor of Computer Science"
                                         value={formData.title}
                                         onChange={(e) => handleInputChange("title", e.target.value)}
                                         className={errors.title ? "border-red-500" : ""}
@@ -356,7 +387,6 @@ export default function ProfilePage() {
                                     <Label htmlFor="institution">Institution</Label>
                                     <Input
                                         id="institution"
-                                        placeholder="University of Paris"
                                         value={formData.institution}
                                         onChange={(e) => handleInputChange("institution", e.target.value)}
                                         className={errors.institution ? "border-red-500" : ""}
@@ -372,6 +402,7 @@ export default function ProfilePage() {
                                         value={formData.orcid}
                                         onChange={(e) => handleInputChange("orcid", e.target.value)}
                                         className={errors.orcid ? "border-red-500" : ""}
+                                        ref={orcidInputRef}
                                     />
                                     <p className="text-sm text-muted-foreground">
                                         Your ORCID identifier to automatically retrieve your publications.
@@ -384,7 +415,6 @@ export default function ProfilePage() {
                                         <Input
                                             id="hIndex"
                                             type="number"
-                                            placeholder="25"
                                             value={formData.hIndex}
                                             onChange={(e) => handleInputChange("hIndex", e.target.value)}
                                             className={errors.hIndex ? "border-red-500 w-fit" : " w-fit"}
@@ -446,6 +476,9 @@ export default function ProfilePage() {
                                         Upload your CV in PDF or Word format (max 5MB). This will be available for download on your public
                                         site.
                                     </p>
+                                    <Link href="/dashboard/cv" className="text-sm font-bold text-muted-foreground cursor-pointer hover:underline">
+                                        Make your CV faster with our CV Builder — it pulls in everything you’ve already uploaded.
+                                    </Link>
                                 </div>
                             </CardContent>
                             <CardFooter>

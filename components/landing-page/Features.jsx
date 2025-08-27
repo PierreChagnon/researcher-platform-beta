@@ -9,7 +9,7 @@ export default function Features() {
             <div className='flex flex-col items-center gap-12 text-center lg:text-start lg:items-start lg:flex-1'>
                 <div className='flex flex-col items-center gap-4 text-center lg:text-start lg:items-start'>
                     <TitleBadge>Powerfull Features</TitleBadge>
-                    <h2 className=''>Buil faster with powerful features</h2>
+                    <h2 className=''>Build faster with powerful features</h2>
                     <p className='text-muted-foreground '>Lokus combines a sleek, customizable profile, automatic publication updates, project showcases, and CV builder—all in one seamless package.</p>
                 </div>
                 <div className='flex flex-col gap-6'>

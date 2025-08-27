@@ -125,9 +125,13 @@ export default function PresentationsPage() {
                         <form action={handleAddPresentation}>
                             <DialogHeader>
                                 <DialogTitle>Add a presentation</DialogTitle>
-                                <DialogDescription>Add a new presentation or conference to your profile.</DialogDescription>
+                                <DialogDescription>Add a new presentation.</DialogDescription>
                             </DialogHeader>
                             <div className="grid gap-4 py-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="conferenceName">Conference Name *</Label>
+                                    <Input id="conferenceName" name="conferenceName" required />
+                                </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="title">Title *</Label>
                                     <Input id="title" name="title" required />
@@ -154,11 +158,11 @@ export default function PresentationsPage() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="location">Location *</Label>
-                                        <Input id="location" name="location" placeholder="Paris, France" required />
+                                        <Input id="location" name="location" required />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="date">Date *</Label>
-                                        <Input id="date" name="date" type="date" required />
+                                        <Label htmlFor="date">Year *</Label>
+                                        <Input id="date" name="date" type="number" min={1900} max={new Date().getFullYear()} step={1} required />
                                     </div>
                                 </div>
                             </div>
@@ -184,6 +188,10 @@ export default function PresentationsPage() {
                             <DialogDescription>Edit your presentation information.</DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="edit-conferenceName">Conference Name *</Label>
+                                <Input id="edit-conferenceName" name="conferenceName" defaultValue={editingPresentation?.conferenceName} required />
+                            </div>
                             <div className="space-y-2">
                                 <Label htmlFor="edit-title">Title *</Label>
                                 <Input id="edit-title" name="title" defaultValue={editingPresentation?.title} required />
@@ -219,13 +227,12 @@ export default function PresentationsPage() {
                                         id="edit-location"
                                         name="location"
                                         defaultValue={editingPresentation?.location}
-                                        placeholder="Paris, France"
                                         required
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="edit-date">Date *</Label>
-                                    <Input id="edit-date" name="date" type="date" defaultValue={editingPresentation?.date} required />
+                                    <Label htmlFor="edit-date">Year *</Label>
+                                    <Input id="edit-date" name="date" type="number" min={1900} max={new Date().getFullYear()} step={1} defaultValue={editingPresentation?.date} required />
                                 </div>
                             </div>
                         </div>
@@ -282,7 +289,7 @@ export default function PresentationsPage() {
                                     <TableHead>Title</TableHead>
                                     <TableHead className="hidden md:table-cell">Category</TableHead>
                                     <TableHead className="hidden md:table-cell">Location</TableHead>
-                                    <TableHead className="hidden md:table-cell">Date</TableHead>
+                                    <TableHead className="hidden md:table-cell">Year</TableHead>
                                     <TableHead className="w-[50px]"></TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -302,7 +309,7 @@ export default function PresentationsPage() {
                                                     )}
                                                     <div className="text-sm text-muted-foreground md:hidden flex items-center gap-2 mt-1">
                                                         <MapPin className="h-3 w-3" />
-                                                        {presentation.location} • {new Date(presentation.date).toLocaleDateString()}
+                                                        {presentation.location} • {presentation.date}
                                                     </div>
                                                 </div>
                                             </TableCell>
@@ -318,7 +325,7 @@ export default function PresentationsPage() {
                                             <TableCell className="hidden md:table-cell">
                                                 <div className="flex items-center gap-1">
                                                     <Calendar className="h-3 w-3 text-muted-foreground" />
-                                                    {new Date(presentation.date).toLocaleDateString()}
+                                                    {presentation.date}
                                                 </div>
                                             </TableCell>
                                             <TableCell>
