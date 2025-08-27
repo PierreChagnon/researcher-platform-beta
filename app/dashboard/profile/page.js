@@ -119,7 +119,7 @@ export default function ProfilePage() {
         setIsLoading(true)
 
         try {
-            console.log("Submitting form data:", formData)
+            // console.log("Submitting form data:", formData)
             const result = await updateUserProfileWithRevalidation(formData)
 
             if (result.success) {

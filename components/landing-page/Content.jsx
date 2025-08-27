@@ -44,7 +44,7 @@ export default function Content() {
             </div>
             <div className="w-full h-full rounded-lg p-1 flex-1 flex justify-center">
                 <div className="pl-4 pt-4 rounded-lg w-full flex justify-end">
-                    <div className='relative h-96 w-full lg:h-96 lg:w-96 shadow-md'>
+                    <div className='relative h-96 w-full lg:h-96 lg:w-96 shadow-md rounded-lg'>
                         <Image src="/site.png" alt="Researcher website example" fill className="h-full w-full rounded-lg object-cover" />
                     </div>
                 </div>

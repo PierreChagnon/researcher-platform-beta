@@ -34,7 +34,7 @@ export default function Hero() {
                 <AspectRatio ratio={16 / 9} className="bg-gradient-to-b from-[#FF2F2F]/50 via-[#EF7B16]/50 to-[#D511FD]/50 rounded-lg p-1 shadow-md">
                     <div className='relative h-full w-full'>
                         <Image
-                            src="/site.png"
+                            src="/site (2).png"
                             alt="Researcher website example"
                             fill
                             className="h-full w-full rounded-lg object-cover"

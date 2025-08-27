@@ -53,7 +53,6 @@ export default function ResearcherSite({
     }
 
     const data = researcher
-    console.log("profilePictureUrl", data?.profilePictureUrl)
     const pubsToShow = publications.length > 0 && publications
     const presToShow = presentations.length > 0 && presentations
     const teachToShow = teaching.length > 0 && teaching

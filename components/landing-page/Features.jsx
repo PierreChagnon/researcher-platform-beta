@@ -47,12 +47,10 @@ export default function Features() {
                     </div>
                 </div>
             </div>
-            <div className="w-full h-full rounded-lg p-1 flex-1 flex justify-center">
-                <div className="pl-4 pt-4 rounded-lg w-full">
-                    <div className='relative h-96 w-full lg:h-96 lg:w-96 shadow-md'>
-                        <Image src="/site.png" alt="Researcher website example" fill className="h-full w-full rounded-lg object-cover" />
+            <div className="w-full h-full rounded-lg flex-1 flex justify-center">
+                    <div className='relative h-96 w-96 shadow-md rounded-lg'>
+                        <Image src="/features.png" alt="Researcher website example" fill className="h-full w-full rounded-lg object-fill" />
                     </div>
-                </div>
             </div>
         </div>
     )
