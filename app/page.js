@@ -105,17 +105,17 @@ export default function Home() {
       </header>
       <main className="flex-1 flex flex-col items-center z-40">
         <section id='hero' className="py-18 md:py-24 lg:py-36 w-full flex justify-center">
-          <div className="container w-full md:max-w-11/12 lg:max-w-4/5">
+          <div className="container w-full md:max-w-11/12 lg:max-w-4/5 2xl:max-w-3/4">
             <Hero />
           </div>
         </section>
         <section id='content' className="py-18 md:py-24 lg:py-36 w-full flex justify-center">
-          <div className="container w-full md:max-w-11/12 lg:max-w-4/5">
+          <div className="container w-full md:max-w-11/12 lg:max-w-4/5 2xl:max-w-3/4">
             <Content />
           </div>
         </section>
         <section id='features' className="py-18 md:py-24 lg:py-36 w-full flex justify-center">
-          <div className="container w-full md:max-w-11/12 lg:max-w-4/5">
+          <div className="container w-full md:max-w-11/12 lg:max-w-4/5 2xl:max-w-3/4">
             <Features />
           </div>
         </section>
@@ -123,32 +123,32 @@ export default function Home() {
           {/* Absolute positioned circle */}
           <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white border border-stone-300 rounded-full" />
           <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-white border border-stone-300 rounded-full" />
-          <div className="container w-full md:max-w-11/12 lg:max-w-4/5">
+          <div className="container w-full md:max-w-11/12 lg:max-w-4/5 2xl:max-w-3/4">
             <TextCarousel />
           </div>
         </section>
         <section id='pricing' className="py-18 md:py-24 lg:py-36 w-full flex justify-center">
-          <div className="container w-full md:max-w-11/12 lg:max-w-4/5">
+          <div className="container w-full md:max-w-11/12 lg:max-w-4/5 2xl:max-w-3/4">
             <Pricing />
           </div>
         </section>
         <section id='about' className="py-18 md:py-24 lg:py-36 w-full flex justify-center">
-          <div className="container w-full md:max-w-11/12 lg:max-w-4/5">
+          <div className="container w-full md:max-w-11/12 lg:max-w-4/5 2xl:max-w-3/4">
             <About />
           </div>
         </section>
         <section id='contact' className="py-18 md:py-24 lg:py-36 w-full flex justify-center">
-          <div className="container w-full md:max-w-11/12 lg:max-w-4/5">
+          <div className="container w-full md:max-w-11/12 lg:max-w-4/5 2xl:max-w-3/4">
             <Contact />
           </div>
         </section>
         <section id='faq' className="py-18 md:py-24 lg:py-36 w-full flex justify-center">
-          <div className="container w-full md:max-w-11/12 lg:max-w-4/5">
+          <div className="container w-full md:max-w-11/12 lg:max-w-4/5 2xl:max-w-3/4">
             <FAQ />
           </div>
         </section>
         <footer id='footer' className="py-18 md:py-24 lg:py-36 bg-black w-full flex justify-center">
-          <div className="container w-full md:max-w-11/12 lg:max-w-4/5">
+          <div className="container w-full md:max-w-11/12 lg:max-w-4/5 2xl:max-w-3/4">
             <Footer />
           </div>
         </footer>

@@ -2,7 +2,6 @@ import React from 'react'
 import TitleBadge from './TitleBadge'
 import { FileText, LayoutTemplate, Settings, Workflow } from 'lucide-react'
 import { Separator } from '../ui/separator'
-import { AspectRatio } from '../ui/aspect-ratio'
 import Image from 'next/image'
 
 export default function Content() {
