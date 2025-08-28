@@ -268,7 +268,7 @@ export default function ResearcherSite({
                                     </div>
                                 </div>
 
-                                <div className="space-y-8">
+                                <div className="space-y-12">
                                     {categorizedPublications.map((category) => (
                                         <div key={category.value} className="space-y-6">
                                             <h3 className="text-2xl font-light text-slate-900 border border-slate-900 w-fit p-4">{category.label}</h3>
@@ -400,31 +400,28 @@ export default function ResearcherSite({
                                     <div className="flex-1 h-px bg-gradient-to-r from-slate-300 to-transparent"></div>
                                 </div>
 
-                                <div className="space-y-8">
+                                <div className="space-y-12">
                                     {categorizedPresentations.map((category) => (
                                         <div key={category.value} className="space-y-6">
                                             <h3 className="text-2xl font-light text-slate-900 border border-slate-900 w-fit p-4">
                                                 {category.label}
                                             </h3>
                                             <div className="space-y-2">
-
                                                 {category.presentations.map((presentation) => (
                                                     <div
                                                         key={presentation.id}
                                                         className="group relative"
                                                     >
                                                         <div className="absolute left-0 top-0 bottom-0 w-px bg-slate-200 group-hover:bg-slate-400 transition-colors duration-300"></div>
-
                                                         <div className="pl-8 py-6">
-                                                            <div className="space-y-4">
+                                                            <div className="space-y-2">
                                                                 <div className="flex items-start gap-4">
                                                                     <h3 className="text-xl font-medium text-slate-900 leading-tight flex-1">
                                                                         {presentation.title}
                                                                     </h3>
                                                                 </div>
-
                                                                 <p className="text-slate-700 font-medium">{presentation.conferenceName}</p>
-
+                                                                <p className="text-slate-600 font-light">{presentation.coAuthors}</p>
                                                                 <div className="flex items-center gap-6 text-sm text-slate-500">
                                                                     {presentation.location && (
                                                                         <span className="flex items-center gap-2">
@@ -462,7 +459,7 @@ export default function ResearcherSite({
                                     <div className="flex-1 h-px bg-gradient-to-r from-slate-300 to-transparent"></div>
                                 </div>
 
-                                <div className="space-y-8">
+                                <div className="space-y-12">
                                     {categorizedTeaching.map((category) => (
                                         <div key={category.value} className="space-y-6">
                                             <h3 className="text-2xl font-light text-slate-900 border border-slate-900 w-fit p-4">
@@ -477,21 +474,20 @@ export default function ResearcherSite({
                                                         <div className="absolute left-0 top-0 bottom-0 w-px bg-slate-200 group-hover:bg-slate-400 transition-colors duration-300"></div>
 
                                                         <div className="pl-8 py-6">
-                                                            <div className="space-y-4">
+                                                            <div className="space-y-2">
                                                                 <h3 className="text-xl font-medium text-slate-900 leading-tight">{course.title}</h3>
-
-                                                                <p className="text-slate-700 font-medium">{course.institution}</p>
-
+                                                                <p className="text-slate-600 font-light">{course.coTeachers}</p>
                                                                 <div className="flex items-center gap-6 text-sm text-slate-500">
-                                                                    {course.level && (
-                                                                        <span className="bg-slate-100 px-3 py-1 text-xs font-light tracking-wide">
-                                                                            {course.level}
+                                                                    {course.university && (
+                                                                        <span className="flex items-center gap-2">
+                                                                            <MapPin className="h-3 w-3" />
+                                                                            {course.university}
                                                                         </span>
                                                                     )}
                                                                     {course.year && (
                                                                         <span className="flex items-center gap-2">
                                                                             <Calendar className="h-3 w-3" />
-                                                                            {course.year}
+                                                                            {course.semester} {course.year}
                                                                         </span>
                                                                     )}
                                                                 </div>

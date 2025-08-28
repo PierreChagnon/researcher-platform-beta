@@ -68,15 +68,6 @@ export default function Nav({
                     onClick={scrollToTop}
                     className="flex items-center gap-3 text-xl font-semibold text-slate-800"
                 >
-                    <div className="w-10 h-10 bg-slate-900 rounded-lg flex items-center justify-center">
-                        <span className="text-white font-bold text-sm">
-                            {(researcher?.name || "Dr. Marie Laurent")
-                                .split(" ")
-                                .map((n) => n[0])
-                                .join("")
-                                .slice(0, 2)}
-                        </span>
-                    </div>
                     <span className="hidden sm:block">{researcher?.name || "Dr. Marie Laurent"}</span>
                 </button>
 
@@ -87,8 +78,8 @@ export default function Nav({
                             key={section.id}
                             onClick={() => scrollToSection(section.id)}
                             className={`px-3 py-2 transition-colors ${active === section.id
-                                    ? "bg-slate-900 text-white"
-                                    : "text-slate-700 hover:bg-slate-100"
+                                ? "bg-slate-900 text-white"
+                                : "text-slate-700 hover:bg-slate-100"
                                 }`}
                         >
                             {section.label}
@@ -114,8 +105,8 @@ export default function Nav({
                                 key={section.id}
                                 onClick={() => scrollToSection(section.id)}
                                 className={`w-full text-left px-4 py-3 transition-all duration-200 ${active === section.id
-                                        ? "bg-slate-900 text-white"
-                                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-800"
+                                    ? "bg-slate-900 text-white"
+                                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-800"
                                     }`}
                             >
                                 {section.label}
