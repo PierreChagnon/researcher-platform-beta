@@ -141,6 +141,7 @@ export default function TeachingPage() {
     }
 
     const closeTeachingDialog = () => {
+        console.log("Closing teaching dialog")
         setIsTeachingDialogOpen(false)
         setEditingTeaching(null)
     }
@@ -152,9 +153,14 @@ export default function TeachingPage() {
                     <h1 className="text-3xl font-bold tracking-tight">Teaching</h1>
                     <p className="text-muted-foreground">Manage your teaching activities and guest lectures.</p>
                 </div>
-                <Dialog open={isTeachingDialogOpen} onOpenChange={setIsTeachingDialogOpen}>
+                <Dialog open={isTeachingDialogOpen} onOpenChange={(open) => {
+                    setIsTeachingDialogOpen(open)
+                    if (!open) setEditingTeaching(null) // Reset quand on ferme sans cliquer sur le bouton
+                }}>
                     <DialogTrigger asChild>
-                        <Button className="flex items-center gap-2">
+                        <Button
+                            onClick={() => setEditingTeaching(null)} // Garantit l'ouverture en mode Add
+                            className="flex items-center gap-2">
                             <Plus className="h-4 w-4" />
                             Add a teaching
                         </Button>
