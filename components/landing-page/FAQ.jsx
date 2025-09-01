@@ -32,7 +32,7 @@ export default function FAQ() {
                         <AccordionItem value="item-3">
                             <AccordionTrigger className="text-lg py-8">Who is this platform for?</AccordionTrigger>
                             <AccordionContent className="text-base">
-                                This platform is designed for researchers and research teams who want to create, manage, and update their own website and online experiments—no coding required.
+                                This platform is designed for researchers and who want to create, manage, and update their own website and online experiments—no coding required.
                             </AccordionContent>
                         </AccordionItem>
                     </Accordion>

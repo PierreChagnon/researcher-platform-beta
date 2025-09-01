@@ -3,11 +3,12 @@ import TitleBadge from './TitleBadge'
 import { FileText, LayoutTemplate, Settings, Workflow } from 'lucide-react'
 import { Separator } from '../ui/separator'
 import Image from 'next/image'
+import { AspectRatio } from '../ui/aspect-ratio'
 
 export default function Content() {
     return (
-        <div className="flex flex-col lg:flex-row items-center gap-12">
-            <div className='flex flex-col items-center gap-4 text-center lg:text-start lg:items-start lg:flex-1'>
+        <div className="flex flex-col xl:flex-row items-center gap-12">
+            <div className='flex flex-col items-center gap-4 text-center xl:text-start xl:items-start xl:flex-1'>
                 <TitleBadge>Content Management</TitleBadge>
                 <h2 className='mb-12'>Everything you need as a researcher</h2>
                 {/* 4 features container */}
@@ -41,12 +42,12 @@ export default function Content() {
                     </div>
                 </div>
             </div>
-            <div className="w-full h-full rounded-lg p-1 flex-1 flex justify-center">
-                <div className="pl-4 pt-4 rounded-lg w-full flex justify-end">
-                    <div className='relative h-96 w-full lg:h-96 lg:w-96 shadow-md rounded-lg'>
+            <div className="w-full max-w-4xl xl:max-w-lg rounded-lg">
+                <AspectRatio ratio={16 / 9} className="">
+                    <div className='relative h-full w-full shadow-md rounded-lg'>
                         <Image src="/site.png" alt="Researcher website example" fill className="h-full w-full rounded-lg object-cover" />
                     </div>
-                </div>
+                </AspectRatio>
             </div>
         </div>
     )

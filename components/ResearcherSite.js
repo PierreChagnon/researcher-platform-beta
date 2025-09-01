@@ -16,6 +16,8 @@ import {
     Download,
     MessageCircle,
     Eye,
+    Text,
+    DownloadCloud,
 } from "lucide-react"
 import Nav from "@/components/site/Nav"
 import Link from "next/link"
@@ -34,7 +36,6 @@ export default function ResearcherSite({
     categorizedPresentations = [],
     categorizedTeaching = [],
 }) {
-    console.log(categorizedPresentations)
     // État pour gérer l'ouverture/fermeture des abstracts
     const [expandedAbstracts, setExpandedAbstracts] = useState(new Set())
     const [hoveredItem, setHoveredItem] = useState(null)
@@ -99,7 +100,7 @@ export default function ResearcherSite({
             />
 
             {/* Main Content avec padding pour la navigation latérale */}
-            <main className="">
+            <main className="pt-24">
                 {/* Hero Section */}
                 <section id="header" className="relative pt-24 lg:py-24 px-6">
                     <div className="relative max-w-6xl mx-auto">
@@ -129,24 +130,13 @@ export default function ResearcherSite({
                                 <div className="space-y-8 flex items-center lg:items-baseline text-center flex-col ">
                                     {/* Nom avec effet typographique */}
                                     <div className="relative">
-                                        <h1 className="text-5xl lg:text-7xl font-light text-slate-900 leading-[0.9] tracking-tight flex gap-2">
-                                            {data.name.split(" ").map((word, index) => (
-                                                <span
-                                                    key={index}
-                                                    className="inline-block"
-                                                    style={{
-                                                        // transform: `translateY(${index * -2}px)`,
-                                                        opacity: 1 - index * 0.1,
-                                                    }}
-                                                >
-                                                    {word}{" "}
-                                                </span>
-                                            ))}
+                                        <h1 className="text-5xl lg:text-7xl font-light text-slate-900 leading-[0.9] tracking-tight">
+                                            {data.name}
                                         </h1>
                                     </div>
 
                                     <div className="space-y-6">
-                                        <p className="text-2xl text-slate-600 font-light leading-relaxed max-w-2xl">{data.title}</p>
+                                        <p className="text-2xl text-slate-600 font-light leading-relaxed max-w-2xl text-start">{data.title}</p>
 
                                         <div className="space-y-4">
                                             {data.institution && (
@@ -208,10 +198,10 @@ export default function ResearcherSite({
                                                         href={data.social[profile]}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="group shrink-0 inline-flex items-center gap-3 px-2 py-2 text-slate-600 hover:text-slate-900 transition-all duration-300 border-b border-transparent hover:border-slate-300"
+                                                        className="group shrink-0 inline-flex items-center gap-3 px-2 py-2 text-slate-900 group border-b border-transparent hover:border-slate-300"
                                                     >
                                                         {getSocialIcon(profile)}
-                                                        <span className="text-sm font-light tracking-wide">
+                                                        <span className="text-sm font-light tracking-wide group-hover:text-slate-900 transition-all duration-300">
                                                             {profile === "researchgate"
                                                                 ? "ResearchGate"
                                                                 : profile === "googlescholar"
@@ -285,7 +275,7 @@ export default function ResearcherSite({
 
                                                         {/* Contenu principal */}
                                                         <div className="pl-8 py-6">
-                                                            <div className="space-y-4">
+                                                            <div className="space-y-4 flex flex-col">
                                                                 <h3 className="text-xl font-medium text-slate-900 leading-tight group-hover:text-slate-700 transition-colors duration-300 max-w-4xl">
                                                                     {publication.url ? (
                                                                         <a
@@ -311,7 +301,28 @@ export default function ResearcherSite({
                                                                     )}
                                                                 </div>
 
-                                                                {/* Abstract expandable */}
+                                                                <div className="flex items-center justify-between gap-2">
+                                                                    {/* Abstract expandable */}
+                                                                    <button
+                                                                        className={`mt-2 text-sm text-slate-600 hover:text-slate-900 ${publication.abstract ? "inline-flex items-center gap-1 p-2 hover:cursor-pointer" : "opacity-0 cursor-not-allowed pointer-events-none"}`}
+                                                                        onClick={() => toggleAbstract(publication.id)}
+                                                                    >
+                                                                        {expandedAbstracts.has(publication.id) ? "Hide Abstract" : <span className="flex items-center"><Text className="h-4 w-4 mr-1" />Show Abstract</span>}
+                                                                    </button>
+
+                                                                    {/* Download PDF button */}
+                                                                    {publication.pdfUrl && (
+                                                                        <a
+                                                                            href={publication.pdfUrl}
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer"
+                                                                            className="inline-flex items-center gap-1 text-sm text-slate-600 hover:text-slate-900 p-2 border border-slate-900/50 hover:cursor-pointer"
+                                                                        >
+                                                                            <DownloadCloud className="h-4 w-4" />
+                                                                            Download PDF
+                                                                        </a>
+                                                                    )}
+                                                                </div>
                                                                 {expandedAbstracts.has(publication.id) && publication.abstract && (
                                                                     <div className="pt-4 max-w-4xl">
                                                                         <p className="text-slate-700 leading-relaxed font-light text-sm">
@@ -333,52 +344,6 @@ export default function ResearcherSite({
                                                                 )}
                                                             </div>
                                                         </div>
-
-                                                        {/* Actions flottantes */}
-                                                        {hoveredItem === `pub-${publication.id}` && (
-                                                            <div className="absolute right-0 top-6 bg-white border border-slate-200 rounded-lg shadow-lg p-2 flex items-center gap-1 animate-in slide-in-from-right-2 duration-200">
-                                                                {publication.abstract && (
-                                                                    <button
-                                                                        onClick={() => toggleAbstract(publication.id)}
-                                                                        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200 hover:cursor-pointer"
-                                                                        title="Show/Hide Abstract"
-                                                                    >
-                                                                        <FileText className="h-4 w-4" />
-                                                                    </button>
-                                                                )}
-
-                                                                {publication.pdfUrl && (
-                                                                    <a
-                                                                        href={publication.pdfUrl}
-                                                                        target="_blank"
-                                                                        rel="noopener noreferrer"
-                                                                        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200 hover:cursor-pointer"
-                                                                        title="Download PDF"
-                                                                    >
-                                                                        <Download className="h-4 w-4" />
-                                                                    </a>
-                                                                )}
-
-                                                                {publication.url && (
-                                                                    <a
-                                                                        href={publication.url}
-                                                                        target="_blank"
-                                                                        rel="noopener noreferrer"
-                                                                        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200 hover:cursor-pointer"
-                                                                        title="View Online"
-                                                                    >
-                                                                        <ExternalLink className="h-4 w-4" />
-                                                                    </a>
-                                                                )}
-
-                                                                {/* <button
-                                                                    className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded transition-all duration-200"
-                                                                    title="Discuss with AI"
-                                                                >
-                                                                    <MessageCircle className="h-4 w-4" />
-                                                                </button> */}
-                                                            </div>
-                                                        )}
                                                     </div>
                                                 ))}
                                             </div>
